@@ -1,0 +1,83 @@
+import Foundation
+
+@objc public class VCSSharedAssetWrapper: NSObject, SharedAsset, Codable {
+    @objc public let asset: Asset
+    @objc public let assetType: AssetType
+    public let resourceURI: String
+    
+    init(asset: Asset, assetType: AssetType, resourceURI: String) {
+        self.asset = asset
+        self.assetType = assetType
+        self.resourceURI = resourceURI
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case asset
+        case assetType = "asset_type"
+        case resourceURI = "resource_uri"
+    }
+    
+    required public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.assetType = try container.decode(AssetType.self, forKey: CodingKeys.assetType)
+        self.resourceURI = try container.decode(String.self, forKey: CodingKeys.resourceURI)
+        
+        switch self.assetType {
+        case .file:
+            self.asset = try container.decode(VCSFileResponse.self, forKey: CodingKeys.asset)
+        case .folder:
+            self.asset = try container.decode(VCSFolderResponse.self, forKey: CodingKeys.asset)
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.assetType, forKey: CodingKeys.assetType)
+        try container.encode(self.resourceURI, forKey: CodingKeys.resourceURI)
+        
+        switch self.assetType {
+        case .file:
+            if let fileAsset = self.asset as? VCSFileResponse {
+                try container.encode(fileAsset, forKey: CodingKeys.asset)
+            }
+        case .folder:
+            if let folderAsset = self.asset as? VCSFolderResponse {
+                try container.encode(folderAsset, forKey: CodingKeys.asset)
+            }
+        }
+    }
+}
+
+extension VCSSharedAssetWrapper: VCSCellDataHolder {
+    public var cellData: VCSCellPresentable {
+        //TODO: remove force cast
+        return self.asset as! VCSCellPresentable
+    }
+    public var cellFileData: FileCellPresentable? {
+        return self.asset as? VCSFileResponse
+    }
+    public var assetData: Asset? {
+        return self.asset
+    }
+}
+
+extension VCSSharedAssetWrapper: VCSCachable {
+    public typealias RealmModel = RealmSharedAsset
+    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
+    
+    public func addToCache() {
+        VCSSharedAssetWrapper.realmStorage.addOrUpdate(item: self)
+    }
+    
+    public func addOrPartialUpdateToCache() {
+        if VCSSharedAssetWrapper.realmStorage.getByIdOfItem(item: self) != nil {
+            VCSSharedAssetWrapper.realmStorage.partialUpdate(item: self)
+        } else {
+            VCSSharedAssetWrapper.realmStorage.addOrUpdate(item: self)
+        }
+    }
+    
+    public func partialUpdateToCache() {
+        VCSSharedAssetWrapper.realmStorage.partialUpdate(item: self)
+    }
+}

@@ -1,0 +1,60 @@
+//
+//  OAuthSwiftRequestInterceptor.swift
+//  OAuthSwift-Alamofire
+//
+//  Created by phimage on 05/10/16.
+//  Copyright © 2016 phimage. All rights reserved.
+//
+
+import Foundation
+import Alamofire
+import OAuth2
+
+/// Add authentification headers from OAuthSwift to Alamofire request
+open class OAuth2RetryHandler: RequestInterceptor {
+    
+    public internal(set) var userDidCancelSingIn = false
+    let loader: OAuth2DataLoader
+    fileprivate var requestsToRetry: [(RetryResult) -> Void] = []
+    
+    init?(oauth2: OAuth2C?) {
+        guard let loader = oauth2 else { return nil }
+        self.loader = OAuth2DataLoader(oauth2: loader)
+    }
+    
+    open func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
+        guard nil != loader.oauth2.accessToken else {
+            completion(.success(urlRequest))
+            return
+        }
+        
+        do {
+            let request = try urlRequest.signed(with: loader.oauth2)
+            return completion(.success(request))
+        } catch {
+            print("Unable to sign request: \(error)")
+            return completion(.failure(error))
+        }
+    }
+    
+    open func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
+        if self.userDidCancelSingIn == false, let response = request.task?.response as? HTTPURLResponse, 401 == response.statusCode || 403 == response.statusCode, let req = request.request {
+            var dataRequest = OAuth2DataRequest(request: req, callback: { _ in })
+            
+            dataRequest.context = completion
+            loader.enqueue(request: dataRequest)
+            loader.attemptToAuthorize() { authParams, error in
+                self.loader.dequeueAndApply() { req in
+                    if let comp = req.context as? (RetryResult) -> Void {
+                        comp(.retry)
+                    } else {
+                        completion(.doNotRetryWithError(VCSNetworkError.parsingError("RetryResult - cannot parse req.context")))
+                    }
+                }
+            }
+        }
+        else {
+            completion(.doNotRetry)   // not a 401, not our problem
+        }
+    }
+}
