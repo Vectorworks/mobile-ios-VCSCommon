@@ -1,5 +1,4 @@
 import Foundation
-import PromisedFuture
 import Alamofire
 import os
 import CocoaLumberjackSwift

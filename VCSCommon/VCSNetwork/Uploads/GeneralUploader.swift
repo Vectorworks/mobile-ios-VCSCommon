@@ -1,5 +1,4 @@
 import Foundation
-import PromisedFuture
 
 typealias FileWithRelated = (VCSFileResponse, [VCSFileResponse])
 typealias FileWithRelatedАRGS = (uploadedFile: VCSFileResponse, uploadedRelatedFiles: [VCSFileResponse])

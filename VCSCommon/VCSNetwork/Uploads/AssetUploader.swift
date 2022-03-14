@@ -1,5 +1,4 @@
 import Foundation
-import PromisedFuture
 import CocoaLumberjackSwift
 
 enum UploadPDFError: Error {
