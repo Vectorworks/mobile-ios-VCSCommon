@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 @objc class VCSFCIconsStr: NSObject {
     @objc public static let badge_view = "badge-view"

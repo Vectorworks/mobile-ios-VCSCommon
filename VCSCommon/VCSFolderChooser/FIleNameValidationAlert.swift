@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 @objc public enum FileTypeForAlert: Int {
     case folder
