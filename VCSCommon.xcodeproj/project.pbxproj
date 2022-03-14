@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D49263027DF7102002C3DEC /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 1D49262F27DF7102002C3DEC /* SocketIO */; };
 		1D9B595F27DB895900C02CB5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B58D627DB895900C02CB5 /* Constants.swift */; };
 		1D9B596027DB895900C02CB5 /* VCSServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B58D727DB895900C02CB5 /* VCSServer.swift */; };
 		1D9B596127DB895900C02CB5 /* DebugExtensionURLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B58D827DB895900C02CB5 /* DebugExtensionURLRequest.swift */; };
@@ -447,6 +448,7 @@
 				4B13E17E26A07E7A002DD21C /* Toast in Frameworks */,
 				4B285B4E252F1DD300CD87CB /* libiconv.tbd in Frameworks */,
 				4B13E18626A07F08002DD21C /* FirebaseDynamicLinks in Frameworks */,
+				1D49263027DF7102002C3DEC /* SocketIO in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -904,6 +906,7 @@
 				1D9B59E027DB8A2100C02CB5 /* RealmSwift */,
 				1D9B59E627DB8AEC00C02CB5 /* Alamofire */,
 				1D9B59E927DB8B2200C02CB5 /* OAuth2 */,
+				1D49262F27DF7102002C3DEC /* SocketIO */,
 			);
 			productName = VWCommon;
 			productReference = CC61EFEA21526EA100671C8C /* VCSCommon.framework */;
@@ -950,6 +953,7 @@
 				1D9B59DD27DB8A2100C02CB5 /* XCRemoteSwiftPackageReference "realm-cocoa" */,
 				1D9B59E527DB8AEC00C02CB5 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				1D9B59E827DB8B2100C02CB5 /* XCRemoteSwiftPackageReference "OAuth2" */,
+				1D49262E27DF7101002C3DEC /* XCRemoteSwiftPackageReference "mobile-ios-socket.io-client-swift" */,
 			);
 			productRefGroup = CC61EFEB21526EA100671C8C /* Products */;
 			projectDirPath = "";
@@ -1492,6 +1496,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		1D49262E27DF7101002C3DEC /* XCRemoteSwiftPackageReference "mobile-ios-socket.io-client-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Vectorworks/mobile-ios-socket.io-client-swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 9.0.36;
+			};
+		};
 		1D9B59DD27DB8A2100C02CB5 /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-cocoa.git";
@@ -1559,6 +1571,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1D49262F27DF7102002C3DEC /* SocketIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1D49262E27DF7101002C3DEC /* XCRemoteSwiftPackageReference "mobile-ios-socket.io-client-swift" */;
+			productName = SocketIO;
+		};
 		1D9B59DE27DB8A2100C02CB5 /* Realm */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1D9B59DD27DB8A2100C02CB5 /* XCRemoteSwiftPackageReference "realm-cocoa" */;

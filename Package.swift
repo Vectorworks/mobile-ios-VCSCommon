@@ -31,6 +31,7 @@ let package = Package(
         .package(url: "https://github.com/realm/realm-cocoa.git", .exact("10.22.0")),
         .package(url: "https://github.com/scalessec/Toast-Swift.git", .exact("5.0.1")),
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("8.13.0")),
+        .package(url: "https://github.com/Vectorworks/mobile-ios-socket.io-client-swift.git", .exact("9.0.36")),
 //        .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("8.3.1")),
     ],
     targets: [
