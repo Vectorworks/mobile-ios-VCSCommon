@@ -7,6 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D1EF96E27DF76CE00439D8F /* VCSFolderChooserSwiftUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF95B27DF76CE00439D8F /* VCSFolderChooserSwiftUtils.swift */; };
+		1D1EF96F27DF76CE00439D8F /* FIleNameValidationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF95C27DF76CE00439D8F /* FIleNameValidationAlert.swift */; };
+		1D1EF97027DF76CE00439D8F /* VCSFCIconsStr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF95D27DF76CE00439D8F /* VCSFCIconsStr.swift */; };
+		1D1EF97127DF76CE00439D8F /* VCSMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF95E27DF76CE00439D8F /* VCSMessageView.swift */; };
+		1D1EF97227DF76CE00439D8F /* FolderChooserResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF95F27DF76CE00439D8F /* FolderChooserResult.swift */; };
+		1D1EF97327DF76CE00439D8F /* SelectFilenameDialogCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF96027DF76CE00439D8F /* SelectFilenameDialogCreator.swift */; };
+		1D1EF97527DF76CE00439D8F /* FolderCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF96627DF76CE00439D8F /* FolderCreator.swift */; };
+		1D1EF97627DF76CE00439D8F /* AssetNameValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF96727DF76CE00439D8F /* AssetNameValidation.swift */; };
+		1D1EF97727DF76CE00439D8F /* VCSFolderChooser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF96827DF76CE00439D8F /* VCSFolderChooser.swift */; };
+		1D1EF97827DF76CE00439D8F /* VCSFolderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF96A27DF76CE00439D8F /* VCSFolderCell.swift */; };
+		1D1EF97A27DF76CE00439D8F /* VCSTableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF96C27DF76CE00439D8F /* VCSTableViewDataSource.swift */; };
 		1D49263027DF7102002C3DEC /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 1D49262F27DF7102002C3DEC /* SocketIO */; };
 		1D9B595F27DB895900C02CB5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B58D627DB895900C02CB5 /* Constants.swift */; };
 		1D9B596027DB895900C02CB5 /* VCSServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B58D727DB895900C02CB5 /* VCSServer.swift */; };
@@ -93,7 +104,6 @@
 		1D9B59B127DB895900C02CB5 /* VCSFolderEventResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B592D27DB895900C02CB5 /* VCSFolderEventResponse.swift */; };
 		1D9B59B227DB895900C02CB5 /* VCSRequestURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B592E27DB895900C02CB5 /* VCSRequestURL.swift */; };
 		1D9B59B327DB895900C02CB5 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B592F27DB895900C02CB5 /* Utils.swift */; };
-		1D9B59B427DB895900C02CB5 /* VCSNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D9B593027DB895900C02CB5 /* VCSNetwork.h */; };
 		1D9B59B527DB895900C02CB5 /* VCSGenericRealmModelStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B593327DB895900C02CB5 /* VCSGenericRealmModelStorage.swift */; };
 		1D9B59B627DB895900C02CB5 /* VCSCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B593527DB895900C02CB5 /* VCSCache.swift */; };
 		1D9B59B727DB895900C02CB5 /* VCSModelStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B593627DB895900C02CB5 /* VCSModelStorage.swift */; };
@@ -227,6 +237,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1D1EF95B27DF76CE00439D8F /* VCSFolderChooserSwiftUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSFolderChooserSwiftUtils.swift; sourceTree = "<group>"; };
+		1D1EF95C27DF76CE00439D8F /* FIleNameValidationAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FIleNameValidationAlert.swift; sourceTree = "<group>"; };
+		1D1EF95D27DF76CE00439D8F /* VCSFCIconsStr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSFCIconsStr.swift; sourceTree = "<group>"; };
+		1D1EF95E27DF76CE00439D8F /* VCSMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSMessageView.swift; sourceTree = "<group>"; };
+		1D1EF95F27DF76CE00439D8F /* FolderChooserResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderChooserResult.swift; sourceTree = "<group>"; };
+		1D1EF96027DF76CE00439D8F /* SelectFilenameDialogCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectFilenameDialogCreator.swift; sourceTree = "<group>"; };
+		1D1EF96227DF76CE00439D8F /* icon.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = icon.xcassets; sourceTree = "<group>"; };
+		1D1EF96627DF76CE00439D8F /* FolderCreator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FolderCreator.swift; sourceTree = "<group>"; };
+		1D1EF96727DF76CE00439D8F /* AssetNameValidation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetNameValidation.swift; sourceTree = "<group>"; };
+		1D1EF96827DF76CE00439D8F /* VCSFolderChooser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSFolderChooser.swift; sourceTree = "<group>"; };
+		1D1EF96927DF76CE00439D8F /* VCSFolderChooser.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = VCSFolderChooser.storyboard; sourceTree = "<group>"; };
+		1D1EF96A27DF76CE00439D8F /* VCSFolderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSFolderCell.swift; sourceTree = "<group>"; };
+		1D1EF96C27DF76CE00439D8F /* VCSTableViewDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSTableViewDataSource.swift; sourceTree = "<group>"; };
 		1D439AAD27DB5EC400B1F2E2 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		1D9B58D627DB895900C02CB5 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		1D9B58D727DB895900C02CB5 /* VCSServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSServer.swift; sourceTree = "<group>"; };
@@ -313,7 +336,6 @@
 		1D9B592D27DB895900C02CB5 /* VCSFolderEventResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSFolderEventResponse.swift; sourceTree = "<group>"; };
 		1D9B592E27DB895900C02CB5 /* VCSRequestURL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSRequestURL.swift; sourceTree = "<group>"; };
 		1D9B592F27DB895900C02CB5 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		1D9B593027DB895900C02CB5 /* VCSNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VCSNetwork.h; sourceTree = "<group>"; };
 		1D9B593327DB895900C02CB5 /* VCSGenericRealmModelStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSGenericRealmModelStorage.swift; sourceTree = "<group>"; };
 		1D9B593527DB895900C02CB5 /* VCSCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSCache.swift; sourceTree = "<group>"; };
 		1D9B593627DB895900C02CB5 /* VCSModelStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSModelStorage.swift; sourceTree = "<group>"; };
@@ -354,7 +376,6 @@
 		1D9B595A27DB895900C02CB5 /* RealmShareableLinkOwner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmShareableLinkOwner.swift; sourceTree = "<group>"; };
 		1D9B595B27DB895900C02CB5 /* RealmLocalFilesAppFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmLocalFilesAppFile.swift; sourceTree = "<group>"; };
 		1D9B595D27DB895900C02CB5 /* OAuth2RetryHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OAuth2RetryHandler.swift; sourceTree = "<group>"; };
-		1D9B595E27DB895900C02CB5 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1D9B59ED27DB8CFD00C02CB5 /* Future.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Future.swift; sourceTree = "<group>"; };
 		1D9B59EE27DB8CFD00C02CB5 /* Future+Functional.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Future+Functional.swift"; sourceTree = "<group>"; };
 		1D9B59EF27DB8CFD00C02CB5 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -455,6 +476,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1D1EF95A27DF76CE00439D8F /* VCSFolderChooser */ = {
+			isa = PBXGroup;
+			children = (
+				1D1EF95B27DF76CE00439D8F /* VCSFolderChooserSwiftUtils.swift */,
+				1D1EF95C27DF76CE00439D8F /* FIleNameValidationAlert.swift */,
+				1D1EF95D27DF76CE00439D8F /* VCSFCIconsStr.swift */,
+				1D1EF95E27DF76CE00439D8F /* VCSMessageView.swift */,
+				1D1EF95F27DF76CE00439D8F /* FolderChooserResult.swift */,
+				1D1EF96027DF76CE00439D8F /* SelectFilenameDialogCreator.swift */,
+				1D1EF96127DF76CE00439D8F /* Resources */,
+				1D1EF96627DF76CE00439D8F /* FolderCreator.swift */,
+				1D1EF96727DF76CE00439D8F /* AssetNameValidation.swift */,
+				1D1EF96827DF76CE00439D8F /* VCSFolderChooser.swift */,
+				1D1EF96927DF76CE00439D8F /* VCSFolderChooser.storyboard */,
+				1D1EF96A27DF76CE00439D8F /* VCSFolderCell.swift */,
+				1D1EF96C27DF76CE00439D8F /* VCSTableViewDataSource.swift */,
+			);
+			path = VCSFolderChooser;
+			sourceTree = "<group>";
+		};
+		1D1EF96127DF76CE00439D8F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1D1EF96227DF76CE00439D8F /* icon.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		1D9B58D527DB895900C02CB5 /* VCSNetwork */ = {
 			isa = PBXGroup;
 			children = (
@@ -469,10 +518,8 @@
 				1D9B58EF27DB895900C02CB5 /* Models */,
 				1D9B592E27DB895900C02CB5 /* VCSRequestURL.swift */,
 				1D9B592F27DB895900C02CB5 /* Utils.swift */,
-				1D9B593027DB895900C02CB5 /* VCSNetwork.h */,
 				1D9B593127DB895900C02CB5 /* VCSModelStorage */,
 				1D9B595C27DB895900C02CB5 /* OAuthAlamofireHelpers */,
-				1D9B595E27DB895900C02CB5 /* Info.plist */,
 			);
 			path = VCSNetwork;
 			sourceTree = "<group>";
@@ -770,6 +817,7 @@
 				CC61EFFD21526F0000671C8C /* Reachability */,
 				CC61EFF721526F0000671C8C /* Utils */,
 				1D9B58D527DB895900C02CB5 /* VCSNetwork */,
+				1D1EF95A27DF76CE00439D8F /* VCSFolderChooser */,
 				CC61EFF621526F0000671C8C /* VCSCommon.h */,
 				CC61F00021526F0000671C8C /* Info.plist */,
 			);
@@ -848,7 +896,6 @@
 				CC61F05121526F0000671C8C /* DesignLayerData.h in Headers */,
 				CC61F05721526F0000671C8C /* ClassData.h in Headers */,
 				CC61F05C21526F0000671C8C /* CameraData.h in Headers */,
-				1D9B59B427DB895900C02CB5 /* VCSNetwork.h in Headers */,
 				CC61F05821526F0000671C8C /* SavedViewData.h in Headers */,
 				CC61F05221526F0000671C8C /* RenderworksCameraData.h in Headers */,
 				CC61F05A21526F0000671C8C /* VWFileMetadata.h in Headers */,
@@ -1017,6 +1064,7 @@
 			files = (
 				1D9B59F327DB8CFD00C02CB5 /* Future+Functional.swift in Sources */,
 				1D9B596A27DB895900C02CB5 /* VCSFileType.swift in Sources */,
+				1D1EF97227DF76CE00439D8F /* FolderChooserResult.swift in Sources */,
 				1D9B59A527DB895900C02CB5 /* LocalFilesAppFile.swift in Sources */,
 				1D9B596527DB895900C02CB5 /* PhotogramJobRequest.swift in Sources */,
 				1D9B59A927DB895900C02CB5 /* FileAsset.swift in Sources */,
@@ -1053,6 +1101,8 @@
 				1D9B598127DB895900C02CB5 /* SharedWithMePermission.swift in Sources */,
 				1D9B59A327DB895900C02CB5 /* VCSMountFolderResponse.swift in Sources */,
 				1D9B59D427DB895900C02CB5 /* RealmWSharedWithInfo.swift in Sources */,
+				1D1EF97027DF76CE00439D8F /* VCSFCIconsStr.swift in Sources */,
+				1D1EF97727DF76CE00439D8F /* VCSFolderChooser.swift in Sources */,
 				1D9B596C27DB895900C02CB5 /* APIClient.swift in Sources */,
 				1D9B596F27DB895900C02CB5 /* GeneralUploader.swift in Sources */,
 				1D9B59DB27DB895900C02CB5 /* RealmLocalFilesAppFile.swift in Sources */,
@@ -1080,7 +1130,9 @@
 				1D9B596827DB895900C02CB5 /* UserLogoutRequest.swift in Sources */,
 				1D9B59BF27DB895900C02CB5 /* RealmJobData.swift in Sources */,
 				1D9B598427DB895900C02CB5 /* AnnouncementsResponse.swift in Sources */,
+				1D1EF97A27DF76CE00439D8F /* VCSTableViewDataSource.swift in Sources */,
 				1D9B59D227DB895900C02CB5 /* RealmLocalFileForUpload.swift in Sources */,
+				1D1EF97127DF76CE00439D8F /* VCSMessageView.swift in Sources */,
 				1D9B59BD27DB895900C02CB5 /* RealmSharedAssetOWN.swift in Sources */,
 				1D9B59AA27DB895900C02CB5 /* Asset.swift in Sources */,
 				1D9B596727DB895900C02CB5 /* GenericJobRequest.swift in Sources */,
@@ -1092,12 +1144,15 @@
 				CC61F05521526F0000671C8C /* CameraData.m in Sources */,
 				1D9B59A227DB895900C02CB5 /* VCSFileEventResponse.swift in Sources */,
 				1D9B598827DB895900C02CB5 /* VCSSharedFolderResponse.swift in Sources */,
+				1D1EF97627DF76CE00439D8F /* AssetNameValidation.swift in Sources */,
 				1D9B597227DB895900C02CB5 /* UnuploadedFile.swift in Sources */,
 				1D9B599027DB895900C02CB5 /* VCSStorageResponse.swift in Sources */,
 				4BBB16F82334C42A00FD742B /* Localization.swift in Sources */,
 				1D9B59B827DB895900C02CB5 /* SharedLink.swift in Sources */,
 				1D9B59CF27DB895900C02CB5 /* RealmLocalFile.swift in Sources */,
+				1D1EF97327DF76CE00439D8F /* SelectFilenameDialogCreator.swift in Sources */,
 				4BF2F2FA21B16D3000D443D5 /* VCSScreenShot.swift in Sources */,
+				1D1EF97827DF76CE00439D8F /* VCSFolderCell.swift in Sources */,
 				1D9B59D027DB895900C02CB5 /* RealmCascadeDeletion.swift in Sources */,
 				CC61F05B21526F0000671C8C /* RenderworksCameraData.m in Sources */,
 				C92F9A68237DAFDB0080D46F /* EmailAvatar.swift in Sources */,
@@ -1115,9 +1170,11 @@
 				1D9B596327DB895900C02CB5 /* LinkDetailsData.swift in Sources */,
 				1D9B59BE27DB895900C02CB5 /* RealmFilesAppTags.swift in Sources */,
 				4BE9BEFE2334F469004EE45C /* FileUtils.swift in Sources */,
+				1D1EF96E27DF76CE00439D8F /* VCSFolderChooserSwiftUtils.swift in Sources */,
 				1D9B599B27DB895900C02CB5 /* WSharedWithInfo.swift in Sources */,
 				4B23EEDD253091D10032BCAA /* MetricsEvents.swift in Sources */,
 				1D9B59B727DB895900C02CB5 /* VCSModelStorage.swift in Sources */,
+				1D1EF97527DF76CE00439D8F /* FolderCreator.swift in Sources */,
 				1D9B598D27DB895900C02CB5 /* Container.swift in Sources */,
 				4BE9BEFA2334EFA9004EE45C /* VCSColors.swift in Sources */,
 				1D9B596D27DB895900C02CB5 /* AuthCenter.swift in Sources */,
@@ -1168,6 +1225,7 @@
 				1D9B59BA27DB895900C02CB5 /* RealmVCSUser.swift in Sources */,
 				1D9B598627DB895900C02CB5 /* VCSLoginSettingsResponse.swift in Sources */,
 				4BE9BEFC2334F0FB004EE45C /* UIColor-Extention.swift in Sources */,
+				1D1EF96F27DF76CE00439D8F /* FIleNameValidationAlert.swift in Sources */,
 				1D9B597D27DB895900C02CB5 /* VCSAnnouncementResponse.swift in Sources */,
 				CC61F05321526F0000671C8C /* VWFileMetadata.m in Sources */,
 			);
@@ -1405,10 +1463,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = VCSCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = "$(inherited)";
@@ -1440,10 +1495,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = VCSCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = "$(inherited)";
