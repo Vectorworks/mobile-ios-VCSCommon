@@ -18,7 +18,6 @@ let package = Package(
             name: "mobile-ios-VCSCommon",
             targets: [
                 "VCSCommon",
-                "CVCSCommon",
             ]
         ),
     ],
@@ -57,13 +56,6 @@ let package = Package(
                 "PromisedFuture/README.md",
                 "Info.plist",
             ]),
-        .target(
-            name: "CVCSCommon",
-            dependencies: [
-                "KissXML",
-            ],
-            path: "VCSCommon/MetadataFileReader"
-        ),
 //        .testTarget(
 //            name: "mobile-ios-VCSCommonTests",
 //            dependencies: [

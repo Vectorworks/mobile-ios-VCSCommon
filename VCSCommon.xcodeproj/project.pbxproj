@@ -196,20 +196,6 @@
 		C92F9A71237DB48A0080D46F /* LetterAvatarConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C92F9A70237DB48A0080D46F /* LetterAvatarConfiguration.swift */; };
 		C92F9A75237DB4E70080D46F /* LetterAvatarBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C92F9A74237DB4E70080D46F /* LetterAvatarBuilder.swift */; };
 		CC61F04721526F0000671C8C /* VCSCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = CC61EFF621526F0000671C8C /* VCSCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CC61F04F21526F0000671C8C /* ClassData.m in Sources */ = {isa = PBXBuildFile; fileRef = CC61F00221526F0000671C8C /* ClassData.m */; };
-		CC61F05021526F0000671C8C /* SavedViewData.m in Sources */ = {isa = PBXBuildFile; fileRef = CC61F00321526F0000671C8C /* SavedViewData.m */; };
-		CC61F05121526F0000671C8C /* DesignLayerData.h in Headers */ = {isa = PBXBuildFile; fileRef = CC61F00421526F0000671C8C /* DesignLayerData.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CC61F05221526F0000671C8C /* RenderworksCameraData.h in Headers */ = {isa = PBXBuildFile; fileRef = CC61F00521526F0000671C8C /* RenderworksCameraData.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CC61F05321526F0000671C8C /* VWFileMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = CC61F00621526F0000671C8C /* VWFileMetadata.m */; };
-		CC61F05421526F0000671C8C /* PageData.m in Sources */ = {isa = PBXBuildFile; fileRef = CC61F00721526F0000671C8C /* PageData.m */; };
-		CC61F05521526F0000671C8C /* CameraData.m in Sources */ = {isa = PBXBuildFile; fileRef = CC61F00821526F0000671C8C /* CameraData.m */; };
-		CC61F05621526F0000671C8C /* DesignLayerData.m in Sources */ = {isa = PBXBuildFile; fileRef = CC61F00921526F0000671C8C /* DesignLayerData.m */; };
-		CC61F05721526F0000671C8C /* ClassData.h in Headers */ = {isa = PBXBuildFile; fileRef = CC61F00A21526F0000671C8C /* ClassData.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CC61F05821526F0000671C8C /* SavedViewData.h in Headers */ = {isa = PBXBuildFile; fileRef = CC61F00B21526F0000671C8C /* SavedViewData.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CC61F05921526F0000671C8C /* PageData.h in Headers */ = {isa = PBXBuildFile; fileRef = CC61F00C21526F0000671C8C /* PageData.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CC61F05A21526F0000671C8C /* VWFileMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = CC61F00D21526F0000671C8C /* VWFileMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CC61F05B21526F0000671C8C /* RenderworksCameraData.m in Sources */ = {isa = PBXBuildFile; fileRef = CC61F00E21526F0000671C8C /* RenderworksCameraData.m */; };
-		CC61F05C21526F0000671C8C /* CameraData.h in Headers */ = {isa = PBXBuildFile; fileRef = CC61F00F21526F0000671C8C /* CameraData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -420,20 +406,6 @@
 		CC61EFEA21526EA100671C8C /* VCSCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VCSCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC61EFF621526F0000671C8C /* VCSCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VCSCommon.h; sourceTree = "<group>"; };
 		CC61F00021526F0000671C8C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CC61F00221526F0000671C8C /* ClassData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClassData.m; sourceTree = "<group>"; };
-		CC61F00321526F0000671C8C /* SavedViewData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SavedViewData.m; sourceTree = "<group>"; };
-		CC61F00421526F0000671C8C /* DesignLayerData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DesignLayerData.h; sourceTree = "<group>"; };
-		CC61F00521526F0000671C8C /* RenderworksCameraData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderworksCameraData.h; sourceTree = "<group>"; };
-		CC61F00621526F0000671C8C /* VWFileMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VWFileMetadata.m; sourceTree = "<group>"; };
-		CC61F00721526F0000671C8C /* PageData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageData.m; sourceTree = "<group>"; };
-		CC61F00821526F0000671C8C /* CameraData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraData.m; sourceTree = "<group>"; };
-		CC61F00921526F0000671C8C /* DesignLayerData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DesignLayerData.m; sourceTree = "<group>"; };
-		CC61F00A21526F0000671C8C /* ClassData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClassData.h; sourceTree = "<group>"; };
-		CC61F00B21526F0000671C8C /* SavedViewData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SavedViewData.h; sourceTree = "<group>"; };
-		CC61F00C21526F0000671C8C /* PageData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageData.h; sourceTree = "<group>"; };
-		CC61F00D21526F0000671C8C /* VWFileMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VWFileMetadata.h; sourceTree = "<group>"; };
-		CC61F00E21526F0000671C8C /* RenderworksCameraData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RenderworksCameraData.m; sourceTree = "<group>"; };
-		CC61F00F21526F0000671C8C /* CameraData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraData.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -811,7 +783,6 @@
 			children = (
 				C92F9A66237DAF700080D46F /* Avatar */,
 				4BBB16F62334C42A00FD742B /* Localization */,
-				CC61F00121526F0000671C8C /* MetadataFileReader */,
 				4B263245233A2AF8002763E9 /* Metrics */,
 				1D9B59EB27DB8CFD00C02CB5 /* PromisedFuture */,
 				CC61EFFD21526F0000671C8C /* Reachability */,
@@ -852,27 +823,6 @@
 			path = Reachability;
 			sourceTree = "<group>";
 		};
-		CC61F00121526F0000671C8C /* MetadataFileReader */ = {
-			isa = PBXGroup;
-			children = (
-				CC61F00921526F0000671C8C /* DesignLayerData.m */,
-				CC61F00421526F0000671C8C /* DesignLayerData.h */,
-				CC61F00221526F0000671C8C /* ClassData.m */,
-				CC61F00A21526F0000671C8C /* ClassData.h */,
-				CC61F00321526F0000671C8C /* SavedViewData.m */,
-				CC61F00B21526F0000671C8C /* SavedViewData.h */,
-				CC61F00721526F0000671C8C /* PageData.m */,
-				CC61F00C21526F0000671C8C /* PageData.h */,
-				CC61F00E21526F0000671C8C /* RenderworksCameraData.m */,
-				CC61F00521526F0000671C8C /* RenderworksCameraData.h */,
-				CC61F00821526F0000671C8C /* CameraData.m */,
-				CC61F00F21526F0000671C8C /* CameraData.h */,
-				CC61F00621526F0000671C8C /* VWFileMetadata.m */,
-				CC61F00D21526F0000671C8C /* VWFileMetadata.h */,
-			);
-			path = MetadataFileReader;
-			sourceTree = "<group>";
-		};
 		CC61F04321526F0000671C8C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -892,13 +842,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CC61F05921526F0000671C8C /* PageData.h in Headers */,
-				CC61F05121526F0000671C8C /* DesignLayerData.h in Headers */,
-				CC61F05721526F0000671C8C /* ClassData.h in Headers */,
-				CC61F05C21526F0000671C8C /* CameraData.h in Headers */,
-				CC61F05821526F0000671C8C /* SavedViewData.h in Headers */,
-				CC61F05221526F0000671C8C /* RenderworksCameraData.h in Headers */,
-				CC61F05A21526F0000671C8C /* VWFileMetadata.h in Headers */,
 				CC61F04721526F0000671C8C /* VCSCommon.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1089,7 +1032,6 @@
 				1D9B597127DB895900C02CB5 /* UnuploadedFileActions.swift in Sources */,
 				4BBBD400266F7D970015CD07 /* VCSUserDefaults.swift in Sources */,
 				1D9B59A827DB895900C02CB5 /* FileCellPresentable.swift in Sources */,
-				CC61F05421526F0000671C8C /* PageData.m in Sources */,
 				1D9B59C827DB895900C02CB5 /* RealmSharedAsset.swift in Sources */,
 				1D9B596E27DB895900C02CB5 /* ContainingFolderMetadata.swift in Sources */,
 				1D9B597327DB895900C02CB5 /* AssetUploader.swift in Sources */,
@@ -1108,7 +1050,6 @@
 				1D9B59DB27DB895900C02CB5 /* RealmLocalFilesAppFile.swift in Sources */,
 				1D9B597827DB895900C02CB5 /* SSOUserResponse.swift in Sources */,
 				1D9B59C627DB895900C02CB5 /* RealmFilesAppFavorite.swift in Sources */,
-				CC61F05021526F0000671C8C /* SavedViewData.m in Sources */,
 				1D9B597627DB895900C02CB5 /* VCSRegisterResponse.swift in Sources */,
 				1D9B599E27DB895900C02CB5 /* VCSSSOUser.swift in Sources */,
 				1D9B595F27DB895900C02CB5 /* Constants.swift in Sources */,
@@ -1141,7 +1082,6 @@
 				1D9B596127DB895900C02CB5 /* DebugExtensionURLRequest.swift in Sources */,
 				4BBC1CE72445B4560012485A /* VCSTextFieldValidator.swift in Sources */,
 				1D9B596427DB895900C02CB5 /* FeedbackRequest.swift in Sources */,
-				CC61F05521526F0000671C8C /* CameraData.m in Sources */,
 				1D9B59A227DB895900C02CB5 /* VCSFileEventResponse.swift in Sources */,
 				1D9B598827DB895900C02CB5 /* VCSSharedFolderResponse.swift in Sources */,
 				1D1EF97627DF76CE00439D8F /* AssetNameValidation.swift in Sources */,
@@ -1154,7 +1094,6 @@
 				4BF2F2FA21B16D3000D443D5 /* VCSScreenShot.swift in Sources */,
 				1D1EF97827DF76CE00439D8F /* VCSFolderCell.swift in Sources */,
 				1D9B59D027DB895900C02CB5 /* RealmCascadeDeletion.swift in Sources */,
-				CC61F05B21526F0000671C8C /* RenderworksCameraData.m in Sources */,
 				C92F9A68237DAFDB0080D46F /* EmailAvatar.swift in Sources */,
 				1D9B598C27DB895900C02CB5 /* VCSShareableLinkOwner.swift in Sources */,
 				1D9B59D127DB895900C02CB5 /* RealmSharedFileFolderAssetWrapper.swift in Sources */,
@@ -1204,7 +1143,6 @@
 				1D9B596927DB895900C02CB5 /* WebViewTaskDialogResult.swift in Sources */,
 				4B8BBFE526A178DC00E1BFC6 /* VCSCommonConstants.swift in Sources */,
 				4BDB047B23267CDF005532CC /* VCSReachability.swift in Sources */,
-				CC61F04F21526F0000671C8C /* ClassData.m in Sources */,
 				1D9B597F27DB895900C02CB5 /* VCSJobFileVersionResponse.swift in Sources */,
 				1D9B59AE27DB895900C02CB5 /* VCSSharedWithMeResponse.swift in Sources */,
 				1D9B597727DB895900C02CB5 /* VCSFlagsResponse.swift in Sources */,
@@ -1217,7 +1155,6 @@
 				1D9B59DA27DB895900C02CB5 /* RealmShareableLinkOwner.swift in Sources */,
 				1D9B59C427DB895900C02CB5 /* RealmSharedWithMeAssetWrapper.swift in Sources */,
 				1D9B59D927DB895900C02CB5 /* RealmSharedWithUser.swift in Sources */,
-				CC61F05621526F0000671C8C /* DesignLayerData.m in Sources */,
 				4BC091E821AD608E001DADA7 /* String-Extensions.swift in Sources */,
 				1D9B59B927DB895900C02CB5 /* RealmBrandingLogoPosition.swift in Sources */,
 				4B617AF02440C4E40039663F /* UnicodeScalar-Extensions.swift in Sources */,
@@ -1227,7 +1164,6 @@
 				4BE9BEFC2334F0FB004EE45C /* UIColor-Extention.swift in Sources */,
 				1D1EF96F27DF76CE00439D8F /* FIleNameValidationAlert.swift in Sources */,
 				1D9B597D27DB895900C02CB5 /* VCSAnnouncementResponse.swift in Sources */,
-				CC61F05321526F0000671C8C /* VWFileMetadata.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
