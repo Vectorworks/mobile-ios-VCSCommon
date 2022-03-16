@@ -52,7 +52,6 @@ let package = Package(
             ],
             path: "VCSCommon",
             exclude: [
-                "MetadataFileReader",
                 "PromisedFuture/README.md",
                 "Info.plist",
             ]),
