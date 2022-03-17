@@ -236,7 +236,6 @@
 		1D1EF96927DF76CE00439D8F /* VCSFolderChooser.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = VCSFolderChooser.storyboard; sourceTree = "<group>"; };
 		1D1EF96A27DF76CE00439D8F /* VCSFolderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSFolderCell.swift; sourceTree = "<group>"; };
 		1D1EF96C27DF76CE00439D8F /* VCSTableViewDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSTableViewDataSource.swift; sourceTree = "<group>"; };
-		1D439AAD27DB5EC400B1F2E2 /* Cartfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		1D9B58D627DB895900C02CB5 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		1D9B58D727DB895900C02CB5 /* VCSServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSServer.swift; sourceTree = "<group>"; };
 		1D9B58D827DB895900C02CB5 /* DebugExtensionURLRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugExtensionURLRequest.swift; sourceTree = "<group>"; };
@@ -759,9 +758,8 @@
 		CC61EFE021526EA100671C8C = {
 			isa = PBXGroup;
 			children = (
-				1D439AAD27DB5EC400B1F2E2 /* Cartfile */,
-				4BF7C62826A1B087000C5FCE /* Package.swift */,
 				4B6108C9252F29A6009A458B /* .gitignore */,
+				4BF7C62826A1B087000C5FCE /* Package.swift */,
 				CC61EFF521526EFF00671C8C /* VCSCommon */,
 				4BE9BF0423350230004EE45C /* VCSCommon-APP */,
 				CC61F04321526F0000671C8C /* Frameworks */,
