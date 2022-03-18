@@ -3,7 +3,7 @@ import Foundation
 @objc public class PDFFileAsset: NSObject {
     public let fileAsset: FileAsset
     
-    init(fileAsset: FileAsset) {
+    public init(fileAsset: FileAsset) {
         self.fileAsset = fileAsset
     }
     
