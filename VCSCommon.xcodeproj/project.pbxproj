@@ -19,6 +19,7 @@
 		1D1EF97827DF76CE00439D8F /* VCSFolderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF96A27DF76CE00439D8F /* VCSFolderCell.swift */; };
 		1D1EF97A27DF76CE00439D8F /* VCSTableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1EF96C27DF76CE00439D8F /* VCSTableViewDataSource.swift */; };
 		1D49263027DF7102002C3DEC /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 1D49262F27DF7102002C3DEC /* SocketIO */; };
+		1D62E64127E4878000E2155B /* VCSCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D62E64027E4878000E2155B /* VCSCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1D9B595F27DB895900C02CB5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B58D627DB895900C02CB5 /* Constants.swift */; };
 		1D9B596027DB895900C02CB5 /* VCSServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B58D727DB895900C02CB5 /* VCSServer.swift */; };
 		1D9B596127DB895900C02CB5 /* DebugExtensionURLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9B58D827DB895900C02CB5 /* DebugExtensionURLRequest.swift */; };
@@ -195,7 +196,6 @@
 		C92F9A6C237DB1850080D46F /* LetterAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C92F9A6B237DB1850080D46F /* LetterAvatar.swift */; };
 		C92F9A71237DB48A0080D46F /* LetterAvatarConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C92F9A70237DB48A0080D46F /* LetterAvatarConfiguration.swift */; };
 		C92F9A75237DB4E70080D46F /* LetterAvatarBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C92F9A74237DB4E70080D46F /* LetterAvatarBuilder.swift */; };
-		CC61F04721526F0000671C8C /* VCSCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = CC61EFF621526F0000671C8C /* VCSCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -236,6 +236,7 @@
 		1D1EF96927DF76CE00439D8F /* VCSFolderChooser.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = VCSFolderChooser.storyboard; sourceTree = "<group>"; };
 		1D1EF96A27DF76CE00439D8F /* VCSFolderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSFolderCell.swift; sourceTree = "<group>"; };
 		1D1EF96C27DF76CE00439D8F /* VCSTableViewDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSTableViewDataSource.swift; sourceTree = "<group>"; };
+		1D62E64027E4878000E2155B /* VCSCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VCSCommon.h; sourceTree = "<group>"; };
 		1D9B58D627DB895900C02CB5 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		1D9B58D727DB895900C02CB5 /* VCSServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCSServer.swift; sourceTree = "<group>"; };
 		1D9B58D827DB895900C02CB5 /* DebugExtensionURLRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugExtensionURLRequest.swift; sourceTree = "<group>"; };
@@ -403,7 +404,6 @@
 		C92F9A70237DB48A0080D46F /* LetterAvatarConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterAvatarConfiguration.swift; sourceTree = "<group>"; };
 		C92F9A74237DB4E70080D46F /* LetterAvatarBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterAvatarBuilder.swift; sourceTree = "<group>"; };
 		CC61EFEA21526EA100671C8C /* VCSCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VCSCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CC61EFF621526F0000671C8C /* VCSCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VCSCommon.h; sourceTree = "<group>"; };
 		CC61F00021526F0000671C8C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -473,6 +473,14 @@
 				1D1EF96227DF76CE00439D8F /* icon.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		1D62E63F27E4877000E2155B /* include */ = {
+			isa = PBXGroup;
+			children = (
+				1D62E64027E4878000E2155B /* VCSCommon.h */,
+			);
+			path = include;
 			sourceTree = "<group>";
 		};
 		1D9B58D527DB895900C02CB5 /* VCSNetwork */ = {
@@ -779,6 +787,7 @@
 		CC61EFF521526EFF00671C8C /* VCSCommon */ = {
 			isa = PBXGroup;
 			children = (
+				1D62E63F27E4877000E2155B /* include */,
 				C92F9A66237DAF700080D46F /* Avatar */,
 				4BBB16F62334C42A00FD742B /* Localization */,
 				4B263245233A2AF8002763E9 /* Metrics */,
@@ -787,7 +796,6 @@
 				CC61EFF721526F0000671C8C /* Utils */,
 				1D9B58D527DB895900C02CB5 /* VCSNetwork */,
 				1D1EF95A27DF76CE00439D8F /* VCSFolderChooser */,
-				CC61EFF621526F0000671C8C /* VCSCommon.h */,
 				CC61F00021526F0000671C8C /* Info.plist */,
 			);
 			path = VCSCommon;
@@ -840,7 +848,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CC61F04721526F0000671C8C /* VCSCommon.h in Headers */,
+				1D62E64127E4878000E2155B /* VCSCommon.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
