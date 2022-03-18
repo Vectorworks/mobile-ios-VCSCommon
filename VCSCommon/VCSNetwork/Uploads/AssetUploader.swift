@@ -24,6 +24,10 @@ fileprivate struct MetadataForVCSFileResponse {
         (asset as? FileAsset)?.relatedFileAssets.forEach { AssetUploader.removeUploadedFileFromAPIClient($0) }
     }
     
+    @objc public func upload(_ PDFTempFile: URL, pdfAssetMetadata: PDFFileAsset, newName name: String, thumbnail: UnuploadedFile?, owner: String) {
+        self.upload(PDFTempFile, pdfMetadata: pdfAssetMetadata.fileAsset, newName: name, thumbnail: thumbnail, owner: owner)
+    }
+    
     @objc public func upload(_ PDFTempFile: URL, pdfMetadata: FileAsset, newName name: String, thumbnail: UnuploadedFile?, owner: String) {
         let unuploadedPDF = PDF.construct(relatedTo: pdfMetadata, withName: name, PDFTempFile: PDFTempFile, thumbnail: thumbnail)
         
