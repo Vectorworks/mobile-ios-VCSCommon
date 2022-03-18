@@ -1,11 +1,11 @@
 import Foundation
 
 @objc public protocol FileAsset: Asset {
-    var downloadURLString: String { get }
-    var isAvailableOnDevice: Bool { get }
-    var localPathString: String? { get }
-    var fileTypeString: String? { get }
-    var relatedFileAssets: [FileAsset] { get }
+    @objc var downloadURLString: String { get }
+    @objc var isAvailableOnDevice: Bool { get }
+    @objc var localPathString: String? { get }
+    @objc var fileTypeString: String? { get }
+    @objc var relatedFileAssets: [FileAsset] { get }
 }
 
 extension FileAsset {
