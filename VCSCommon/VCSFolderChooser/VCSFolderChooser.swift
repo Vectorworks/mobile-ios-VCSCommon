@@ -15,7 +15,7 @@ public class VCSFolderChooser: UIViewController, UITableViewDelegate {
     public override class func vcsStoryboardName() -> String {return "VCSFolderChooser"}
     
     public class func fromStoryboard(withDelegate delegate: VCSFolderChooserDelegate?, andFileName name: String) -> VCSFolderChooser? {
-        guard let controller = VCSFolderChooser.storyboardInstance(Bundle.module) as? VCSFolderChooser else { return nil }
+        guard let controller = VCSFolderChooser.storyboardInstance(Bundle.VCSCommon) as? VCSFolderChooser else { return nil }
         controller.delegate = delegate
         controller.fileName = name
         return controller

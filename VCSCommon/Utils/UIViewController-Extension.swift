@@ -2,6 +2,10 @@ import Foundation
 import UIKit
 import Toast
 
+public extension Bundle {
+    public static var VCSCommon: Bundle = Bundle.module
+}
+
 @objc public extension UIViewController {
     // expected-warning {{'open' modifier conflicts with extension's default access of 'public'}}
     open class func vcsStoryboardID() -> String {return ""}
