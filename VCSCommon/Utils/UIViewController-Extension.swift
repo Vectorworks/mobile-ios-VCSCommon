@@ -3,7 +3,7 @@ import UIKit
 import Toast
 
 public extension Bundle {
-    public static var VCSCommon: Bundle = Bundle.module
+    static let VCSCommon: Bundle = Bundle.module
 }
 
 @objc public extension UIViewController {
