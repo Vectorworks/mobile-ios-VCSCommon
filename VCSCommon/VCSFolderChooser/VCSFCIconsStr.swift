@@ -9,7 +9,7 @@ import UIKit
 
 extension String {
     var namedImage: UIImage? {
-        return UIImage(named: self, in: Bundle(for: VCSFCIconsStr.self), compatibleWith: nil)
+        return UIImage(named: self, in: Bundle.module, compatibleWith: nil)
     }
 }
 
