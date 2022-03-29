@@ -8,8 +8,8 @@ import Toast
     open class func vcsStoryboardName() -> String {return "Main"}
     
     //this will crash if vcsStoryboardID and vcsStoryboardName are not overwritten
-    open class func storyboardInstance() -> UIViewController {
-        let storyboard = UIStoryboard(name: self.vcsStoryboardName(), bundle: Bundle.module)
+    open class func storyboardInstance(_ bundle: Bundle) -> UIViewController {
+        let storyboard = UIStoryboard(name: self.vcsStoryboardName(), bundle: bundle)
         return storyboard.instantiateViewController(withIdentifier: self.vcsStoryboardID())
     }
     
