@@ -226,7 +226,6 @@ public class VCSRealmConfig {
                     newObject?["localFilesAppFile"] = nil
                 }
             }
-            
             if (oldSchemaVersion < 13) {
                 migration.enumerateObjects(ofType: RealmSharedWithMeAsset.className()) { (oldObject: MigrationObject?, newObject: MigrationObject?) in
                     if oldObject?["sharedParentFolder"] == nil {
@@ -234,7 +233,6 @@ public class VCSRealmConfig {
                     }
                 }
             }
-            
             if (oldSchemaVersion < 14) {
                 migration.enumerateObjects(ofType: VCSRealmStorage.className()) { (oldObject: MigrationObject?, newObject: MigrationObject?) in
                     newObject?["pagesURL"] = nil
