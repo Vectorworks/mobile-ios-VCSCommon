@@ -29,9 +29,9 @@ import Foundation
         
         if let fileURL = tempFileURL {
             let localFileURL = URL(fileURLWithPath: self.localPath)
-            try? FileUtils.createPath(self.localPath.deletingLastPathComponent)
+            try? FileUtils.createURL(localFileURL.deletingLastPathComponent())
             try? FileUtils.deleteItem(localFileURL.path)
-            try! FileManager.default.moveItem(at: fileURL, to: localFileURL)
+            try? FileManager.default.moveItem(at: fileURL, to: localFileURL)
         }
     }
 }
