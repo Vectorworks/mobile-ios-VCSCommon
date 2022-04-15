@@ -131,8 +131,7 @@ import Foundation
         self.ownerLogin = self.ownerInfo?.owner ?? AuthCenter.shared.user?.login ?? ""
         
         if self.resourceID == "__invalid__",
-           self.name == "",
-           self.storageType == StorageType.S3 {
+           self.name == "" {
             self.resourceID = self.storageType.itemIdentifier
         }
         
