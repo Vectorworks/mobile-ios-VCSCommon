@@ -132,7 +132,7 @@ import Foundation
         
         if self.resourceID == "__invalid__",
            self.name == "" {
-            self.resourceID = self.storageType.itemIdentifier
+            self.resourceID = self.storageType.itemIdentifier.appendingPathComponent(self.prefix)
         }
         
         self.VCSID = self.resourceID
