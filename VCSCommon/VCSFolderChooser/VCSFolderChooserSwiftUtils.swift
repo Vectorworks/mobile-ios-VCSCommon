@@ -30,7 +30,8 @@ extension VCSStorageResponse {
         guard let pagesURL = self.pagesURL else { return }
         
         APIClient.getStoragePagesList(storagePagesURI: pagesURL).execute { (result: StoragePagesList) in
-            StoragePage.appendResponse(result)
+            self.setStoragePagesList(storagePages: result)
+            self.addToCache()
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             result.forEach { (storagePage) in
                 guard storagePage.id != "sharedWithMe" else { return }
@@ -59,7 +60,8 @@ extension VCSStorageResponse {
         guard let pagesURL = self.pagesURL else { return }
         
         APIClient.getStoragePagesList(storagePagesURI: pagesURL).execute { (result: StoragePagesList) in
-            StoragePage.appendResponse(result)
+            self.setStoragePagesList(storagePages: result)
+            self.addToCache()
             guard let storagePage = result.first, storagePage.folderURI != presenter.folder?.resourceURI else { return }
             presenter.changeStoragePage(storagePage: storagePage)
         } onFailure: { (error: Error) in

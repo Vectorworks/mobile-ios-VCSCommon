@@ -14,6 +14,7 @@ public class VCSRealmStorage: Object, VCSRealmObject {
     @objc dynamic var autoprocessParent: String?
     @objc dynamic var accessType: String?
     @objc dynamic var pagesURL: String?
+    dynamic var pages: List<VCSRealmStoragPages> = List()
     
     public required convenience init(model: VCSStorageResponse) {
         self.init()
@@ -25,10 +26,19 @@ public class VCSRealmStorage: Object, VCSRealmObject {
         self.autoprocessParent = model.autoprocessParent
         self.accessType = model.accessType
         self.pagesURL = model.pagesURL
+        
+        let pagesArray = model.pages
+        let realmPagesArray = List<VCSRealmStoragPages>()
+        pagesArray.forEach {
+            realmPagesArray.append(VCSRealmStoragPages(model: $0))
+        }
+        self.pages = realmPagesArray
     }
     
     public var entity: VCSStorageResponse {
-        return VCSStorageResponse(name: self.name, folderURI: self.folderURI, fileURI: self.fileURI, storageType: StorageType(rawValue: self.storageType) ?? .INTERNAL, resourceURI: self.resourceURI, autoprocessParent: self.autoprocessParent, accessType: self.accessType, pagesURL: self.pagesURL)
+        let pagesArray = self.pages.compactMap({ $0.entity })
+        let arrPages = Array(pagesArray)
+        return VCSStorageResponse(name: self.name, folderURI: self.folderURI, fileURI: self.fileURI, storageType: StorageType(rawValue: self.storageType) ?? .INTERNAL, resourceURI: self.resourceURI, autoprocessParent: self.autoprocessParent, accessType: self.accessType, pagesURL: self.pagesURL, pages: arrPages)
     }
     
     public var partialUpdateModel: [String : Any] {
@@ -50,6 +60,11 @@ public class VCSRealmStorage: Object, VCSRealmObject {
         
         if let pagesURL = self.pagesURL {
             result["pagesURL"] = pagesURL
+        }
+        
+        let partialPages = Array(self.pages.compactMap({ $0.partialUpdateModel }))
+        if partialPages.count > 0 {
+            result["pages"] = partialPages
         }
         
         return result

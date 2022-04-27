@@ -4,7 +4,6 @@ import Foundation
 public typealias StoragePagesList = [StoragePage]
 
 @objc public class StoragePage: NSObject, Codable {
-    @objc private static var cachedList: [String: StoragePage] = [:]
     @objc public static let driveIDRegXPattern: String = "driveId_[\\w\\-$!]+"
     @objc public static let driveIDSharedRegXPattern: String = "driveId_sharedWithMe[\\w\\-$!]+"
     @objc public let id, name, folderURI: String
@@ -12,6 +11,12 @@ public typealias StoragePagesList = [StoragePage]
     enum CodingKeys: String, CodingKey {
         case id, name
         case folderURI = "folder_uri"
+    }
+    
+    init(id: String, name: String, folderURI: String) {
+        self.id = id
+        self.name = name
+        self.folderURI = folderURI
     }
     
     public func storageImage() -> UIImage? {
@@ -33,18 +38,31 @@ public typealias StoragePagesList = [StoragePage]
 
 extension StoragePage {
     public static func getNameFromURI(_ uri: String) -> String {
-        let result = StoragePage.cachedList.first { (key: String, value: StoragePage) in
-            uri.contains(value.id)
-        }
+        let result = StoragePage.realmStorage.getAll().first(where: { (page: StoragePage) in uri.contains(page.id) })
         
-        guard result?.value.name != StorageType.ONE_DRIVE.displayName else { return "" }
+        guard result?.name != StorageType.ONE_DRIVE.displayName else { return "" }
         
-        return result?.value.name ?? ""
+        return result?.name ?? ""
+    }
+}
+
+extension StoragePage: VCSCachable {
+    public typealias RealmModel = VCSRealmStoragPages
+    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
+    
+    public func addToCache() {
+        StoragePage.realmStorage.addOrUpdate(item: self)
     }
     
-    public static func appendResponse(_ response: StoragePagesList) {
-        response.forEach { (page: StoragePage) in
-            StoragePage.cachedList[page.id] = page
+    public func addOrPartialUpdateToCache() {
+        if StoragePage.realmStorage.getByIdOfItem(item: self) != nil {
+            StoragePage.realmStorage.partialUpdate(item: self)
+        } else {
+            StoragePage.realmStorage.addOrUpdate(item: self)
         }
+    }
+    
+    public func partialUpdateToCache() {
+        StoragePage.realmStorage.partialUpdate(item: self)
     }
 }

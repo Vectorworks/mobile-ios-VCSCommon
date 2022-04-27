@@ -129,7 +129,7 @@ public class VCSRealmConfig {
         )
     }
     
-    private static var getRealmSchemaVersion: UInt64 { return 15 }
+    private static var getRealmSchemaVersion: UInt64 { return 16 }
     private static var getRealmMigrations: RealmSwift.MigrationBlock {
         return { migration, oldSchemaVersion in
             if (oldSchemaVersion < 2) {
@@ -236,6 +236,11 @@ public class VCSRealmConfig {
             if (oldSchemaVersion < 14) {
                 migration.enumerateObjects(ofType: VCSRealmStorage.className()) { (oldObject: MigrationObject?, newObject: MigrationObject?) in
                     newObject?["pagesURL"] = nil
+                }
+            }
+            if (oldSchemaVersion < 15) {
+                migration.enumerateObjects(ofType: VCSRealmStorage.className()) { (oldObject: MigrationObject?, newObject: MigrationObject?) in
+                    newObject?["pages"] = []
                 }
             }
         }

@@ -52,6 +52,9 @@ public typealias StorageList = [VCSStorageResponse]
     
     public func setStorageList(storages: StorageList) {
         self.storages.removeAll()
+        storages.forEach { (storage: VCSStorageResponse) in
+            storage.loadLocalPagesList()
+        }
         self.storages.append(contentsOf: storages)
         VCSUser.realmStorage.addOrUpdate(item: self)
     }
