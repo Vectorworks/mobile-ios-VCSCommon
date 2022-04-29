@@ -13,6 +13,7 @@ public class VCSRealmStoragPages: Object, VCSRealmObject {
     public required convenience init(model: StoragePage) {
         self.init()
         self.RealmID = model.folderURI
+        self.id = model.id
         self.name = model.name
         self.folderURI = model.folderURI
     }
