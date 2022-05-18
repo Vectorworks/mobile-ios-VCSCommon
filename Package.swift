@@ -24,11 +24,11 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/robbiehanson/KissXML.git", .exact("5.3.3")),
         .package(url: "https://github.com/CocoaLumberjack/CocoaLumberjack.git", .exact("3.7.4")),
-        .package(url: "https://github.com/Alamofire/Alamofire.git", .exact("5.5.0")),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", .exact("5.6.1")),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", .exact("0.9.14")),
-        .package(url: "https://github.com/realm/realm-cocoa.git", .exact("10.24.2")),
+        .package(url: "https://github.com/realm/realm-cocoa.git", .exact("10.25.2")),
         .package(url: "https://github.com/scalessec/Toast-Swift.git", .exact("5.0.1")),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("8.14.0")),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("9.0.0")),
         
         .package(url: "https://github.com/Vectorworks/OAuth2.git", .exact("5.2.1")),
         .package(url: "https://github.com/Vectorworks/mobile-ios-socket.io-client-swift.git", .exact("9.0.36")),
@@ -45,6 +45,7 @@ let package = Package(
                 .product(name: "FirebaseAnalytics", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseCrashlytics", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseDynamicLinks", package: "firebase-ios-sdk"),
+                .product(name: "FirebasePerformance", package: "firebase-ios-sdk"),
                 .product(name: "Alamofire", package: "Alamofire"),
                 .product(name: "OAuth2", package: "OAuth2"),
                 .product(name: "Toast", package: "Toast-Swift"),
