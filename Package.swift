@@ -31,8 +31,6 @@ let package = Package(
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("9.0.0")),
         
         .package(url: "https://github.com/Vectorworks/OAuth2.git", .exact("5.2.1")),
-        .package(url: "https://github.com/Vectorworks/mobile-ios-socket.io-client-swift.git", .exact("9.0.36")),
-//        .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("8.3.1")),
     ],
     targets: [
         .target(
