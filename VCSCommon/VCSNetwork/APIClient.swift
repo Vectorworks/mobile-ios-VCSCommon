@@ -72,6 +72,7 @@ public class APIClient: NSObject {
             "use_pkce": true,
             "secret_in_body": true,
             "token_prefix": "Token",
+            "token_assume_unexpired": false
         ] as OAuth2JSON
         if let vSharedGroup = sharedGroup {
             settings = [
@@ -82,6 +83,7 @@ public class APIClient: NSObject {
                 "use_pkce": true,
                 "secret_in_body": true,
                 "token_prefix": "Token",
+                "token_assume_unexpired": false,
                 "keychain_access_group": vSharedGroup
             ] as OAuth2JSON
         }
