@@ -52,7 +52,7 @@ public class APIClient: NSObject {
             if error == OAuth2Error.requestCancelled {
                 APIClient.oauth2RetryHandler?.userDidCancelSingIn = true
             }
-            NetworkLogger.log(error)
+            DDLogError("afterAuthorizeOrFail - \(error)")
         }
         APIClient.oauth2RetryHandler?.userDidCancelSingIn = false
     }
