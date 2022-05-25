@@ -87,6 +87,19 @@ import Foundation
                 if $0.lastModified == oldFile.lastModified {
                     $0.localFile = oldFile.localFile
                     $0.localFilesAppFile = oldFile.localFilesAppFile //Files App
+                    
+                    //load old optional data
+                    if $0.sharingInfo == nil, oldFile.sharingInfo != nil {
+                        $0.sharingInfo = oldFile.sharingInfo
+                    }
+                    
+                    if $0.flags == nil, oldFile.flags != nil {
+                        $0.flags = oldFile.flags
+                    }
+                    
+                    if $0.ownerInfo == nil, oldFile.ownerInfo != nil {
+                        $0.ownerInfo = oldFile.ownerInfo
+                    }
                 } else {
                     print("REMOVE OLD - \($0.name)")
                     oldFile.setLocalFile(nil)
