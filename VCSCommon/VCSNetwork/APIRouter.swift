@@ -28,9 +28,8 @@ public enum APIRouter: URLRequestConvertible {
     case deleteAsset(asset: Asset)
     case job(jobID: String)
     case listJobs(initialRequest: Bool)
-    case executeNotification(_ notif: VCSAnnouncementResponse, action: String)
-    case newNotifications
-    case oldNotifications
+    case unssenNotificationsIDs
+    case clearNotifications(IDsHolder: ClearNotificationHolder)
     case genericJob(data: GenericJobRequest)
     
     //NEW API CALLS
@@ -92,12 +91,10 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .listJobs:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
-        case .executeNotification:
-            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
-        case .newNotifications:
-            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v01)
-        case .oldNotifications:
-            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v01)
+        case .unssenNotificationsIDs:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .clearNotifications:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .genericJob:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
             
@@ -149,8 +146,8 @@ public enum APIRouter: URLRequestConvertible {
             return .delete
         case .deleteAsset:
             return .delete
-        case .executeNotification:
-            return .post
+        case .clearNotifications:
+            return.post
         case .sendFeedback:
             return .post
         case .genericJob:
@@ -252,13 +249,10 @@ public enum APIRouter: URLRequestConvertible {
             return result.VCSNormalizedURLString()
         case .listJobs:
             return "/jobs/"
-        case .executeNotification(let notif, let action):
-            let result = notif.resourceURI.stringByAppendingPath(path: action)
-            return result
-        case .newNotifications:
-            return "/notification/"
-        case .oldNotifications:
-            return "/notification/"
+        case .unssenNotificationsIDs:
+            return "/unseen/"
+        case .clearNotifications:
+            return "/clear_unseen/"
         case .genericJob:
             return "/jobs/"
             
@@ -315,6 +309,8 @@ public enum APIRouter: URLRequestConvertible {
             return jobData.asDictionary()
         case .linkDetailsData(let link):
             return [K.APIParameterKey.linkDetailsData.url: link]
+        case .clearNotifications(let IDsHolder):
+            return [ClearNotificationHolder.CodingKeys.sequenceNumbers.stringValue: IDsHolder.sequenceNumbers]
         case .mountFolder(_, _, _, let mountValue):
             let actionValue = mountValue ? "mount" : "unmount"
             return [K.APIParameterKey.mountFolder.action: actionValue]
@@ -374,13 +370,12 @@ public enum APIRouter: URLRequestConvertible {
                 result = [queryItemCurrent, queryItemLimit]
             }
             return result
-        case .newNotifications:
+        case .unssenNotificationsIDs:
             let queryItemClient = URLQueryItem(name: "client", value: "ios")
             return [queryItemClient]
-        case .oldNotifications:
+        case .clearNotifications:
             let queryItemClient = URLQueryItem(name: "client", value: "ios")
-            let queryItemRead = URLQueryItem(name: "read", value: "on")
-            return [queryItemClient, queryItemRead]
+            return [queryItemClient]
             
         //NEW API CALLS
         case .linkSharedAsset(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo, let related, let versioning):

@@ -277,16 +277,12 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.listJobs(initialRequest: initialRequest))
     }
     
-    public static func executeNotification(_ notif: VCSAnnouncementResponse, action: String) -> Future<VCSEmptyResponse, Error> {
-        return performRequest(route: APIRouter.executeNotification(notif, action: action))
+    public static func unssenNotificationsIDs() -> Future<AnnouncementsResponse, Error> {
+        return performRequest(route: APIRouter.unssenNotificationsIDs)
     }
     
-    public static func newNotifications() -> Future<AnnouncementsResponse, Error> {
-        return performRequest(route: APIRouter.newNotifications)
-    }
-    
-    public static func oldNotifications() -> Future<AnnouncementsResponse, Error> {
-        return performRequest(route: APIRouter.oldNotifications)
+    public static func clearNotifications(IDsHolder: ClearNotificationHolder) -> Future<AnnouncementsResponse, Error> {
+        return performRequest(route: APIRouter.clearNotifications(IDsHolder: IDsHolder))
     }
     
     public static func processFile(filePrefix: String, storageType: String, owner: String, jobType: String) -> Future<VCSJobResponse, Error> {

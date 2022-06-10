@@ -1,19 +1,17 @@
 import Foundation
 
-@objc public class AnnouncementsResponse: NSObject, Codable {
-    public let meta: MetaResponse
-    @objc public let objects: [VCSAnnouncementResponse]
+public class AnnouncementsResponse: NSObject, Codable {
+    public let unseen: [Int]
 }
 
-@objc public class MetaResponse: NSObject, Codable {
-    public let limit: Int
-    public let next: String?
-    public let offset: Int
-    public let previous: String?
-    public let totalCount: Int
+public class ClearNotificationHolder: NSObject, Codable {
+    public let sequenceNumbers: [Int]
     
     enum CodingKeys: String, CodingKey {
-        case limit, next, offset, previous
-        case totalCount = "total_count"
+        case sequenceNumbers = "sequence_numbers"
+    }
+    
+    public init(withIDs: [Int]) {
+        self.sequenceNumbers = withIDs
     }
 }
