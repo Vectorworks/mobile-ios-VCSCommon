@@ -27,6 +27,7 @@ import FirebaseAnalytics
     @objc public static let LIST_ACTION__ADD__PHOTOS_TO_3D                      = "list_action__add__photos_to_3d"
     @objc public static let LIST_ACTION__ADD__QR_CODE_SCANNER                   = "list_action__add__qr_code_scanner"
     @objc public static let LIST_ACTION__ADD__POINT_CLOUD                       = "list_action__add__point_cloud"
+    @objc public static let LIST_ACTION__ADD_ROOM_SCAN                          = "list_action__add__room_scan"
     
     @objc public static let LIST_ACTION__JOB__GENERATE_PDF                      = "list_action__job__generate_pdf"
     @objc public static let LIST_ACTION__JOB__GENERATE_3D                       = "list_action__job__generate_3d"
