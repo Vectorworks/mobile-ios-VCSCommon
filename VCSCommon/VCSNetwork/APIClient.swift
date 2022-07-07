@@ -298,6 +298,17 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.sharedWithMeAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related))
     }
     
+    public static func sharedWithMeAsset(assetResult: WebViewTaskAssetResult, related: Bool = VCSFlagStates.related, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileType: Bool = VCSFlagStates.thumbnail3D, versioning: Bool = VCSFlagStates.versioning, sharingInfo: Bool = VCSFlagStates.sharingInfo) -> Future<VCSSharedWithMeAsset, Error> {
+        
+        let filePath = "/p:\(assetResult.path)/"
+        var fileURI = "/restapi/public/v2/\(assetResult.storageType)/shared_with_me/file/o:\(assetResult.owner)/"
+        if assetResult.isFolder {
+            fileURI = "/restapi/public/v2/\(assetResult.storageType)/shared_with_me/folder/o:\(assetResult.owner)/"
+        }
+        let assetURI = fileURI.stringByAppendingPath(path: filePath)
+        return APIClient.sharedWithMeAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileType, sharingInfo: sharingInfo, related: related)
+    }
+    
     public static func linkSharedAsset(assetURI: String, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileTypes: Bool = VCSFlagStates.fileType, sharingInfo: Bool = VCSFlagStates.sharingInfo, related: Bool = VCSFlagStates.related, versioning: Bool = VCSFlagStates.versioning) -> Future<VCSShareableLinkResponse, Error> {
         return performRequest(route: APIRouter.linkSharedAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, versioning: versioning))
     }
