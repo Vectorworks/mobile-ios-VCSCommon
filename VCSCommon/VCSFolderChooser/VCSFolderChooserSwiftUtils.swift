@@ -62,8 +62,26 @@ extension VCSStorageResponse {
         APIClient.getStoragePagesList(storagePagesURI: pagesURL).execute { (result: StoragePagesList) in
             self.setStoragePagesList(storagePages: result)
             self.addToCache()
-            guard let storagePage = result.first, storagePage.folderURI != presenter.folder?.resourceURI else { return }
-            presenter.changeStoragePage(storagePage: storagePage)
+            
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            result.forEach { (storagePage) in
+                guard storagePage.id != "sharedWithMeOneDrive" else { return }
+                let storagePageAction = UIAlertAction(title: storagePage.name, style: .default, handler: { (action) -> Void in
+                    guard storagePage.folderURI != presenter.folder?.resourceURI else { return }
+                    presenter.changeStoragePage(storagePage: storagePage)
+                })
+                storagePageAction.setValue(storagePage.storageImage(), forKey: "image")
+                alertController.addAction(storagePageAction)
+            }
+            
+            let cancelButton = UIAlertAction(title: "Cancel".vcsLocalized, style: .cancel)
+            alertController.addAction(cancelButton)
+            
+            if let popoverController = alertController.popoverPresentationController {
+                popoverController.sourceView = homeButton
+            }
+            
+            presenter.present(alertController, animated: true, completion: nil)
         } onFailure: { (error: Error) in
             DDLogError(error.localizedDescription)
         }

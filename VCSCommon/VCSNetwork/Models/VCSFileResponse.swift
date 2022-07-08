@@ -343,6 +343,10 @@ extension VCSFileResponse {
     public var filesForDownload: [VCSFileResponse] {
         let relatedAndSelf = self.related + [self]
         return relatedAndSelf.filter { (file) -> Bool in
+            //filter thumbnails
+            if let thumbnailName = self.thumbnailURL?.lastPathComponent, file.name == thumbnailName {
+                return false
+            }
             return VCSFileResponse.relatedExtensions[self.name.pathExtension.uppercased()]?.contains { $0.isInFileName(name: file.name) } ?? true
         }
     }

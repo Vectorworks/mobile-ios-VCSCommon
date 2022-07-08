@@ -35,4 +35,14 @@ import Foundation
     @objc public let jobs: String
     @objc public let file: String
     @objc public let folder: String
+    @objc public let notification: String
+    @objc public let featureNotification: String
+    
+    enum CodingKeys: String, CodingKey {
+        case jobs = "jobs"
+        case file = "file"
+        case folder = "folder"
+        case notification = "notification"
+        case featureNotification = "feature_notification"
+    }
 }

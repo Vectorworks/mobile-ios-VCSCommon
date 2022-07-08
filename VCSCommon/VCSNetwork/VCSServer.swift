@@ -8,6 +8,7 @@ public enum VCSAPIVersion: String {
     case v04 = "/api/public/v0.4/"
     case v05 = "/api/public/v0.5/"
     case v06 = "/api/public/v0.6/"
+    case v07 = "/api/public/v0.7/"
     
     case v1 = "/restapi/public/v1/"
     case v2 = "/restapi/public/v2/"

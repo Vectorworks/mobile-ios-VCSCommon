@@ -14,7 +14,7 @@ struct Measurement {
 }
 
 public struct Photo {
-    public func construct(withName name: String, tempFile: URL, containerInfo: ContainingFolderMetadata, owner: String) -> UnuploadedFile {
+    public static func construct(withName name: String, tempFile: URL, containerInfo: ContainingFolderMetadata, owner: String) -> UnuploadedFile {
         let newName = name.pathExtension.lowercased() == Photo.fileExtension ? name : name.appendingPathExtension(Photo.fileExtension)
         let metadata = LocalFileForUpload(ownerLogin: owner,
                                           storageType: containerInfo.storageType,

@@ -101,10 +101,8 @@ fileprivate struct MetadataForVCSFileResponse {
     
     @discardableResult
     public func upload(photos: [CapturedPhoto], containingFolder: ContainingFolderMetadata, owner: String, withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) -> [UnuploadedFile] {
-        let photoConstructor = Photo()
-        
         let unuploadedPhotos = photos.compactMap { (photo) -> UnuploadedFile? in
-            return photoConstructor.construct(withName: photo.name, tempFile: photo.pathURL, containerInfo: containingFolder, owner: owner)
+            return Photo.construct(withName: photo.name, tempFile: photo.pathURL, containerInfo: containingFolder, owner: owner)
         }
         
         UnuploadedFileActions.saveUnuploadedFiles(unuploadedPhotos)
@@ -119,6 +117,36 @@ fileprivate struct MetadataForVCSFileResponse {
         }
         
         return unuploadedPhotos
+    }
+    
+    public func upload(photos: [PhotoCapture], containingFolder: ContainingFolderMetadata, owner: String, withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) -> [UnuploadedFile] {
+        var unuploadedFiles: [UnuploadedFile] = []
+        
+        photos.forEach { (capture: PhotoCapture) in
+            let image = GenericFile.construct(withName: capture.imagePathURL.lastPathComponent, fileURL: capture.imagePathURL, containerInfo: containingFolder, owner: owner)
+            unuploadedFiles.append(image)
+            if capture.gravity != nil {
+                let gravity = GenericFile.construct(withName: capture.gravityPathURL.lastPathComponent, fileURL: capture.gravityPathURL, containerInfo: containingFolder, owner: owner)
+                unuploadedFiles.append(gravity)
+            }
+            if capture.depthData != nil {
+                let depth = GenericFile.construct(withName: capture.depthPathURL.lastPathComponent, fileURL: capture.depthPathURL, containerInfo: containingFolder, owner: owner)
+                unuploadedFiles.append(depth)
+            }
+        }
+        
+        UnuploadedFileActions.saveUnuploadedFiles(unuploadedFiles)
+        Uploader.uploadMultiple(files: unuploadedFiles).execute { (result) in
+            switch result {
+            case .success(let files):
+                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+                handler?(.success(files))
+            case .failure(let error):
+                handler?(.failure(error))
+            }
+        }
+        
+        return unuploadedFiles
     }
     
     //MARK: - Uploading files that are queued

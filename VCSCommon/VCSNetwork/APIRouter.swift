@@ -48,7 +48,7 @@ public enum APIRouter: URLRequestConvertible {
     private var requestURL: VCSRequestURL {
         switch self {
         case .loginSettings:
-            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v06)
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v07)
         case .vcsUser:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v02)
         case .awsKeys:
