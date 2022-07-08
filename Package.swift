@@ -26,9 +26,9 @@ let package = Package(
         .package(url: "https://github.com/CocoaLumberjack/CocoaLumberjack.git", .exact("3.7.4")),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .exact("5.6.1")),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", .exact("0.9.14")),
-        .package(url: "https://github.com/realm/realm-cocoa.git", .exact("10.25.2")),
+        .package(url: "https://github.com/realm/realm-cocoa.git", .exact("10.28.2")),
         .package(url: "https://github.com/scalessec/Toast-Swift.git", .exact("5.0.1")),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("9.0.0")),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("9.2.0")),
         
         .package(url: "https://github.com/Vectorworks/OAuth2.git", .exact("5.2.1")),
     ],
