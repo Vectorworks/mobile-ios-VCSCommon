@@ -34,7 +34,7 @@ extension VCSStorageResponse {
             self.addToCache()
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             result.forEach { (storagePage) in
-                guard storagePage.id != StoragePageConstants.GoogleDriveSharedWithMeID else { return }
+                guard storagePage.id != StoragePageConstants.GoogleDriveSharedWithMeID.rawValue else { return }
                 let storagePageAction = UIAlertAction(title: storagePage.name, style: .default, handler: { (action) -> Void in
                     guard storagePage.folderURI != presenter.folder?.resourceURI else { return }
                     presenter.changeStoragePage(storagePage: storagePage)
@@ -65,7 +65,7 @@ extension VCSStorageResponse {
             
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             result.forEach { (storagePage) in
-                guard storagePage.id != StoragePageConstants.OneDriveSharedWithMeID else { return }
+                guard storagePage.id != StoragePageConstants.OneDriveSharedWithMeID.rawValue else { return }
                 let storagePageAction = UIAlertAction(title: storagePage.name, style: .default, handler: { (action) -> Void in
                     guard storagePage.folderURI != presenter.folder?.resourceURI else { return }
                     presenter.changeStoragePage(storagePage: storagePage)

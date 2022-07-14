@@ -36,9 +36,9 @@ public enum StoragePageConstants: String {
         switch self.id {
         case "myDrive":
             result = "google-drive"
-        case StoragePageConstants.GoogleDriveSharedWithMeID:
+        case StoragePageConstants.GoogleDriveSharedWithMeID.rawValue:
             result = "google-shared-with-me"
-        case StoragePageConstants.OneDriveSharedWithMeID:
+        case StoragePageConstants.OneDriveSharedWithMeID.rawValue:
             result = "onedrive-shared-with-me"
         default:
             result = "google-shared-drive"
