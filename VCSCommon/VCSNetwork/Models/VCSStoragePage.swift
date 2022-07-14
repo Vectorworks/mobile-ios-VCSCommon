@@ -3,6 +3,12 @@ import Foundation
 
 public typealias StoragePagesList = [StoragePage]
 
+public enum StoragePageConstants: String {
+    case GoogleDriveSharedWithMeID = "sharedWithMe"
+    case OneDriveSharedWithMeID = "sharedWithMeOneDrive"
+}
+
+
 @objc public class StoragePage: NSObject, Codable {
     @objc public static let driveIDRegXPattern: String = "driveId_[\\w\\-$!]+"
     @objc public static let driveIDSharedRegXPattern: String = "driveId_sharedWithMe[\\w\\-$!]+"
@@ -25,14 +31,24 @@ public typealias StoragePagesList = [StoragePage]
     }
     
     public var storageImageName: String {
+        var result = "google-shared-drive"
+
         switch self.id {
         case "myDrive":
-            return "google-drive"
-        case "sharedWithMe":
-            return "google-shared-with-me"
+            result = "google-drive"
+        case StoragePageConstants.GoogleDriveSharedWithMeID:
+            result = "google-shared-with-me"
+        case StoragePageConstants.OneDriveSharedWithMeID:
+            result = "onedrive-shared-with-me"
         default:
-            return "google-shared-drive"
+            result = "google-shared-drive"
         }
+        
+        if self.name == "My Files" {
+            result = "onedrive-folder"
+        }
+
+        return result
     }
 }
 
