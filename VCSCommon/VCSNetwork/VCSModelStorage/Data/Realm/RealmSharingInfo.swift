@@ -11,6 +11,7 @@ public class RealmSharingInfo: Object, VCSRealmObject {
     @objc dynamic var linkUUID: String = ""
     @objc dynamic var linkExpires: String = ""
     @objc dynamic var linkVisitsCount: Int = 0
+    @objc dynamic var allowComments: Bool = false
     
     dynamic var sharedWith: List<RealmSharedWithUser> = List()
     @objc dynamic var resourceURI: String = ""
@@ -25,6 +26,7 @@ public class RealmSharingInfo: Object, VCSRealmObject {
         self.linkUUID = model.linkUUID
         self.linkExpires = model.linkExpires
         self.linkVisitsCount = model.linkVisitsCount
+        self.allowComments = model.allowComments
         
         let realmSharedWithArray = List<RealmSharedWithUser>()
         model.sharedWith?.forEach {
@@ -39,7 +41,7 @@ public class RealmSharingInfo: Object, VCSRealmObject {
         let sharedWithArray = self.sharedWith.compactMap({ $0.entity })
         let arrSharedWith = Array(sharedWithArray)
         
-        return VCSSharingInfoResponse(isShared: self.isShared, link: self.link, linkUUID: self.linkUUID, linkExpires: self.linkExpires, sharedWith: arrSharedWith, resourceURI: self.resourceURI, lastShareDate: self.lastShareDate, realmID: self.RealmID)
+        return VCSSharingInfoResponse(isShared: self.isShared, link: self.link, linkUUID: self.linkUUID, linkExpires: self.linkExpires, allowComments: self.allowComments, sharedWith: arrSharedWith, resourceURI: self.resourceURI, lastShareDate: self.lastShareDate, realmID: self.RealmID)
     }
     
     public var partialUpdateModel: [String : Any] {
@@ -51,6 +53,7 @@ public class RealmSharingInfo: Object, VCSRealmObject {
         result["linkUUID"] = self.linkUUID
         result["linkExpires"] = self.linkExpires
         result["linkVisitsCount"] = self.linkVisitsCount
+        result["allowComments"] = self.allowComments
         
         
         result["sharedWith"] = Array(self.sharedWith.compactMap({ $0.partialUpdateModel }))

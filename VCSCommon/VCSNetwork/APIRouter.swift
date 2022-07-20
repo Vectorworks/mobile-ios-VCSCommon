@@ -350,12 +350,12 @@ public enum APIRouter: URLRequestConvertible {
             let queryItemRelated = URLQueryItem(name: "related", value: "on")
             let queryItemOrdering = URLQueryItem(name: "ordering", value: "name")
             let queryItemLimit = URLQueryItem(name: "limit", value: "300")
-            let queryItemFields = URLQueryItem(name: "fields", value: "(asset.flags,asset.owner_info.mount_point,asset.thumbnail_3d,asset.file_type,asset.sharing_info,asset.sharing_info.link_visits_count,asset.sharing_info.shared_with,asset.sharing_info.last_share_date)")
+            let queryItemFields = URLQueryItem(name: "fields", value: "(asset.flags,asset.owner_info.mount_point,asset.thumbnail_3d,asset.file_type,asset.sharing_info,asset.sharing_info.link_visits_count,asset.sharing_info.shared_with,asset.sharing_info.last_share_date,asset.sharing_info.allow_comments)")
             return [queryItemRelated, queryItemOrdering, queryItemLimit, queryItemFields]
         case .fileData(_, _, _, let updateFromStorage, _, _):
             let queryItemUpdate = URLQueryItem(name: "update_from_storage", value: "true")
             let queryItemRelated = URLQueryItem(name: "related", value: "on")
-            let queryItemFileType = URLQueryItem(name: "fields", value: "(flags,owner_info.mount_point,thumbnail_3d,file_type,related.file_type,sharing_info,sharing_info.link_visits_count,sharing_info.shared_with,sharing_info.last_share_date)")
+            let queryItemFileType = URLQueryItem(name: "fields", value: "(flags,owner_info.mount_point,thumbnail_3d,file_type,related.file_type,sharing_info,sharing_info.link_visits_count,sharing_info.shared_with,sharing_info.last_share_date,sharing_info.allow_comments)")
             let result = updateFromStorage ? [queryItemUpdate, queryItemRelated, queryItemFileType] : [queryItemRelated, queryItemFileType]
             return result
         case .patchFile(_, _, _, let updateFromStorage, _, _, _):
@@ -409,14 +409,17 @@ public enum APIRouter: URLRequestConvertible {
                 fields.append("asset.sharing_info.link_visits_count")
                 fields.append("asset.sharing_info.shared_with")
                 fields.append("asset.sharing_info.last_share_date")
+                fields.append("asset.sharing_info.allow_comments")
                 fields.append("asset.files.sharing_info")
                 fields.append("asset.files.sharing_info.link_visits_count")
                 fields.append("asset.files.sharing_info.shared_with")
                 fields.append("asset.files.sharing_info.last_share_date")
+                fields.append("asset.files.sharing_info.allow_comments")
                 fields.append("asset.subfolders.sharing_info")
                 fields.append("asset.subfolders.sharing_info.link_visits_count")
                 fields.append("asset.subfolders.sharing_info.shared_with")
                 fields.append("asset.subfolders.sharing_info.last_share_date")
+                fields.append("asset.subfolders.sharing_info.allow_comments")
             }
             
             if fields.count > 0 {
@@ -465,14 +468,17 @@ public enum APIRouter: URLRequestConvertible {
                 fields.append("sharing_info.link_visits_count")
                 fields.append("sharing_info.shared_with")
                 fields.append("sharing_info.last_share_date")
+                fields.append("sharing_info.allow_comments")
                 fields.append("files.sharing_info")
                 fields.append("files.sharing_info.link_visits_count")
                 fields.append("files.sharing_info.shared_with")
                 fields.append("files.sharing_info.last_share_date")
+                fields.append("files.sharing_info.allow_comments")
                 fields.append("subfolders.sharing_info")
                 fields.append("subfolders.sharing_info.link_visits_count")
                 fields.append("subfolders.sharing_info.shared_with")
                 fields.append("subfolders.sharing_info.last_share_date")
+                fields.append("subfolders.sharing_info.allow_comments")
             }
             
             if fields.count > 0 {
@@ -518,6 +524,7 @@ public enum APIRouter: URLRequestConvertible {
                 fields.append("sharing_info.link_visits_count")
                 fields.append("sharing_info.shared_with")
                 fields.append("sharing_info.last_share_date")
+                fields.append("sharing_info.allow_comments")
             }
             
             if fields.count > 0 {
@@ -577,16 +584,19 @@ public enum APIRouter: URLRequestConvertible {
                 fields.append("asset.sharing_info.link_visits_count")
                 fields.append("asset.sharing_info.shared_with")
                 fields.append("asset.sharing_info.last_share_date")
+                fields.append("asset.sharing_info.allow_comments")
                 
                 if isFolder {
                     fields.append("asset.files.sharing_info")
                     fields.append("asset.files.sharing_info.link_visits_count")
                     fields.append("asset.files.sharing_info.shared_with")
                     fields.append("asset.files.sharing_info.last_share_date")
+                    fields.append("asset.files.sharing_info.allow_comments")
                     fields.append("asset.subfolders.sharing_info")
                     fields.append("asset.subfolders.sharing_info.link_visits_count")
                     fields.append("asset.subfolders.sharing_info.shared_with")
                     fields.append("asset.subfolders.sharing_info.last_share_date")
+                    fields.append("asset.subfolders.sharing_info.allow_comments")
                 }
             }
             

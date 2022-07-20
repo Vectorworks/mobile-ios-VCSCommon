@@ -7,6 +7,7 @@ import Foundation
     public let linkUUID: String
     public let linkExpires: String
     public let linkVisitsCount: Int
+    public let allowComments: Bool
     
     public let sharedWith: [VCSSharedWithUser]?
     public let resourceURI: String
@@ -22,6 +23,7 @@ import Foundation
         case linkUUID = "link_uuid"
         case linkExpires = "link_expires"
         case linkVisitsCount = "link_visits_count"
+        case allowComments = "allow_comments"
         
         case sharedWith = "shared_with"
         case resourceURI = "resource_uri"
@@ -35,6 +37,7 @@ import Foundation
         self.linkUUID = (try? container.decode(String.self, forKey: CodingKeys.linkUUID)) ?? ""
         self.linkExpires = (try? container.decode(String.self, forKey: CodingKeys.linkExpires)) ?? ""
         self.linkVisitsCount = (try? container.decode(Int.self, forKey: CodingKeys.linkVisitsCount)) ?? 0
+        self.allowComments = (try? container.decode(Bool.self, forKey: CodingKeys.allowComments)) ?? false
         
         self.sharedWith = try container.decode([VCSSharedWithUser].self, forKey: CodingKeys.sharedWith)
         self.resourceURI = try container.decode(String.self, forKey: CodingKeys.resourceURI)
@@ -48,19 +51,21 @@ import Foundation
         try container.encode(self.linkUUID, forKey: CodingKeys.linkUUID)
         try container.encode(self.linkExpires, forKey: CodingKeys.linkExpires)
         try container.encode(self.linkVisitsCount, forKey: CodingKeys.linkVisitsCount)
+        try container.encode(self.allowComments, forKey: CodingKeys.allowComments)
         
         try container.encode(self.sharedWith, forKey: CodingKeys.sharedWith)
         try container.encode(self.resourceURI, forKey: CodingKeys.resourceURI)
         try container.encode(self.lastShareDate, forKey: CodingKeys.lastShareDate)
     }
     
-    init(isShared: Bool, link: String, linkUUID: String, linkExpires: String, linkVisitsCount: Int = 0, sharedWith: [VCSSharedWithUser], resourceURI: String, lastShareDate: String? = nil, realmID: String) {
+    init(isShared: Bool, link: String, linkUUID: String, linkExpires: String, linkVisitsCount: Int = 0, allowComments: Bool = false, sharedWith: [VCSSharedWithUser], resourceURI: String, lastShareDate: String? = nil, realmID: String) {
         self.realmID = realmID
         self.isShared = isShared
         self.link = link
         self.linkUUID = linkUUID
         self.linkExpires = linkExpires
         self.linkVisitsCount = linkVisitsCount
+        self.allowComments = allowComments
         self.sharedWith = sharedWith
         self.resourceURI = resourceURI
         self.lastShareDate = lastShareDate
