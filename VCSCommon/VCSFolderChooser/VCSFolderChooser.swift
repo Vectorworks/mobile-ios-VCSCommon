@@ -109,6 +109,11 @@ public class VCSFolderChooser: UIViewController, UITableViewDelegate {
             processedTitle = title.replacingCharacters(in: sharedResult, with: "/" + "Shared with me".vcsLocalized)
         }
         
+        // share /driveId_sharedWithMeOneDrive90cefe5fad3849bebb4b4b284d0065fd/
+        if let sharedResult = title.range(of: StoragePage.driveIDSharedOneDriveRegXPattern, options:.regularExpression) {
+            processedTitle = title.replacingCharacters(in: sharedResult, with: "/" + "Shared".vcsLocalized)
+        }
+        
         if title == "/" || processedTitle == "/" {
             processedTitle = ""
         }

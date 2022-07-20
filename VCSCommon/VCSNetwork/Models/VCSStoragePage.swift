@@ -12,6 +12,7 @@ public enum StoragePageConstants: String {
 @objc public class StoragePage: NSObject, Codable {
     @objc public static let driveIDRegXPattern: String = "driveId_[\\w\\-$!]+"
     @objc public static let driveIDSharedRegXPattern: String = "driveId_sharedWithMe[\\w\\-$!]+"
+    @objc public static let driveIDSharedOneDriveRegXPattern: String = "driveId_sharedWithMeOneDrive[\\w\\-$!]+"
     @objc public let id, name, folderURI: String
     
     enum CodingKeys: String, CodingKey {
