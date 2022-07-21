@@ -32,6 +32,7 @@ extension VCSStorageResponse {
         APIClient.getStoragePagesList(storagePagesURI: pagesURL).execute { (result: StoragePagesList) in
             self.setStoragePagesList(storagePages: result)
             self.addToCache()
+            
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             result.forEach { (storagePage) in
                 guard storagePage.id != StoragePageConstants.GoogleDriveSharedWithMeID.rawValue else { return }
