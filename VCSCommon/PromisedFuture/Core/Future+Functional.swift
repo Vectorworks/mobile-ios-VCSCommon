@@ -1,10 +1,3 @@
-//
-//  Future+Functional.swift
-//  PromisedFuture
-//
-//  Created by Alaeddine Messaoudi on 29/05/2018.
-//
-
 import Foundation
 
 extension Future {

@@ -1,11 +1,3 @@
-//
-//  OAuthSwiftRequestInterceptor.swift
-//  OAuthSwift-Alamofire
-//
-//  Created by phimage on 05/10/16.
-//  Copyright © 2016 phimage. All rights reserved.
-//
-
 import Foundation
 import Alamofire
 import OAuth2

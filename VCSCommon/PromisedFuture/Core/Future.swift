@@ -1,10 +1,3 @@
-//
-//  Future.swift
-//  PromisedFuture
-//
-//  Created by Alaeddine Messaoudi on 26/05/2018.
-//
-
 import Foundation
 
 /**
