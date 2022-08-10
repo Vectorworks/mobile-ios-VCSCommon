@@ -38,8 +38,10 @@ public class VCSFileConverter {
             let diff = CFAbsoluteTimeGetCurrent() - start
             DDLogInfo("Took \(diff) seconds")
             
-            let directoryContents = try FileManager.default.contentsOfDirectory(atPath: outputFilenameUrl.deletingLastPathComponent().path)
+            var directoryContents = try FileManager.default.contentsOfDirectory(atPath: outputFilenameUrl.deletingLastPathComponent().path)
+            directoryContents.removeAll(where: { $0 == inputFileUrl.path })
             DDLogInfo("Exported \(directoryContents.count) files.")
+            directoryContents.forEach{ DDLogInfo("Filename: \($0.lastPathComponent)") }
             
             return directoryContents
         } catch {
