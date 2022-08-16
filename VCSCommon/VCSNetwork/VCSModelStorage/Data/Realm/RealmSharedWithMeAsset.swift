@@ -17,6 +17,7 @@ public class RealmSharedWithMeAsset: Object, VCSRealmObject {
     dynamic var permission: List<String> = List()
     @objc dynamic var sharedParentFolder: String = ""
     @objc dynamic var sharedWithLogin: String?
+    @objc dynamic var branding: RealmSharedAssetBranding?
     
     public required convenience init(model: Model) {
         self.init()
@@ -38,13 +39,17 @@ public class RealmSharedWithMeAsset: Object, VCSRealmObject {
         }
         
         self.permission = realmPermissionArray
+        if let modelBranding = model.branding {
+            modelBranding.realmID = self.RealmID
+            self.branding = RealmSharedAssetBranding(model: modelBranding)
+        }
     }
     
     public var entity: Model {
         let permissionArray = self.permission.compactMap({ $0 })
         let arrPermission = Array(permissionArray)
         
-        return VCSSharedWithMeAsset(owner: self.owner, ownerEmail: self.ownerEmail, ownerName: self.ownerName, dateCreated: self.dateCreated, asset: self.asset!.entity, assetType: AssetType(rawValue: self.assetType), resourceURI: self.RealmID, permission: arrPermission, sharedParentFolder: self.sharedParentFolder, sharedWithLogin: self.sharedWithLogin)
+        return VCSSharedWithMeAsset(owner: self.owner, ownerEmail: self.ownerEmail, ownerName: self.ownerName, dateCreated: self.dateCreated, asset: self.asset!.entity, assetType: AssetType(rawValue: self.assetType), resourceURI: self.RealmID, permission: arrPermission, sharedParentFolder: self.sharedParentFolder, sharedWithLogin: self.sharedWithLogin, branding: self.branding?.entity)
     }
     
     public var partialUpdateModel: [String : Any] {
@@ -61,6 +66,10 @@ public class RealmSharedWithMeAsset: Object, VCSRealmObject {
         result["permission"] = self.permission
         result["sharedParentFolder"] = self.sharedParentFolder
         result["sharedWithLogin"] = self.sharedWithLogin
+        
+        if let branding = self.branding {
+            result["branding"] = branding.partialUpdateModel
+        }
         
         return result
     }

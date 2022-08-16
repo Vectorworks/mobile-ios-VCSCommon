@@ -294,8 +294,8 @@ public class APIClient: NSObject {
     }
     
     //MARK: - NEW API CALLS
-    public static func sharedWithMeAsset(assetURI: String, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileTypes: Bool = VCSFlagStates.fileType, sharingInfo: Bool = VCSFlagStates.sharingInfo, related: Bool = VCSFlagStates.related) -> Future<VCSSharedWithMeAsset, Error> {
-        return performRequest(route: APIRouter.sharedWithMeAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related))
+    public static func sharedWithMeAsset(assetURI: String, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileTypes: Bool = VCSFlagStates.fileType, sharingInfo: Bool = VCSFlagStates.sharingInfo, related: Bool = VCSFlagStates.related, branding: Bool = true) -> Future<VCSSharedWithMeAsset, Error> {
+        return performRequest(route: APIRouter.sharedWithMeAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding))
     }
     
     public static func sharedWithMeAsset(assetResult: WebViewTaskAssetResult, related: Bool = VCSFlagStates.related, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileType: Bool = VCSFlagStates.thumbnail3D, versioning: Bool = VCSFlagStates.versioning, sharingInfo: Bool = VCSFlagStates.sharingInfo) -> Future<VCSSharedWithMeAsset, Error> {
