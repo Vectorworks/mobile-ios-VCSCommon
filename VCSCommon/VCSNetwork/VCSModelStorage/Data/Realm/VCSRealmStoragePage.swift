@@ -9,6 +9,7 @@ public class VCSRealmStoragPages: Object, VCSRealmObject {
     @objc dynamic var id: String = ""
     @objc dynamic var name: String = ""
     @objc dynamic var folderURI: String = ""
+    dynamic var sharedPaths: List<String> = List()
     
     public required convenience init(model: StoragePage) {
         self.init()
@@ -16,10 +17,16 @@ public class VCSRealmStoragPages: Object, VCSRealmObject {
         self.id = model.id
         self.name = model.name
         self.folderURI = model.folderURI
+        let realmSharedPathsArray = List<String>()
+        model.sharedPaths?.forEach {
+            realmSharedPathsArray.append($0)
+        }
     }
     
     public var entity: StoragePage {
-        return StoragePage(id: self.id, name: self.name, folderURI: self.folderURI)
+        let sharedPathsArray = self.sharedPaths.compactMap({ $0 })
+        let arrSharedPaths = Array(sharedPathsArray)
+        return StoragePage(id: self.id, name: self.name, folderURI: self.folderURI, sharedPaths: arrSharedPaths)
     }
     
     public var partialUpdateModel: [String : Any] {
@@ -29,6 +36,7 @@ public class VCSRealmStoragPages: Object, VCSRealmObject {
         result["id"] = self.id
         result["name"] = self.name
         result["folderURI"] = self.folderURI
+        result["sharedPaths"] = self.sharedPaths
         
         return result
     }

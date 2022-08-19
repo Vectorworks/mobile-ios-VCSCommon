@@ -335,6 +335,9 @@ public enum APIRouter: URLRequestConvertible {
         case .awsKeys:
             let queryItemFresh = URLQueryItem(name: "fresh", value: "yes")
             return [queryItemFresh]
+        case .getStoragePagesList:
+            let querySharedPaths = URLQueryItem(name: "fields", value: "(shared_paths)")
+            return [querySharedPaths]
         case .listSharedWithMe:
             let queryItemRelated = URLQueryItem(name: "related", value: "on")
             let queryItemLimit = URLQueryItem(name: "limit", value: "300")
