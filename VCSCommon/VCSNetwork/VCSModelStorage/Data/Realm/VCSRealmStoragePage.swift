@@ -21,6 +21,7 @@ public class VCSRealmStoragPages: Object, VCSRealmObject {
         model.sharedPaths?.forEach {
             realmSharedPathsArray.append($0)
         }
+        self.sharedPaths = realmSharedPathsArray
     }
     
     public var entity: StoragePage {
@@ -36,7 +37,7 @@ public class VCSRealmStoragPages: Object, VCSRealmObject {
         result["id"] = self.id
         result["name"] = self.name
         result["folderURI"] = self.folderURI
-        result["sharedPaths"] = self.sharedPaths
+        result["sharedPaths"] = Array(self.sharedPaths.compactMap({ $0 }))
         
         return result
     }
