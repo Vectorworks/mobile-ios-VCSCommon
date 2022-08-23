@@ -35,7 +35,7 @@ public struct K {
 }
 
 public enum HTTPHeaderField: String {
-    case authentication = "Authorization"
+    case Authorization = "Authorization"
     case contentType = "Content-Type"
     case contentLength = "Content-Length"
     case acceptType = "Accept"
@@ -45,6 +45,8 @@ public enum HTTPHeaderField: String {
     case userAgent = "User-Agent"
     case referer = "Referer"
     case XCSRFToken = "X-CSRFToken"
+    case dropboxAPIPathRoot = "Dropbox-API-Path-Root"
+    case dropboxAPIArg = "Dropbox-API-Arg"
 }
 
 public enum ContentType: String {

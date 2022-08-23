@@ -391,7 +391,7 @@ public class APIClient: NSObject {
                 var alamofireDownloadHeaders = Alamofire.HTTPHeaders([HTTPHeaderField.acceptEncoding.rawValue: "identity"])
                 if let oauth2 = APIClient.oauth2Client, let apiToken = oauth2.accessToken {
                     let authHeaderValue = oauth2.clientConfig.headerTokenPrefix + " " + apiToken
-                    alamofireDownloadHeaders = Alamofire.HTTPHeaders([HTTPHeaderField.acceptEncoding.rawValue: "identity", HTTPHeaderField.authentication.rawValue: authHeaderValue])
+                    alamofireDownloadHeaders = Alamofire.HTTPHeaders([HTTPHeaderField.acceptEncoding.rawValue: "identity", HTTPHeaderField.Authorization.rawValue: authHeaderValue])
                 }
                 
                 let downloadRequest = Alamofire.AF.download(
