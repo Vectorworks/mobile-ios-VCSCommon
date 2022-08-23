@@ -25,7 +25,7 @@ public class RealmOwnerInfo: Object, VCSRealmObject {
         self.ownerEmail = model.ownerEmail
         self.ownerName = model.ownerName
         self.uploadPrefix = model.uploadPrefix
-        self.dateCreated = model.dateCreated
+        self.dateCreated = model.dateCreated ?? ""
         self.sharedParentFolder = model.sharedParentFolder
         if let mountPoint = model.mountPoint {
             mountPoint.realmID = self.RealmID
