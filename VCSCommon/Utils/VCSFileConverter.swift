@@ -14,6 +14,22 @@ public class VCSFileConverter {
         }
     }
     
+    private class func isEmptyFile(_ url: URL) -> Bool {
+        var fileSize: UInt64 = 0
+        
+        do {
+            let attr = try FileManager.default.attributesOfItem(atPath: url.path)
+            fileSize = attr[FileAttributeKey.size] as! UInt64
+
+            let dict = attr as NSDictionary
+            fileSize = dict.fileSize()
+        } catch {
+            DDLogInfo("Error: \(error)")
+        }
+        
+        return fileSize == 0
+    }
+    
     public class func convertUSDZToOBJ(usdzPath: String, objPath: String) throws -> [String] {
         let start = CFAbsoluteTimeGetCurrent()
         DDLogInfo("Start \(start) seconds")
@@ -38,8 +54,12 @@ public class VCSFileConverter {
             let diff = CFAbsoluteTimeGetCurrent() - start
             DDLogInfo("Took \(diff) seconds")
             
-            var directoryContents = try FileManager.default.contentsOfDirectory(atPath: outputFilenameUrl.deletingLastPathComponent().path)
-            directoryContents.removeAll(where: { $0 == inputFileUrl.path })
+            let outputFilesDirectory: URL = outputFilenameUrl.deletingLastPathComponent()
+            var directoryContents = try FileManager.default.contentsOfDirectory(atPath: outputFilesDirectory.path)
+            directoryContents.removeAll(where: {
+                let outputFile: URL = outputFilesDirectory.appendingPathComponent($0)
+                return $0 == inputFileUrl.lastPathComponent || isEmptyFile(outputFile)
+            })
             DDLogInfo("Exported \(directoryContents.count) files.")
             directoryContents.forEach{ DDLogInfo("Filename: \($0.lastPathComponent)") }
             
