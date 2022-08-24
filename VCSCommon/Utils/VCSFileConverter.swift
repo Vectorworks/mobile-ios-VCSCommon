@@ -3,7 +3,7 @@ import CocoaLumberjackSwift
 import ModelIO
 
 public class VCSFileConverter {
-    public class func convertUSDZToOBJ(usdzPath: String, objPath: String, completion: ((Result<[String], Error>) -> Void)? = nil) {
+    public class func convertUSDZToOBJ(usdzPath: String, objPath: String, completion: ((Result<[URL], Error>) -> Void)? = nil) {
         DispatchQueue.global().async {
             do {
                 let directoryContents = try VCSFileConverter.convertUSDZToOBJ(usdzPath: usdzPath, objPath: objPath)
@@ -30,7 +30,7 @@ public class VCSFileConverter {
         return fileSize == 0
     }
     
-    public class func convertUSDZToOBJ(usdzPath: String, objPath: String) throws -> [String] {
+    public class func convertUSDZToOBJ(usdzPath: String, objPath: String) throws -> [URL] {
         let start = CFAbsoluteTimeGetCurrent()
         DDLogInfo("Start \(start) seconds")
         
@@ -55,11 +55,13 @@ public class VCSFileConverter {
             DDLogInfo("Took \(diff) seconds")
             
             let outputFilesDirectory: URL = outputFilenameUrl.deletingLastPathComponent()
-            var directoryContents = try FileManager.default.contentsOfDirectory(atPath: outputFilesDirectory.path)
+            let directoryContentsFilenames = try FileManager.default.contentsOfDirectory(atPath: outputFilesDirectory.path)
+            var directoryContents: [URL] = directoryContentsFilenames.map{ outputFilesDirectory.appendingPathComponent($0) }
+            
             directoryContents.removeAll(where: {
-                let outputFile: URL = outputFilesDirectory.appendingPathComponent($0)
-                return $0 == inputFileUrl.lastPathComponent || isEmptyFile(outputFile)
+                return $0 == inputFileUrl || isEmptyFile($0)
             })
+            
             DDLogInfo("Exported \(directoryContents.count) files.")
             directoryContents.forEach{ DDLogInfo("Filename: \($0.lastPathComponent)") }
             
