@@ -42,6 +42,7 @@ public enum APIRouter: URLRequestConvertible {
     case linkDetailsData(link: String)
     case unshare(assetURI: String)
     case mountFolder(storageType: String, ownerLogin: String, prefix: String, mountValue: Bool)
+    case branding
     
     
     // MARK: - requestURL
@@ -118,6 +119,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .mountFolder:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
+        case .branding:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         }
     }
     
@@ -275,6 +278,8 @@ public enum APIRouter: URLRequestConvertible {
             return assetURI
         case .mountFolder(let storageType, let ownerLogin, let prefix, _):
             return "/\(storageType)/shared_with_me/folder/:mount/o:\(ownerLogin)/p:\(prefix)/"
+        case .branding:
+            return "/branding"
         }
     }
     

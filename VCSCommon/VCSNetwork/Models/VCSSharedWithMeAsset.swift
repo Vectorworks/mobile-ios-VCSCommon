@@ -65,7 +65,7 @@ import Foundation
         self.permission = try container.decode([SharedWithMePermission].self, forKey: CodingKeys.permission)
         self.sharedParentFolder = try container.decode(String.self, forKey: CodingKeys.sharedParentFolder)
         self.branding = try container.decode(VCSSharedAssetBrandingResponse.self, forKey: CodingKeys.branding)
-        
+        self.branding?.realmID = self.asset.rID
         self.asset.updateSharedOwnerLogin(self.owner)
         self.sharedWithLogin = AuthCenter.shared.user?.login
     }

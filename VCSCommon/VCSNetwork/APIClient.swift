@@ -356,6 +356,10 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.mountFolder(storageType: storageType, ownerLogin: ownerLogin, prefix: prefix, mountValue: mountValue))
     }
     
+    public static func getCurrentUserBranding() -> Future<VCSSharedAssetBrandingResponseWrapper, Error> {
+        return performRequest(route: APIRouter.branding)
+    }
+    
     //MARK: - DOWNLOAD
     // key here is file.id. The files that we compare are not actually the same object for some reason
     public static var downloads = [String : Download]()
