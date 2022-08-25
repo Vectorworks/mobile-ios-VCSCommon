@@ -123,14 +123,14 @@ fileprivate struct MetadataForVCSFileResponse {
         var unuploadedFiles: [UnuploadedFile] = []
         
         photos.forEach { (capture: PhotoCapture) in
-            let image = GenericFile.construct(withName: capture.imagePathURL.lastPathComponent, fileURL: capture.imagePathURL, containerInfo: containingFolder, owner: owner)
+            let image = GenericFile.construct(withName: capture.uploadImageFileName, fileURL: capture.imageLocalURL, containerInfo: containingFolder, owner: owner)
             unuploadedFiles.append(image)
             if capture.gravity != nil {
-                let gravity = GenericFile.construct(withName: capture.gravityPathURL.lastPathComponent, fileURL: capture.gravityPathURL, containerInfo: containingFolder, owner: owner)
+                let gravity = GenericFile.construct(withName: capture.uploadGravityFileName, fileURL: capture.gravityLocalURL, containerInfo: containingFolder, owner: owner)
                 unuploadedFiles.append(gravity)
             }
             if capture.depthData != nil {
-                let depth = GenericFile.construct(withName: capture.depthPathURL.lastPathComponent, fileURL: capture.depthPathURL, containerInfo: containingFolder, owner: owner)
+                let depth = GenericFile.construct(withName: capture.uploadDepthFileName, fileURL: capture.depthLocalURL, containerInfo: containingFolder, owner: owner)
                 unuploadedFiles.append(depth)
             }
         }

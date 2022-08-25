@@ -1,9 +1,3 @@
-/*
-See LICENSE folder for this sample’s licensing information.
-
-Abstract:
-The data model for captured images and their associated metadata.
-*/
 import AVFoundation
 import Combine
 import CoreGraphics
@@ -17,7 +11,7 @@ import CocoaLumberjackSwift
 /// and alpha mask.
 public struct PhotoCapture: Identifiable {
     /// This is the unique ID for this capture.
-    public let id: String
+    public let id: UInt32
     
     /// This is the original photo object, including preview.
     public let photo: AVCapturePhoto
@@ -35,25 +29,34 @@ public struct PhotoCapture: Identifiable {
     /// This view displays the full-size image.
     public var uiImage: UIImage { return UIImage(data: photo.fileDataRepresentation()!, scale: 1.0)! }
     
-    public var imagePathURL: URL { return URL(fileURLWithPath: FileManager.AppBurstPhotosTempDirectory.appendingPathComponent(self.id).appendingPathExtension("HEIC")) }
-    public var gravityPathURL: URL { return URL(fileURLWithPath: FileManager.AppBurstPhotosTempDirectory.appendingPathComponent(self.id).appending("_gravity.TXT")) }
-    public var depthPathURL: URL { return URL(fileURLWithPath: FileManager.AppBurstPhotosTempDirectory.appendingPathComponent(self.id).appending("_depth.TIF")) }
+    public private(set) var imageLocalURL: URL
+    public private(set) var gravityLocalURL: URL
+    public private(set) var depthLocalURL: URL
+    public private(set) var uploadImageFileName: String
+    public private(set) var uploadGravityFileName: String
+    public private(set) var uploadDepthFileName: String
     
-    public init(id: String, photo: AVCapturePhoto, depthData: Data? = nil,
-         gravity: CMAcceleration? = nil) {
+    public init(id: UInt32, photo: AVCapturePhoto, depthData: Data? = nil, gravity: CMAcceleration? = nil, imageLocalURL: URL, gravityLocalURL: URL, depthLocalURL: URL, uploadImageFileName: String, uploadGravityFileName: String, uploadDepthFileName: String) {
         self.id = id
         self.photo = photo
         self.depthData = depthData
         self.gravity = gravity
+        
+        self.imageLocalURL = imageLocalURL
+        self.gravityLocalURL = gravityLocalURL
+        self.depthLocalURL = depthLocalURL
+        self.uploadImageFileName = uploadImageFileName
+        self.uploadGravityFileName = uploadGravityFileName
+        self.uploadDepthFileName = uploadDepthFileName
     }
     
     /// This method writes the captured images to a specified folder. This method saves the image as
     /// `IMG_<ID>.HEIC`, the depth data, if available, as `IMG_<ID>_depth.TIF`, and the gravity
     /// vector, if available, as `IMG_<ID>_gravity.TXT`.
-    public func writeAllFiles(to captureDir: URL) throws {
-        writeImage(to: captureDir)
-        writeGravityIfAvailable(to: captureDir)
-        writeDepthIfAvailable(to: captureDir)
+    public func writeAllFiles() throws {
+        writeImage()
+        writeGravityIfAvailable()
+        writeDepthIfAvailable()
     }
     
     // MARK: - Private Helpers
@@ -69,9 +72,9 @@ public struct PhotoCapture: Identifiable {
     }
     
     @discardableResult
-    private func writeImage(to captureDir: URL) -> Bool {
-        let imageUrl = self.imagePathURL
-        print("Saving: \(imageUrl.path)...")
+    private func writeImage() -> Bool {
+        let imageUrl = self.imageLocalURL
+        DDLogInfo("Saving: \(imageUrl.path)...")
         DDLogInfo("Depth Data = \(String(describing: photo.depthData))")
         do {
             try photo.fileDataRepresentation()!
@@ -84,14 +87,14 @@ public struct PhotoCapture: Identifiable {
     }
     
     @discardableResult
-    private func writeGravityIfAvailable(to captureDir: URL) -> Bool {
+    private func writeGravityIfAvailable() -> Bool {
         guard let gravityVector = gravity else {
             DDLogWarn("No gravity vector to save!")
             return false
         }
         
         let gravityString = String(format: "%lf,%lf,%lf", gravityVector.x, gravityVector.y, gravityVector.z)
-        let gravityUrl = self.gravityPathURL
+        let gravityUrl = self.gravityLocalURL
         DDLogInfo("Writing gravity metadata to: \"\(gravityUrl.path)\"...")
         do {
             try gravityString.write(toFile: gravityUrl.path, atomically: true,
@@ -106,13 +109,13 @@ public struct PhotoCapture: Identifiable {
     }
     
     @discardableResult
-    private func writeDepthIfAvailable(to captureDir: URL) -> Bool {
+    private func writeDepthIfAvailable() -> Bool {
         guard let depthMapData = depthData else {
             DDLogWarn("No depth data to save!")
             return false
         }
         
-        let depthMapUrl = self.depthPathURL
+        let depthMapUrl = self.depthLocalURL
         DDLogInfo("Writing depth data to path=\"\(depthMapUrl.path)\"...")
         do {
             try depthMapData.write(to: URL(fileURLWithPath: depthMapUrl.path), options: .atomic)
