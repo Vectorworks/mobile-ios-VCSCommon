@@ -6,7 +6,8 @@ import Foundation
     public let owner, ownerEmail, ownerName, uploadPrefix: String
     public let hasJoined: Bool
     public let permission: [SharedWithMePermission]
-    public let dateCreated, sharedParentFolder: String
+    public let dateCreated: String?
+    public let sharedParentFolder: String
     public let mountPoint: VCSMountPointResponse?
     
     enum CodingKeys: String, CodingKey {

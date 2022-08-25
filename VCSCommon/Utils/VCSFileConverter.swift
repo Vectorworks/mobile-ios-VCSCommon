@@ -3,7 +3,7 @@ import CocoaLumberjackSwift
 import ModelIO
 
 public class VCSFileConverter {
-    public class func convertUSDZToOBJ(usdzPath: String, objPath: String, completion: ((Result<[String], Error>) -> Void)? = nil) {
+    public class func convertUSDZToOBJ(usdzPath: String, objPath: String, completion: ((Result<[URL], Error>) -> Void)? = nil) {
         DispatchQueue.global().async {
             do {
                 let directoryContents = try VCSFileConverter.convertUSDZToOBJ(usdzPath: usdzPath, objPath: objPath)
@@ -14,7 +14,23 @@ public class VCSFileConverter {
         }
     }
     
-    public class func convertUSDZToOBJ(usdzPath: String, objPath: String) throws -> [String] {
+    private class func isEmptyFile(_ url: URL) -> Bool {
+        var fileSize: UInt64 = 0
+        
+        do {
+            let attr = try FileManager.default.attributesOfItem(atPath: url.path)
+            fileSize = attr[FileAttributeKey.size] as! UInt64
+
+            let dict = attr as NSDictionary
+            fileSize = dict.fileSize()
+        } catch {
+            DDLogInfo("Error: \(error)")
+        }
+        
+        return fileSize == 0
+    }
+    
+    public class func convertUSDZToOBJ(usdzPath: String, objPath: String) throws -> [URL] {
         let start = CFAbsoluteTimeGetCurrent()
         DDLogInfo("Start \(start) seconds")
         
@@ -38,8 +54,14 @@ public class VCSFileConverter {
             let diff = CFAbsoluteTimeGetCurrent() - start
             DDLogInfo("Took \(diff) seconds")
             
-            var directoryContents = try FileManager.default.contentsOfDirectory(atPath: outputFilenameUrl.deletingLastPathComponent().path)
-            directoryContents.removeAll(where: { $0 == inputFileUrl.path })
+            let outputFilesDirectory: URL = outputFilenameUrl.deletingLastPathComponent()
+            let directoryContentsFilenames = try FileManager.default.contentsOfDirectory(atPath: outputFilesDirectory.path)
+            var directoryContents: [URL] = directoryContentsFilenames.map{ outputFilesDirectory.appendingPathComponent($0) }
+            
+            directoryContents.removeAll(where: {
+                return $0 == inputFileUrl || isEmptyFile($0)
+            })
+            
             DDLogInfo("Exported \(directoryContents.count) files.")
             directoryContents.forEach{ DDLogInfo("Filename: \($0.lastPathComponent)") }
             

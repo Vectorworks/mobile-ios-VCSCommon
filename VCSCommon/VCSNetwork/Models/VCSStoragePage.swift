@@ -14,16 +14,19 @@ public enum StoragePageConstants: String {
     @objc public static let driveIDSharedRegXPattern: String = "driveId_sharedWithMe[\\w\\-$!]+"
     @objc public static let driveIDSharedOneDriveRegXPattern: String = "driveId_sharedWithMeOneDrive[\\w\\-$!]+"
     @objc public let id, name, folderURI: String
+    @objc public let sharedPaths: [String]?
     
     enum CodingKeys: String, CodingKey {
         case id, name
         case folderURI = "folder_uri"
+        case sharedPaths = "shared_paths"
     }
     
-    init(id: String, name: String, folderURI: String) {
+    init(id: String, name: String, folderURI: String, sharedPaths: [String]) {
         self.id = id
         self.name = name
         self.folderURI = folderURI
+        self.sharedPaths = sharedPaths
     }
     
     public func storageImage() -> UIImage? {

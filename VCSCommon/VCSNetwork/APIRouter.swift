@@ -340,6 +340,9 @@ public enum APIRouter: URLRequestConvertible {
         case .awsKeys:
             let queryItemFresh = URLQueryItem(name: "fresh", value: "yes")
             return [queryItemFresh]
+        case .getStoragePagesList:
+            let querySharedPaths = URLQueryItem(name: "fields", value: "(shared_paths)")
+            return [querySharedPaths]
         case .listSharedWithMe:
             let queryItemRelated = URLQueryItem(name: "related", value: "on")
             let queryItemLimit = URLQueryItem(name: "limit", value: "300")
@@ -632,43 +635,15 @@ public enum APIRouter: URLRequestConvertible {
             urlRequest.setValue(uploadURL.contentType, forHTTPHeaderField: HTTPHeaderField.contentType.rawValue)
             urlRequest.setValue("\(uploadURL.contentLength)", forHTTPHeaderField: HTTPHeaderField.contentLength.rawValue)
             
-            if let dropboxAPIPathRoot = uploadURL.headers.dropboxAPIPathRoot,
-                let data = dropboxAPIPathRoot.data(using: .utf8),
-                let headerAsJSON = (try? JSONSerialization.jsonObject(with: data, options: .mutableLeaves)) as? [String: String] {
-                for (key, value) in headerAsJSON {
-                    urlRequest.setValue(key, forHTTPHeaderField: value)
-                }
-            }
-            
-            if let contentLength = uploadURL.headers.contentLength {
-                urlRequest.setValue("\(contentLength)", forHTTPHeaderField: Headers.CodingKeys.contentLength.rawValue)
-            }
-            if let contentType = uploadURL.headers.contentType {
-                urlRequest.setValue(contentType, forHTTPHeaderField: Headers.CodingKeys.contentType.rawValue)
-            }
-            if let contentRange = uploadURL.headers.contentRange {
-                urlRequest.setValue(contentRange, forHTTPHeaderField: Headers.CodingKeys.contentRange.rawValue)
+            for (key, value) in uploadURL.headers {
+                urlRequest.setValue(value, forHTTPHeaderField: key)
             }
         case .uploadFileURL(let uploadURL):
             urlRequest.setValue(uploadURL.contentType, forHTTPHeaderField: HTTPHeaderField.contentType.rawValue)
             urlRequest.setValue("\(uploadURL.contentLength)", forHTTPHeaderField: HTTPHeaderField.contentLength.rawValue)
             
-            if let dropboxAPIPathRoot = uploadURL.headers.dropboxAPIPathRoot,
-                let data = dropboxAPIPathRoot.data(using: .utf8),
-                let headerAsJSON = (try? JSONSerialization.jsonObject(with: data, options: .mutableLeaves)) as? [String: String] {
-                for (key, value) in headerAsJSON {
-                    urlRequest.setValue(key, forHTTPHeaderField: value)
-                }
-            }
-            
-            if let contentLength = uploadURL.headers.contentLength {
-                urlRequest.setValue("\(contentLength)", forHTTPHeaderField: Headers.CodingKeys.contentLength.rawValue)
-            }
-            if let contentType = uploadURL.headers.contentType {
-                urlRequest.setValue(contentType, forHTTPHeaderField: Headers.CodingKeys.contentType.rawValue)
-            }
-            if let contentRange = uploadURL.headers.contentRange {
-                urlRequest.setValue(contentRange, forHTTPHeaderField: Headers.CodingKeys.contentRange.rawValue)
+            for (key, value) in uploadURL.headers {
+                urlRequest.setValue(value, forHTTPHeaderField: key)
             }
         case .sendFeedback:
             urlRequest.setValue(VCSServer.default.serverURLString, forHTTPHeaderField: HTTPHeaderField.referer.rawValue)
