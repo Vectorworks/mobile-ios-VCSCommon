@@ -34,6 +34,8 @@ public enum VCSFileType: String
     case IMGPNG = "300X300.PNG"
     case UNRESOLVED_LINK
     case PTS
+    case HEIC
+    case TIF
     
     public func isInFileName(_ oName: String?) -> Bool {
         guard let name = oName else { return false }

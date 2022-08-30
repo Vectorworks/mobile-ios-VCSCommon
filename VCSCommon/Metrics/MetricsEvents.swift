@@ -88,6 +88,7 @@ import FirebaseAnalytics
     @objc public static let ACCOUNT_ACTIONS__FEEDBACK_SENT                      = "account_actions__feedback_sent"
     @objc public static let ACCOUNT_ACTIONS__CLEAR_CACHE_BUTTON_CLICKED         = "account_actions__clear_cache_button_clicked"
     @objc public static let ACCOUNT_ACTIONS__TOUR_OPENED                        = "account_actions__tour_opened"
+    @objc public static let ACCOUNT_ACTIONS__DELETE_ACCOUT                      = "account_actions__delete_account"
     
     
     
