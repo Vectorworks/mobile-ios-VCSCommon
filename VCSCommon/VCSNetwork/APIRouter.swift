@@ -639,7 +639,7 @@ public enum APIRouter: URLRequestConvertible {
             }
             
             if let contentLength = uploadURL.headers.contentLength {
-                urlRequest.setValue("\(contentLength)", forHTTPHeaderField: Headers.CodingKeys.contentLength.rawValue)
+                urlRequest.setValue(contentLength, forHTTPHeaderField: Headers.CodingKeys.contentLength.rawValue)
             }
             if let contentType = uploadURL.headers.contentType {
                 urlRequest.setValue(contentType, forHTTPHeaderField: Headers.CodingKeys.contentType.rawValue)
@@ -665,7 +665,7 @@ public enum APIRouter: URLRequestConvertible {
             }
             
             if let contentLength = uploadURL.headers.contentLength {
-                urlRequest.setValue("\(contentLength)", forHTTPHeaderField: Headers.CodingKeys.contentLength.rawValue)
+                urlRequest.setValue(contentLength, forHTTPHeaderField: Headers.CodingKeys.contentLength.rawValue)
             }
             if let contentType = uploadURL.headers.contentType {
                 urlRequest.setValue(contentType, forHTTPHeaderField: Headers.CodingKeys.contentType.rawValue)
