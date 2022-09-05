@@ -20,7 +20,7 @@ public struct Headers: Codable {
     public let dropboxAPIPathRoot: String?
     public let dropboxAPIArg: String?
     public let authorization: String?
-    public let contentLength: String?
+    public let contentLength: Int?
     public let contentType: String?
     public let contentRange: String?
     
