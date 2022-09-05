@@ -112,6 +112,7 @@ public class APIClient: NSObject {
     private static func performRequest<S:Decodable, E:Error>(route: APIRouter, decoder: DataDecoder = JSONDecoder()) -> Future<S, E> {
         return Future(operation: { completion in
             AF.request(route, interceptor: APIClient.oauth2RetryHandler).responseDecodable(decoder: decoder, completionHandler: { (dataResponse: DataResponse<S, AFError>) in
+                //DEBUG: put a breakpoint here to debug response -GKK
                 APIClient.lastErrorData = nil
                 switch dataResponse.result {
                 case .success(let value):

@@ -45,6 +45,10 @@ extension VCSSharedAssetBrandingResponse {
     public static var savedUserBranding: VCSSharedAssetBrandingResponse? {
         return VCSSharedAssetBrandingResponse.realmStorage.getAll().first { $0.realmID == AuthCenter.shared.user?.login }
     }
+    
+    public static func brandingFromDatabase(realmID: String) -> VCSSharedAssetBrandingResponse? {
+        return VCSSharedAssetBrandingResponse.realmStorage.getAll().first { $0.realmID == realmID }
+    }
 }
 
 @objc public class BrandingLogoPosition: NSObject, Codable {
