@@ -188,6 +188,13 @@ public extension FileManager {
         return result
     }
     
+    class func brandingCacheURL(fileName: String) -> URL {
+        let brandingURL = FileManager.AppDownloadDirectory.appendingPathComponent("branding")
+        try? FileUtils.createURL(brandingURL)
+        
+        return brandingURL.appendingPathComponent(fileName)
+    }
+    
     class func downloadPath(fileName: String) -> URL {
         let result = FileManager.AppDownloadDirectory.appendingPathComponent(fileName)
         return result

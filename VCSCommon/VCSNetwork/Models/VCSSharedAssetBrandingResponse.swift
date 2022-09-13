@@ -1,15 +1,17 @@
 import Foundation
 
+public class VCSSharedAssetBrandingResponseWrapper: NSObject, Codable {
+    public let branding: VCSSharedAssetBrandingResponse
+}
+
 @objc public class VCSSharedAssetBrandingResponse: NSObject, Codable {
-    public let active: Bool?
     public let position: BrandingLogoPosition?
     public let image: String?
     public let opacity, size: Float?
     public var realmID: String?
     
-    init(active: Bool?, position: BrandingLogoPosition?, image: String?, opacity: Float?, size: Float?, realmID: String? = nil) {
+    init(position: BrandingLogoPosition?, image: String?, opacity: Float?, size: Float?, realmID: String?) {
         self.realmID = realmID
-        self.active = active
         self.position = position
         self.image = image
         self.opacity = opacity
@@ -35,6 +37,17 @@ extension VCSSharedAssetBrandingResponse: VCSCachable {
     
     public func partialUpdateToCache() {
         VCSSharedAssetBrandingResponse.realmStorage.partialUpdate(item: self)
+    }
+}
+
+extension VCSSharedAssetBrandingResponse {
+    
+    public static var savedUserBranding: VCSSharedAssetBrandingResponse? {
+        return VCSSharedAssetBrandingResponse.realmStorage.getAll().first { $0.realmID == AuthCenter.shared.user?.login }
+    }
+    
+    public static func brandingFromDatabase(realmID: String) -> VCSSharedAssetBrandingResponse? {
+        return VCSSharedAssetBrandingResponse.realmStorage.getAll().first { $0.realmID == realmID }
     }
 }
 

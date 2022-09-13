@@ -6,7 +6,7 @@ public class RealmSharedAssetBranding: Object, VCSRealmObject {
     override public class func primaryKey() -> String { return "RealmID" }
     
     @objc dynamic public var RealmID: String = "nil"
-    dynamic var active: RealmProperty<Bool?> = RealmProperty<Bool?>()
+
     @objc dynamic var position: RealmBrandingLogoPosition?
     @objc dynamic var image: String?
     dynamic var opacity: RealmProperty<Float?> = RealmProperty<Float?>()
@@ -18,7 +18,6 @@ public class RealmSharedAssetBranding: Object, VCSRealmObject {
         if let realmID = model.realmID {
             self.RealmID = realmID
         }
-        self.active.value = model.active
         if let position = model.position {
             self.position = RealmBrandingLogoPosition(model: position)
         }
@@ -28,18 +27,13 @@ public class RealmSharedAssetBranding: Object, VCSRealmObject {
     }
     
     public var entity: Model {
-        let active = self.active.value ?? false
-        return VCSSharedAssetBrandingResponse(active: active, position: self.position?.entity, image: self.image, opacity: self.opacity.value, size: self.size.value)
+        return VCSSharedAssetBrandingResponse(position: self.position?.entity, image: self.image, opacity: self.opacity.value, size: self.size.value, realmID: self.RealmID)
     }
     
     public var partialUpdateModel: [String : Any] {
         var result: [String : Any] = [:]
         
         result["RealmID"] = self.RealmID
-        
-        if let active = self.active.value {
-            result["active"] = active
-        }
         
         if let position = self.position {
             result["position"] = position

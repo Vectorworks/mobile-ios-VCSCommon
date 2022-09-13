@@ -10,6 +10,7 @@ import Foundation
     public let permission: [SharedWithMePermission]
     public let sharedParentFolder: String
     public let sharedWithLogin: String?
+    public let branding: VCSSharedAssetBrandingResponse?
     
     public lazy var sortingDate: Date = { return self.dateCreated.VCSDateFromISO8061 ?? Date() }()
     
@@ -24,9 +25,10 @@ import Foundation
         case hasJoined = "has_joined"
         case permission
         case sharedParentFolder = "shared_parent_folder"
+        case branding
     }
     
-    init(owner: String, ownerEmail: String, ownerName: String, dateCreated: String, asset: Asset, assetType: AssetType, resourceURI: String, permission: [String], sharedParentFolder: String, sharedWithLogin: String?) {
+    init(owner: String, ownerEmail: String, ownerName: String, dateCreated: String, asset: Asset, assetType: AssetType, resourceURI: String, permission: [String], sharedParentFolder: String, sharedWithLogin: String?, branding: VCSSharedAssetBrandingResponse?) {
         self.owner = owner
         self.ownerEmail = ownerEmail
         self.ownerName = ownerName
@@ -40,7 +42,7 @@ import Foundation
         self.permission = permission.map { SharedWithMePermission(rawValue: $0) }
         self.sharedParentFolder = sharedParentFolder
         self.sharedWithLogin = sharedWithLogin
-        
+        self.branding = branding
     }
     
     required public init(from decoder: Decoder) throws {
@@ -62,7 +64,8 @@ import Foundation
         self.hasJoined = try container.decode(Bool.self, forKey: CodingKeys.hasJoined)
         self.permission = try container.decode([SharedWithMePermission].self, forKey: CodingKeys.permission)
         self.sharedParentFolder = try container.decode(String.self, forKey: CodingKeys.sharedParentFolder)
-        
+        self.branding = try container.decode(VCSSharedAssetBrandingResponse.self, forKey: CodingKeys.branding)
+        self.branding?.realmID = self.asset.rID
         self.asset.updateSharedOwnerLogin(self.owner)
         self.sharedWithLogin = AuthCenter.shared.user?.login
     }
@@ -91,6 +94,7 @@ import Foundation
         try container.encode(self.hasJoined, forKey: CodingKeys.hasJoined)
         try container.encode(self.permission, forKey: CodingKeys.permission)
         try container.encode(self.sharedParentFolder, forKey: CodingKeys.sharedParentFolder)
+        try container.encode(self.branding, forKey: CodingKeys.branding)
     }
 }
 

@@ -33,7 +33,7 @@ public enum APIRouter: URLRequestConvertible {
     case genericJob(data: GenericJobRequest)
     
     //NEW API CALLS
-    case sharedWithMeAsset(assetURI: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool, related: Bool)
+    case sharedWithMeAsset(assetURI: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool, related: Bool, branding: Bool)
     case linkSharedAsset(assetURI: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool, related: Bool, versioning: Bool)
     case markLinkAsVisited(assetURI: String)
     case folderAsset(assetURI: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool)
@@ -42,6 +42,7 @@ public enum APIRouter: URLRequestConvertible {
     case linkDetailsData(link: String)
     case unshare(assetURI: String)
     case mountFolder(storageType: String, ownerLogin: String, prefix: String, mountValue: Bool)
+    case branding
     
     
     // MARK: - requestURL
@@ -118,6 +119,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .mountFolder:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
+        case .branding:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         }
     }
     
@@ -257,7 +260,7 @@ public enum APIRouter: URLRequestConvertible {
             return "/jobs/"
             
         //NEW API CALLS
-        case .sharedWithMeAsset(let assetURI, _, _, _, _, _, _):
+        case .sharedWithMeAsset(let assetURI, _, _, _, _, _, _, _):
             return assetURI
         case .linkSharedAsset(let assetURI, _, _, _, _, _, _, _):
             return assetURI
@@ -275,6 +278,8 @@ public enum APIRouter: URLRequestConvertible {
             return assetURI
         case .mountFolder(let storageType, let ownerLogin, let prefix, _):
             return "/\(storageType)/shared_with_me/folder/:mount/o:\(ownerLogin)/p:\(prefix)/"
+        case .branding:
+            return "/branding"
         }
     }
     
@@ -344,7 +349,7 @@ public enum APIRouter: URLRequestConvertible {
             
             var result: [URLQueryItem] = [queryItemRelated, queryItemLimit]
             
-            if let queryItemFields = APIRouter.sharedWithMeAsset(assetURI: "shared_with_me/folder/o:", flags: true, ownerInfo: true, thumbnail3D: true, fileTypes: true, sharingInfo: true, related: true).queryParameters {
+            if let queryItemFields = APIRouter.sharedWithMeAsset(assetURI: "shared_with_me/folder/o:", flags: true, ownerInfo: true, thumbnail3D: true, fileTypes: true, sharingInfo: true, related: true, branding: true).queryParameters {
                 result.append(contentsOf: queryItemFields)
             }
             
@@ -537,7 +542,7 @@ public enum APIRouter: URLRequestConvertible {
             }
             
             return result
-        case .sharedWithMeAsset(let assetURI, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo, let related):
+        case .sharedWithMeAsset(let assetURI, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo, let related, let branding):
             let isFolder = assetURI.contains("shared_with_me/folder/o:")
             
             var result:[URLQueryItem] = []
@@ -601,6 +606,10 @@ public enum APIRouter: URLRequestConvertible {
                     fields.append("asset.subfolders.sharing_info.last_share_date")
                     fields.append("asset.subfolders.sharing_info.allow_comments")
                 }
+            }
+            
+            if branding {
+                fields.append("branding")
             }
             
             if fields.count > 0 {
@@ -734,6 +743,8 @@ public enum APIRouter: URLRequestConvertible {
         NetworkLogger.log(urlRequest.cURL(pretty: false))
         NetworkLogger.log(self.bodyParameters ?? "-no body-")
         NetworkLogger.log("\t###")
+        
+        //DEBUG: put a breakpoint here to debug url -GKK
         
         return urlRequest
     }
