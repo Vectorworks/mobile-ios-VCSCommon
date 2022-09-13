@@ -56,8 +56,7 @@ open class OAuth2RetryHandler: RequestInterceptor {
                     }
                 }
             }
-        }
-        else {
+        } else {
             completion(.doNotRetry)   // not a 401, not our problem
         }
     }
