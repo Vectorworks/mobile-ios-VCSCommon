@@ -54,6 +54,21 @@ public enum StoragePageConstants: String {
 
         return result
     }
+    
+    public var displayName: String {
+        switch self.name {
+        case "My Drive":
+            return self.name.vcsLocalized
+        case "Shared with me":
+            return self.name.vcsLocalized
+        case "My Files":
+            return self.name.vcsLocalized
+        case "Shared":
+            return self.name.vcsLocalized
+        default:
+            return self.name
+        }
+    }
 }
 
 extension StoragePage {
@@ -62,7 +77,7 @@ extension StoragePage {
         
         guard result?.name != StorageType.ONE_DRIVE.displayName else { return "" }
         
-        return result?.name ?? ""
+        return result?.displayName ?? ""
     }
 }
 
