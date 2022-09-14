@@ -48,7 +48,6 @@ public class VCSFileConverter {
         mdlAsset.loadTextures()
         
         do {
-            try FileManager.default.createDirectory(at: outputFilenameUrl.deletingLastPathComponent(), withIntermediateDirectories: true)
             try mdlAsset.export(to: outputFilenameUrl)
             DDLogInfo("Successfully exported file.")
             let diff = CFAbsoluteTimeGetCurrent() - start
