@@ -3,12 +3,52 @@ import RealmSwift
 import CocoaLumberjackSwift
 
 public class VCSRealmDB {
-    private(set) public static var  extObjectTypes: [RealmSwift.ObjectBase.Type]? = nil
+    private(set) public static var  extObjectTypes: [RealmSwift.ObjectBase.Type] = [VCSSharedAssetBrandingResponse.RealmModel.self
+                                                                                    ,VCSFileResponse.RealmModel.self
+                                                                                    ,VCSFlagsResponse.RealmModel.self
+                                                                                    ,VCSFolderResponse.RealmModel.self
+                                                                                    ,VCSStorageResponse.RealmModel.self
+                                                                                    ,StoragePage.RealmModel.self
+                                                                                    ,VCSUser.RealmModel.self
+                                                                                    
+                                                                                    ,VCSOwnerInfoResponse.RealmModel.self
+                                                                                    ,VCSSharingInfoResponse.RealmModel.self
+                                                                                    ,LocalFile.RealmModel.self
+                                                                                    ,LocalFileForUpload.RealmModel.self
+                                                                                    ,VCSMountPointResponse.RealmModel.self
+                                                                                    ,VCSSharedWithUser.RealmModel.self
+                                                                                    
+                                                                                    ,RealmQuotas.self
+                                                                                    ,RealmVCSAWSkeys.self
+                                                                                    ,RealmBrandingLogoPosition.self
+                                                                                    
+                                                                                    ,VCSFilesAppTags.RealmModel.self
+                                                                                    ,VCSFilesAppFavoriteRank.RealmModel.self
+                                                                                    ,LocalFilesAppFile.RealmModel.self
+                                                                                    
+                                                                                    ,RealmJobFileVersionRequest.self
+                                                                                    ,RealmPhotogramOptionsRequest.self
+                                                                                    ,PhotogramJobRequest.RealmModel.self
+                                                                                    ,RealmEmail.self
+                                                                                    ,VCSJobResponse.RealmModel.self
+                                                                                    ,RealmJobEventData.self
+                                                                                    ,VCSJobFileVersionResponse.RealmModel.self
+                                                                                    ,VCSJobOptionsResponse.RealmModel.self
+                                                                                    ,RealmOtherLogin.self
+                                                                                    ,VCSShareableLinkOwner.RealmModel.self
+                                                                                    ,VCSShareableLinkResponse.RealmModel.self
+                                                                                    ,VCSSharedAssetWrapper.RealmModel.self
+                                                                                    ,VCSSharedAssetOWNResponse.RealmModel.self
+                                                                                    ,RealmSharedFileFolderAssetWrapper.self
+                                                                                    ,SharedLink.RealmModel.self
+                                                                                    ,VCSSharedWithMeAsset.RealmModel.self
+                                                                                    ,RealmSharedWithMeAssetWrapper.self
+                                                                                    ,RealmWSharedWithInfo.self]
     private(set) public static var  appGroupRealmPathURL: URL?
     private static var  usedRealmConfig: Realm.Configuration = VCSRealmConfig.getRealmDefaultConfiguration
     static var realm: Realm { return try! Realm(configuration: VCSRealmDB.usedRealmConfig) }
     
-    public static func runMigrations(appGroup: String, extObjectTypes: [RealmSwift.ObjectBase.Type]? = nil) {
+    public static func runMigrations(appGroup: String, extObjectTypes: [RealmSwift.ObjectBase.Type] = VCSRealmDB.extObjectTypes) {
         VCSRealmDB.extObjectTypes = extObjectTypes
         
         if let appGroupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)?.appendingPathComponent("vcs-nomad.realm") {

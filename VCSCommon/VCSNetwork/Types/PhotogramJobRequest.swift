@@ -111,7 +111,7 @@ public class RealmPhotogramJobRequest: Object, VCSRealmObject {
 }
 
 @objc public class PhotogramJobRequest: NSObject, Codable, VCSCachable {
-    
+    public typealias RealmModel = RealmPhotogramJobRequest
     public static let realmStorage = VCSGenericRealmModelStorage<RealmPhotogramJobRequest>()
     
     public func addToCache() {
