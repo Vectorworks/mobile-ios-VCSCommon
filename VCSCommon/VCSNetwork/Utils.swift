@@ -205,7 +205,7 @@ public extension FileManager {
         return result
     }
     
-    class func uploadPath(innerFolderName folderName: String) -> URL {
+    class func uploadPath(folderName: String) -> URL {
         let uploadsURL = FileManager.AppUploadsDirectory
         let result = uploadsURL.appendingPathComponent(folderName)
         return result
