@@ -231,7 +231,7 @@ public class APIClient: NSObject {
                     APIClient.updateUploadProgress(progressForFile: progressForFile, progress: ProgressValues.Finished.rawValue)
                     completion(.success(result))
                 case .failure(let error):
-                    DDLogInfo("APIClient.uploadData - failure")
+                    DDLogDebug("APIClient.uploadData - failure")
                     APIClient.lastErrorData = dataResponse.data
                     NetworkLogger.log("##### VCSNetwork error:\t\(dataResponse)")
                     NetworkLogger.log("##### VCSNetwork error code:\t\(dataResponse.response?.statusCode ?? 0)")
@@ -258,7 +258,7 @@ public class APIClient: NSObject {
     private static func updateUploadProgress(progressForFile: FileAsset?, progress: Double) {
         guard let file = progressForFile else { return }
         NotificationCenter.postUploadNotification(model: file, progress: progress)
-        DDLogInfo("Uploading \(file.name): \(progress)")
+        DDLogDebug("Uploading \(file.name): \(progress)")
     }
     
     @available(*, deprecated, renamed: "deleteAsset")
@@ -410,7 +410,7 @@ public class APIClient: NSObject {
                 downloadRequest.downloadProgress { (progress: Progress) in
                     download.update(progress: progress.fractionCompleted, forFile: downloadFile)
                     NotificationCenter.postDownloadNotification(model: file, progress: download.totalProgress)
-                    DDLogInfo("Downloading \(downloadFile.name): \(progress.fractionCompleted)")
+                    DDLogDebug("Downloading \(downloadFile.name): \(progress.fractionCompleted)")
                 }
                 downloadRequest.response { (dataResponse: AFDownloadResponse) in
                     switch dataResponse.result {
@@ -431,7 +431,7 @@ public class APIClient: NSObject {
                             completion(.failure(VCSNetworkError.GenericException("File was not found on disk")))
                         }
                     case .failure(let error):
-                        DDLogInfo("APIClient.download - failure")
+                        DDLogDebug("APIClient.download - failure")
                         NetworkLogger.log("##### VCSNetwork error:\t\(dataResponse)")
                         NetworkLogger.log("##### VCSNetwork error code:\t\(dataResponse.response?.statusCode ?? 0)")
                         NetworkLogger.log("##### VCSNetwork error URL:\t\(dataResponse.request?.url?.absoluteString ?? "")")

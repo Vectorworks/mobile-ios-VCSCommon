@@ -1,6 +1,7 @@
 import Foundation
 import Alamofire
 import UIKit
+import CocoaLumberjackSwift
 
 public extension Date {
     var VCSISO8061String: String {
@@ -242,7 +243,7 @@ class NetworkLogger {
     static func log(_ item: Any) {
         guard APIClient.loggingEnabled else { return }
         
-        print(item)
+        DDLogVerbose(item)
     }
 }
 

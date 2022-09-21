@@ -24,7 +24,7 @@ public class VCSFileConverter {
             let dict = attr as NSDictionary
             fileSize = dict.fileSize()
         } catch {
-            DDLogInfo("Error: \(error)")
+            DDLogDebug("Error: \(error)")
         }
         
         return fileSize == 0
@@ -32,7 +32,7 @@ public class VCSFileConverter {
     
     public class func convertUSDZToOBJ(usdzPath: String, objPath: String) throws -> [URL] {
         let start = CFAbsoluteTimeGetCurrent()
-        DDLogInfo("Start \(start) seconds")
+        DDLogDebug("Start \(start) seconds")
         
         let inputFileUrl = URL(fileURLWithPath: usdzPath)
         let outputFilenameUrl = URL(fileURLWithPath: objPath)
@@ -49,9 +49,9 @@ public class VCSFileConverter {
         
         do {
             try mdlAsset.export(to: outputFilenameUrl)
-            DDLogInfo("Successfully exported file.")
+            DDLogDebug("Successfully exported file.")
             let diff = CFAbsoluteTimeGetCurrent() - start
-            DDLogInfo("Took \(diff) seconds")
+            DDLogDebug("Took \(diff) seconds")
             
             let outputFilesDirectory: URL = outputFilenameUrl.deletingLastPathComponent()
             let directoryContentsFilenames = try FileManager.default.contentsOfDirectory(atPath: outputFilesDirectory.path)
@@ -61,8 +61,8 @@ public class VCSFileConverter {
                 return $0 == inputFileUrl || isEmptyFile($0)
             })
             
-            DDLogInfo("Exported \(directoryContents.count) files.")
-            directoryContents.forEach{ DDLogInfo("Filename: \($0.lastPathComponent)") }
+            DDLogDebug("Exported \(directoryContents.count) files.")
+            directoryContents.forEach{ DDLogDebug("Filename: \($0.lastPathComponent)") }
             
             return directoryContents
         } catch {

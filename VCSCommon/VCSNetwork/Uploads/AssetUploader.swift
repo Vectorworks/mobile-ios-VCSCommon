@@ -36,7 +36,7 @@ fileprivate struct MetadataForVCSFileResponse {
             AssetUploader.removeUploadedFileFromAPIClient(unuploadedPDF.metadata)
             switch result {
             case .success(_):
-                DDLogInfo("Successfully uploaded \(unuploadedPDF.metadata.name) and its related")
+                DDLogDebug("Successfully uploaded \(unuploadedPDF.metadata.name) and its related")
                 NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             case .failure(let error):
                 DDLogError("Error on upload. \(error.localizedDescription)")
@@ -89,7 +89,7 @@ fileprivate struct MetadataForVCSFileResponse {
         Uploader.uploadSingle(file: unuploadedPDF, filesApp: true, onURLSessionTaskCreation: onURLSessionTaskCreation).execute { (result) in
             switch result {
             case .success(let file):
-                DDLogInfo("Successfully uploaded \(unuploadedPDF.metadata.name) and its related")
+                DDLogDebug("Successfully uploaded \(unuploadedPDF.metadata.name) and its related")
                 completion?(.success(file))
                 NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             case .failure(let error):
@@ -184,7 +184,7 @@ fileprivate struct MetadataForVCSFileResponse {
             
             switch result {
             case .success:
-                DDLogInfo("OK")
+                DDLogDebug("OK")
             case .failure(let error):
                 DDLogError("Error on upload on connection restore. \(error.localizedDescription)")
                 hasFailed = true
