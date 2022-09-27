@@ -335,6 +335,11 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.fileAsset(assetURI: assetURI, related: related, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileType: fileType, versioning: versioning, sharingInfo: sharingInfo))
     }
     
+    // an old API for 'shared with me', we use it only to get the branding of the file owner -GKK
+    public static func sharedFileAsset(assetURI: String, related: Bool = VCSFlagStates.related, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileType: Bool = VCSFlagStates.thumbnail3D, versioning: Bool = VCSFlagStates.versioning, sharingInfo: Bool = VCSFlagStates.sharingInfo) -> Future<VCSSharedFileResponse, Error> {
+        return performRequest(route: APIRouter.sharedFileAsset(assetURI: assetURI, related: related, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileType: fileType, versioning: versioning, sharingInfo: sharingInfo))
+    }
+    
     public static func postGenericJob(jobData: GenericJobRequest) -> Future<VCSJobResponse, Error> {
         return performRequest(route: APIRouter.genericJob(data: jobData))
     }

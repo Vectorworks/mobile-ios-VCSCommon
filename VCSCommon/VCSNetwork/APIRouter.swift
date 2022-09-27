@@ -38,6 +38,7 @@ public enum APIRouter: URLRequestConvertible {
     case markLinkAsVisited(assetURI: String)
     case folderAsset(assetURI: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool)
     case fileAsset(assetURI: String, related: Bool, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileType: Bool, versioning: Bool, sharingInfo: Bool)
+    case sharedFileAsset(assetURI: String, related: Bool, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileType: Bool, versioning: Bool, sharingInfo: Bool)
     case ssoTempUserToken(loginSettings: VCSLoginSettingsResponse)
     case linkDetailsData(link: String)
     case unshare(assetURI: String)
@@ -109,6 +110,8 @@ public enum APIRouter: URLRequestConvertible {
         case .folderAsset:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .fileAsset:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
+        case .sharedFileAsset:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .ssoTempUserToken(let loginSettings):
             let ssoServer = VCSServer(server: loginSettings.loginServer)
@@ -270,6 +273,8 @@ public enum APIRouter: URLRequestConvertible {
             return assetURI
         case .fileAsset(let assetURI, _, _, _, _, _, _, _):
             return assetURI
+        case .sharedFileAsset(let assetURI, _, _, _, _, _, _, _):
+            return assetURI.replacingOccurrences(of: "/restapi/public/v2/s3/file", with: "/restapi/public/v2/s3/shared_file")
         case .ssoTempUserToken(_):
             return "/api/v2/public/users/@current/api-token/@temp/"
         case .linkDetailsData:
@@ -496,7 +501,8 @@ public enum APIRouter: URLRequestConvertible {
             }
             
             return result
-        case .fileAsset(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo):
+        case .fileAsset(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo),
+             .sharedFileAsset(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo):
             var result:[URLQueryItem] = []
             
             if related {

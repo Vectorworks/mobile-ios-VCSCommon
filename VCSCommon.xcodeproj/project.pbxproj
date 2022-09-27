@@ -196,6 +196,7 @@
 		C92F9A6C237DB1850080D46F /* LetterAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C92F9A6B237DB1850080D46F /* LetterAvatar.swift */; };
 		C92F9A71237DB48A0080D46F /* LetterAvatarConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C92F9A70237DB48A0080D46F /* LetterAvatarConfiguration.swift */; };
 		C92F9A75237DB4E70080D46F /* LetterAvatarBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C92F9A74237DB4E70080D46F /* LetterAvatarBuilder.swift */; };
+		CC6E188328E343E400638293 /* VCSSharedFileResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC6E188228E343E400638293 /* VCSSharedFileResponse.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -405,6 +406,7 @@
 		C92F9A74237DB4E70080D46F /* LetterAvatarBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterAvatarBuilder.swift; sourceTree = "<group>"; };
 		CC61EFEA21526EA100671C8C /* VCSCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VCSCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC61F00021526F0000671C8C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CC6E188228E343E400638293 /* VCSSharedFileResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VCSSharedFileResponse.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -590,6 +592,7 @@
 				1D9B592B27DB895900C02CB5 /* VCSUserResponse.swift */,
 				1D9B592C27DB895900C02CB5 /* LocalFile.swift */,
 				1D9B592D27DB895900C02CB5 /* VCSFolderEventResponse.swift */,
+				CC6E188228E343E400638293 /* VCSSharedFileResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1147,6 +1150,7 @@
 				C92F9A6C237DB1850080D46F /* LetterAvatar.swift in Sources */,
 				1D9B59B327DB895900C02CB5 /* Utils.swift in Sources */,
 				1D9B596927DB895900C02CB5 /* WebViewTaskDialogResult.swift in Sources */,
+				CC6E188328E343E400638293 /* VCSSharedFileResponse.swift in Sources */,
 				4B8BBFE526A178DC00E1BFC6 /* VCSCommonConstants.swift in Sources */,
 				4BDB047B23267CDF005532CC /* VCSReachability.swift in Sources */,
 				1D9B597F27DB895900C02CB5 /* VCSJobFileVersionResponse.swift in Sources */,
