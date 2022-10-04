@@ -255,7 +255,7 @@ public class APIClient: NSObject {
         }
     }
     
-    private static func updateUploadProgress(progressForFile: FileAsset?, progress: Double) {
+    public static func updateUploadProgress(progressForFile: FileAsset?, progress: Double) {
         guard let file = progressForFile else { return }
         NotificationCenter.postUploadNotification(model: file, progress: progress)
         DDLogDebug("Uploading \(file.name): \(progress)")

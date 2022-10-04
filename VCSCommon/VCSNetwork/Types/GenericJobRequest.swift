@@ -18,6 +18,11 @@ import Foundation
     }
 }
 
+public enum GenericJobOptionOperations: String {
+    case usdz2obj
+    case measure
+}
+
 @objc public class GenericJobOptionsRequest: NSObject, Codable {
     public let jobName:String
     public let operation: String
