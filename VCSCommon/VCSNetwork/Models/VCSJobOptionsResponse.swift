@@ -1,7 +1,8 @@
 import Foundation
 
 @objc public class VCSJobOptionsResponse: NSObject, Codable {
-    public let options, jobName, operation: String?
+    public let options: String? = nil
+    public let jobName, operation: String?
     public let srcFileVersions: [VCSJobFileVersionResponse]
     public let outputLocation: String?
     public let outputStorageType: String
@@ -10,7 +11,7 @@ import Foundation
     public let srcStorageType: String
     
     enum CodingKeys: String, CodingKey {
-        case options
+//        case options
         case jobName = "job_name"
         case operation
         case srcFileVersions = "src_file_versions"
@@ -27,7 +28,7 @@ import Foundation
         self.outputStorageType = outputStorageType
         self.srcFileVersions = srcFileVersions
         self.refFileVersions = refFileVersions
-        self.options = options
+//        self.options = options
         self.jobName = jobName
         self.operation = operation
         self.outputLocation = outputLocation
