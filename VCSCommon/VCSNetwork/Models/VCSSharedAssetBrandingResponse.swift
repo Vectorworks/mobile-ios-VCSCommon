@@ -8,9 +8,13 @@ public class VCSSharedAssetBrandingResponseWrapper: NSObject, Codable {
     public let position: BrandingLogoPosition?
     public let image: String?
     public let opacity, size: Float?
-    public var realmID: String?
+    public var realmID: String? {
+        didSet {
+            self.position?.realmID = realmID
+        }
+    }
     
-    init(position: BrandingLogoPosition?, image: String?, opacity: Float?, size: Float?, realmID: String?) {
+    public init(position: BrandingLogoPosition?, image: String?, opacity: Float?, size: Float?, realmID: String?) {
         self.realmID = realmID
         self.position = position
         self.image = image
@@ -53,8 +57,10 @@ extension VCSSharedAssetBrandingResponse {
 
 @objc public class BrandingLogoPosition: NSObject, Codable {
     public let top, left, logoAR: Double
+    public var realmID: String?
     
-    public init(top: Double, left: Double, logoAR: Double) {
+    public init(top: Double, left: Double, logoAR: Double, realmID: String?) {
+        self.realmID = realmID
         self.top = top
         self.left = left
         self.logoAR = logoAR

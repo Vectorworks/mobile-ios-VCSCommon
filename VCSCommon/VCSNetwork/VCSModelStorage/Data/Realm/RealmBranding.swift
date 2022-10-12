@@ -36,7 +36,7 @@ public class RealmSharedAssetBranding: Object, VCSRealmObject {
         result["RealmID"] = self.RealmID
         
         if let position = self.position {
-            result["position"] = position
+            result["position"] = position.partialUpdateModel
         }
         
         if let image = self.image {

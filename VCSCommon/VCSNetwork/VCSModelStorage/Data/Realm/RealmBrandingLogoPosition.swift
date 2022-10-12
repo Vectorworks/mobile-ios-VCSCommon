@@ -6,20 +6,25 @@ public class RealmBrandingLogoPosition: Object, VCSRealmObject {
     override public class func primaryKey() -> String { return "RealmID" }
     
     @objc dynamic public var RealmID: String = "nil"
-    public var top: Double = 0
-    public var left: Double = 0
-    public var logoAR: Double = 0
+    
+    @objc dynamic var top: Double = 0
+    @objc dynamic var left: Double = 0
+    @objc dynamic var logoAR: Double = 0
     
     
     public required convenience init(model: Model) {
         self.init()
+        if let rID = model.realmID {
+            self.RealmID = rID
+        }
+        
         self.top = model.top
         self.left = model.left
         self.logoAR = model.logoAR
     }
     
     public var entity: Model {
-        return BrandingLogoPosition(top: self.top, left: self.left, logoAR: self.logoAR)
+        return BrandingLogoPosition(top: self.top, left: self.left, logoAR: self.logoAR, realmID: self.RealmID)
     }
     
     public var partialUpdateModel: [String : Any] {
