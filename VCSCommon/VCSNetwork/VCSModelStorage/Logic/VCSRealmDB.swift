@@ -169,7 +169,7 @@ public class VCSRealmConfig {
         )
     }
     
-    private static var getRealmSchemaVersion: UInt64 { return 19 }
+    private static var getRealmSchemaVersion: UInt64 { return 20 }
     private static var getRealmMigrations: RealmSwift.MigrationBlock {
         return { migration, oldSchemaVersion in
             if (oldSchemaVersion < 2) {
@@ -296,6 +296,13 @@ public class VCSRealmConfig {
             if (oldSchemaVersion < 18) {
                 migration.enumerateObjects(ofType: RealmSharedWithMeAsset.className()) { (oldObject: MigrationObject?, newObject: MigrationObject?) in
                     newObject?["branding"] = nil
+                }
+            }
+            if (oldSchemaVersion < 19) {
+                migration.enumerateObjects(ofType: RealmBrandingLogoPosition.className()) { (oldObject: MigrationObject?, newObject: MigrationObject?) in
+                    newObject?["top"] = 0
+                    newObject?["left"] = 0
+                    newObject?["logoAR"] = 0
                 }
             }
         }
