@@ -14,7 +14,8 @@ public class VCSRealmDB {
                                                                                     ,VCSOwnerInfoResponse.RealmModel.self
                                                                                     ,VCSSharingInfoResponse.RealmModel.self
                                                                                     ,LocalFile.RealmModel.self
-                                                                                    ,LocalFileForUpload.RealmModel.self
+                                                                                    ,UploadJob.RealmModel.self
+                                                                                    ,UploadJobLocalFile.RealmModel.self
                                                                                     ,VCSMountPointResponse.RealmModel.self
                                                                                     ,VCSSharedWithUser.RealmModel.self
                                                                                     
@@ -46,7 +47,7 @@ public class VCSRealmDB {
                                                                                     ,RealmWSharedWithInfo.self]
     private(set) public static var  appGroupRealmPathURL: URL?
     private static var  usedRealmConfig: Realm.Configuration = VCSRealmConfig.getRealmDefaultConfiguration
-    static var realm: Realm { return try! Realm(configuration: VCSRealmDB.usedRealmConfig) }
+    public static var realm: Realm { return try! Realm(configuration: VCSRealmDB.usedRealmConfig) }
     
     public static func runMigrations(appGroup: String, extObjectTypes: [RealmSwift.ObjectBase.Type] = VCSRealmDB.extObjectTypes) {
         VCSRealmDB.extObjectTypes = extObjectTypes

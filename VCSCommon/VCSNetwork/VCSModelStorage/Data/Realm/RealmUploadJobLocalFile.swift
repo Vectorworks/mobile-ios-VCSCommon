@@ -1,20 +1,21 @@
 import Foundation
 import RealmSwift
 
-public class RealmLocalFileForUpload: Object, VCSRealmObject {
-    public typealias Model = LocalFileForUpload
+public class RealmUploadJobLocalFile: Object, VCSRealmObject, Identifiable {
+    public typealias Model = UploadJobLocalFile
     override public class func primaryKey() -> String { return "RealmID" }
     
     @objc dynamic public var RealmID: String = "nil"
     
     @objc dynamic var ownerLogin: String = ""
-    @objc dynamic var storageType: String = StorageType.S3.rawValue
-    @objc dynamic var prefix: String = ""
-    @objc dynamic var parentFolderPrefix: String = ""
+    @objc dynamic var storageType: String = ""
+    @objc dynamic public var prefix: String = ""
+    @objc dynamic var uploadPathSuffix: String = ""
+    @objc dynamic public var uploadingState: String = ""
+    dynamic var related: List<RealmUploadJobLocalFile> = List()
     
-    @objc dynamic var size: String = ""
-    @objc dynamic var localPathUUID: String = ""
-    dynamic var related: List<RealmLocalFileForUpload> = List()
+    //for filtering
+    @objc dynamic var parentFolderPrefix: String = ""
     
     public required convenience init(model: Model) {
         self.init()
@@ -23,32 +24,34 @@ public class RealmLocalFileForUpload: Object, VCSRealmObject {
         self.ownerLogin = model.ownerLogin
         self.storageType = model.storageType.rawValue
         self.prefix = model.prefix
+        self.uploadPathSuffix = model.uploadPathSuffix
         
-        self.size = model.size
-        self.localPathUUID = model.localPathUUID
+        self.uploadingState = model.uploadingState.rawValue
         
         let relatedArray = model.related
-        let realmRelatedArray = List<RealmLocalFileForUpload>()
+        let realmRelatedArray = List<RealmUploadJobLocalFile>()
         relatedArray.forEach {
-            realmRelatedArray.append(RealmLocalFileForUpload(model: $0))
+            realmRelatedArray.append(RealmUploadJobLocalFile(model: $0))
         }
         self.related = realmRelatedArray
         
         let parentPrefix = self.prefix.deletingLastPathComponent.VCSNormalizedURLString()
         self.parentFolderPrefix = parentPrefix
+
     }
     
     
-    public var entity: LocalFileForUpload {
+    public var entity: UploadJobLocalFile {
         let relatedArray = self.related.compactMap({ $0.entity })
         let arrRelated = Array(relatedArray)
         
-        return LocalFileForUpload(ownerLogin: self.ownerLogin,
+        return UploadJobLocalFile(fileID: self.RealmID,
+                                  ownerLogin: self.ownerLogin,
                                   storageType: StorageType.typeFromString(type: self.storageType),
                                   prefix: self.prefix,
-                                  size: self.size,
                                   related: arrRelated,
-                                  localPathUUID: self.localPathUUID)
+                                  uploadPathSuffix: self.uploadPathSuffix,
+                                  uploadingState: UploadJobLocalFile.UploadingState(rawValue: self.uploadingState) ?? UploadJobLocalFile.UploadingState.Ready)
     }
     
     public var partialUpdateModel: [String : Any] {
@@ -59,12 +62,13 @@ public class RealmLocalFileForUpload: Object, VCSRealmObject {
         result["ownerLogin"] = self.ownerLogin
         result["storageType"] = self.storageType
         result["prefix"] = self.prefix
-        
-        result["size"] = self.size
-        result["localPathUUID"] = self.localPathUUID
+        result["uploadPathSuffix"] = self.uploadPathSuffix
         
         let partialRelated = Array(self.related.compactMap({ $0.partialUpdateModel }))
         result["related"] = partialRelated
+        
+        result["parentFolderPrefix"] = self.parentFolderPrefix
+        result["uploadingState"] = self.uploadingState
         
         return result
     }

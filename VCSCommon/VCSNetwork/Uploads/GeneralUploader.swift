@@ -1,58 +1,57 @@
 import Foundation
 
-typealias FileWithRelated = (VCSFileResponse, [VCSFileResponse])
 typealias FileWithRelatedАRGS = (uploadedFile: VCSFileResponse, uploadedRelatedFiles: [VCSFileResponse])
 
 class Uploader {
     //Google Drive updateFromStorage does not work when there 2 files with the same name, so we need to pass the ID & verID
     static var uploadResponses: [String: VCSUploadDataResponse] = [:]
     
-    static func uploadSingle(file: UnuploadedFile, filesApp: Bool = false, onURLSessionTaskCreation: ((URLSessionTask) -> Void)? = nil) -> Future<VCSFileResponse, Error> {
-        let uploadFileData = Uploader.fileUpload(file: file, owner: file.metadata.ownerLogin)
+    static func uploadSingle(file: UploadJobLocalFile, filesApp: Bool = false, onURLSessionTaskCreation: ((URLSessionTask) -> Void)? = nil) -> Future<VCSFileResponse, Error> {
+        let uploadFileData = Uploader.fileUpload(file: file, owner: file.ownerLogin)
         
-        let uploadRelated: (VCSFileResponse) -> Future<FileWithRelated, Error> = { (uploadedFile) in
-            guard file.related.count > 0 else { return Future<FileWithRelated, Error> { $0(.success((uploadedFile, []))) } }
-            return Uploader.uploadRelated(related: file.related).map { (result: [VCSFileResponse]) -> FileWithRelated in
+        let uploadRelated: (VCSFileResponse) -> Future<FileWithRelatedАRGS, Error> = { (uploadedFile) in
+            guard file.related.count > 0 else { return Future<FileWithRelatedАRGS, Error> { $0(.success((uploadedFile, []))) } }
+            return Uploader.uploadRelated(related: file.related).map { (result: [VCSFileResponse]) -> FileWithRelatedАRGS in
                 return (uploadedFile, result)
             }
         }
         
-        let patchPDF: (FileWithRelated) -> Future<FileWithRelated, Error> = { (arg: FileWithRelated) in
+        let patchPDF: (FileWithRelatedАRGS) -> Future<FileWithRelatedАRGS, Error> = { (arg: FileWithRelatedАRGS) in
             let (uploadedFile, uploadedRelatedFiles) = arg
             
-            guard uploadedRelatedFiles.count > 0 else { return Future<FileWithRelated, Error> { $0(.success((uploadedFile, []))) } }
+            guard uploadedRelatedFiles.count > 0 else { return Future<FileWithRelatedАRGS, Error> { $0(.success((uploadedFile, []))) } }
             
             let body = ["related_files": uploadedRelatedFiles.map { $0.resourceURI }]
             if let bodyData = try? JSONSerialization.data(withJSONObject: body) {
-                let uploadResponse = Uploader.uploadResponses[file.metadata.rID]
-                return APIClient.patchFile(owner: file.metadata.ownerLogin, storage: file.metadata.storageType.rawValue,
-                                           filePrefix: file.metadata.prefix, updateFromStorage: true, bodyData: bodyData, googleDriveID: uploadResponse?.googleDriveID, googleDriveVerID: uploadResponse?.googleDriveVerID).map { (VCSEmptyResponse) -> FileWithRelated in
+                let uploadResponse = Uploader.uploadResponses[file.rID]
+                return APIClient.patchFile(owner: file.ownerLogin, storage: file.storageType.rawValue,
+                                           filePrefix: file.prefix, updateFromStorage: true, bodyData: bodyData, googleDriveID: uploadResponse?.googleDriveID, googleDriveVerID: uploadResponse?.googleDriveVerID).map { (VCSEmptyResponse) -> FileWithRelatedАRGS in
                                             return (uploadedFile, uploadedRelatedFiles) }
             } else {
                 return .init(error: UploadPDFError.patchFailed)
             }
         }
         
-        let getJustUploaded: (FileWithRelated) -> Future<VCSFileResponse, Error> = { (arg: FileWithRelated) in
+        let getJustUploaded: (FileWithRelatedАRGS) -> Future<VCSFileResponse, Error> = { (arg: FileWithRelatedАRGS) in
             let (uploadedFile, uploadedRelatedFiles) = arg
             
             guard uploadedRelatedFiles.count > 0 else { return Future<VCSFileResponse, Error> { $0(.success(uploadedFile)) } }
-            let uploadResponse = Uploader.uploadResponses[file.metadata.rID]
+            let uploadResponse = Uploader.uploadResponses[file.rID]
             
-            return APIClient.fileData(owner: file.metadata.ownerLogin, storage: file.metadata.storageType.rawValue, filePrefix: file.metadata.prefix, updateFromStorage: true, googleDriveID: uploadResponse?.googleDriveID, googleDriveVerID: uploadResponse?.googleDriveVerID)
+            return APIClient.fileData(owner: file.ownerLogin, storage: file.storageType.rawValue, filePrefix: file.prefix, updateFromStorage: true, googleDriveID: uploadResponse?.googleDriveID, googleDriveVerID: uploadResponse?.googleDriveVerID)
         }
         
         let updateJustUploaded: (VCSFileResponse) -> Future<VCSFileResponse, Error> = { (fileResponse) in
-            Uploader.uploadResponses[file.metadata.rID] = nil
+            Uploader.uploadResponses[file.rID] = nil
             
             if filesApp == false {
                 NetworkLogger.log("SF owner - \(fileResponse.ownerLogin), storage - \(fileResponse.storageTypeString), prefix - \(fileResponse.prefix)")
-                NetworkLogger.log("LF owner - \(file.metadata.ownerLogin), storage - \(file.metadata.storageTypeString), prefix - \(file.metadata.prefix)")
+                NetworkLogger.log("LF owner - \(file.ownerLogin), storage - \(file.storageTypeString), prefix - \(file.prefix)")
                 AssetUploader.updateUploadedFile(fileResponse, withLocalFileForUnuploadedFile: file)
             }
             VCSCache.addToCache(item: fileResponse)
             if filesApp == false {
-                UnuploadedFileActions.deleteUnuploadedFiles([file.metadata])
+                UnuploadedFileActions.deleteUnuploadedFiles([file])
             }
             return Future(result: .success(fileResponse))
         }
@@ -65,9 +64,9 @@ class Uploader {
             .andThen(updateJustUploaded)
     }
     
-    static func fileUpload(file: UnuploadedFile, owner: String, onURLSessionTaskCreation: ((URLSessionTask) -> Void)? = nil) -> Future<VCSFileResponse, Error> {
+    static func fileUpload(file: UploadJobLocalFile, owner: String, onURLSessionTaskCreation: ((URLSessionTask) -> Void)? = nil) -> Future<VCSFileResponse, Error> {
         let uploadData: (VCSUploadURL) -> Future<VCSUploadDataResponse, Error> = { (url) in
-            return APIClient.uploadFileURL(fileURL: file.metadata.localPathURL, uploadURL: url, progressForFile: file.metadata, onURLSessionTaskCreation: onURLSessionTaskCreation)
+            return APIClient.uploadFileURL(fileURL: file.uploadPathURL, uploadURL: url, progressForFile: file, onURLSessionTaskCreation: onURLSessionTaskCreation)
         }
         
 //        let uploadDataBG: (VCSUploadURL) -> Future<VCSUploadDataResponse, Error> = { (url) in
@@ -75,7 +74,7 @@ class Uploader {
 //        }
         
         let getJustUploaded: (VCSUploadDataResponse) -> Future<VCSFileResponse, Error> = { (uploadResponse: VCSUploadDataResponse) in
-            return APIClient.fileData(owner: owner, storage: file.metadata.storageType.rawValue, filePrefix: file.metadata.prefix, updateFromStorage: true, googleDriveID: uploadResponse.googleDriveID, googleDriveVerID: uploadResponse.googleDriveVerID)
+            return APIClient.fileData(owner: owner, storage: file.storageType.rawValue, filePrefix: file.prefix, updateFromStorage: true, googleDriveID: uploadResponse.googleDriveID, googleDriveVerID: uploadResponse.googleDriveVerID)
         }
         
 //        let delay5: (VCSUploadDataResponse) -> Future<VCSUploadDataResponse, Error> = { (response) in
@@ -84,34 +83,34 @@ class Uploader {
 //        }
         
         
-        return APIClient.getUploadURL(owner: owner, storage: file.metadata.storageType.rawValue, filePrefix: file.metadata.prefix, size: Int(file.metadata.size) ?? 0)
+        return APIClient.getUploadURL(owner: owner, storage: file.storageType.rawValue, filePrefix: file.prefix, size: Int(file.size) ?? 0)
             .andThen(uploadData)
 //            .andThen(uploadDataBG)
 //            .andThen(delay5)
             .andThen(getJustUploaded)
     }
     
-    static func uploadMultiple(files: [UnuploadedFile]) -> Future<[VCSFileResponse], Error> {
+    static func uploadMultiple(files: [UploadJobLocalFile]) -> Future<[VCSFileResponse], Error> {
         let uploadSingleFile = UploadHelper.uploadSingleWithOwner()
         return FutureWrapper.execute(uploadSingleFile, onFiles: files)
     }
     
-    static func uploadRelated(related: [UnuploadedFile]) -> Future<[VCSFileResponse], Error> {
+    static func uploadRelated(related: [UploadJobLocalFile]) -> Future<[VCSFileResponse], Error> {
         let uploadFile = UploadHelper.fileUplaodWithOwner()
         return FutureWrapper.execute(uploadFile, onFiles: related)
     }
 }
 
 class UploadHelper {
-    static func uploadSingleWithOwner() -> ((UnuploadedFile) -> Future<VCSFileResponse, Error>) {
+    static func uploadSingleWithOwner() -> ((UploadJobLocalFile) -> Future<VCSFileResponse, Error>) {
         return { (file) in
             Uploader.uploadSingle(file: file)
         }
     }
     
-    static func fileUplaodWithOwner() -> ((UnuploadedFile) -> Future<VCSFileResponse, Error>) {
+    static func fileUplaodWithOwner() -> ((UploadJobLocalFile) -> Future<VCSFileResponse, Error>) {
         return { (file) in
-            Uploader.fileUpload(file: file, owner: file.metadata.ownerLogin)
+            Uploader.fileUpload(file: file, owner: file.ownerLogin)
         }
     }
 }

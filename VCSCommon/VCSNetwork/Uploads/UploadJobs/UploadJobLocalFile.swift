@@ -1,42 +1,71 @@
 import Foundation
 
-@objc public class LocalFileForUpload: NSObject {
+@objc public class UploadJobLocalFile: NSObject {
+    public enum UploadingState: String {
+        case Ready
+        case Waiting
+        case Uploading
+        case Done
+        case Error
+    }
     
     public var VCSID: String
     
     public let ownerLogin: String
     public let storageType: StorageType
     public var prefix: String
+    public var size: String { return self.uploadPathURL.fileSizeString }
+    public var sizeAsInt: Int { return Int(self.uploadPathURL.fileSizeString) ?? 0 }
+    public let uploadPathSuffix: String
+    public var uploadPathURL: URL { return FileManager.AppUploadsDirectory.appendingPathComponent(self.uploadPathSuffix) }
     
-    public let size: String
-    public let localPathUUID: String
-    public var related: [LocalFileForUpload]
+    public var related: [UploadJobLocalFile]
     
+    public var uploadingState: UploadingState = .Ready
     
-    public var localPath: String {  return FileManager.uploadPath(uuidString: self.localPathUUID, pathExtension: self.name.pathExtension).path }
-    public var localPathURL: URL {  return URL(fileURLWithPath: self.localPath) }
-    
-    public init(ownerLogin: String, storageType: StorageType, prefix: String, size: String, related: [LocalFileForUpload], localPathUUID: String = UUID().uuidString) {
+    public var parentUploadJob: UploadJob? {
+        return UploadJob.uploadJobs.first { $0.localFiles.contains(where: { (localFile: UploadJobLocalFile) in localFile.VCSID == self.VCSID }) }
+    }
+
+        
+    public init(ownerLogin: String, storageType: StorageType, prefix: String, tempFileURL: URL, related: [UploadJobLocalFile]) {
+        self.VCSID = tempFileURL.lastPathComponent
+        
         self.ownerLogin = ownerLogin
         self.storageType = storageType
         self.prefix = prefix
+        self.uploadPathSuffix = UUID().uuidString
+        self.related = related
         
-        self.VCSID = localPathUUID
+        super.init()
         
-        self.size = size
-        self.localPathUUID = localPathUUID
+        //move files to uploads temp folder and save only the suffix
+        if self.uploadPathURL.exists == false {
+            try? FileManager.default.moveItem(at: tempFileURL, to: self.uploadPathURL)
+        }
+    }
+    
+    //Realm only
+    internal init(fileID: String, ownerLogin: String, storageType: StorageType, prefix: String, related: [UploadJobLocalFile], uploadPathSuffix: String, uploadingState: UploadingState) {
+        self.VCSID = fileID
+        
+        self.ownerLogin = ownerLogin
+        self.storageType = storageType
+        self.prefix = prefix
+        self.uploadPathSuffix = uploadPathSuffix
+        self.uploadingState = uploadingState
         self.related = related
         
         super.init()
     }
     
-    final public class func ==(lhs: LocalFileForUpload, rhs: LocalFileForUpload) -> Bool {
+    final public class func ==(lhs: UploadJobLocalFile, rhs: UploadJobLocalFile) -> Bool {
         return lhs.VCSID == rhs.VCSID
     }
     
     public func removeFromCache() {
-        self.related.forEach { LocalFileForUpload.realmStorage.delete(item: $0) }
-        LocalFileForUpload.realmStorage.delete(item: self)
+        self.related.forEach { UploadJobLocalFile.realmStorage.delete(item: $0) }
+        UploadJobLocalFile.realmStorage.delete(item: self)
     }
     
     public var isNameValid: Bool {
@@ -47,7 +76,7 @@ import Foundation
     public lazy var sortingDate: Date = { return Date() }()
 }
 
-extension LocalFileForUpload: FileCellPresentable {
+extension UploadJobLocalFile: FileCellPresentable {
     public var rID: String { return self.VCSID }
     public var name: String { return self.prefix.lastPathComponent }
     public var hasWarning: Bool { return self.flags?.hasWarning ?? true }
@@ -61,7 +90,7 @@ extension LocalFileForUpload: FileCellPresentable {
     public var thumbnailURL: URL? {
         var result: URL?
         if let relatedPNG = self.related.first(where: {  VCSFileType.PNG.isInFileName(name: $0.name) }) {
-            result = URL(fileURLWithPath: relatedPNG.localPath)
+            result = relatedPNG.uploadPathURL
         }
         return result
     }
@@ -69,7 +98,7 @@ extension LocalFileForUpload: FileCellPresentable {
     public func hasPermission(_ permission: String) -> Bool { self.permissions.contains(permission) }
 }
 
-extension LocalFileForUpload: VCSCellDataHolder {
+extension UploadJobLocalFile: VCSCellDataHolder {
     public var cellData: VCSCellPresentable {
         return self
     }
@@ -81,9 +110,9 @@ extension LocalFileForUpload: VCSCellDataHolder {
     }
 }
 
-extension LocalFileForUpload: FileAsset {
+extension UploadJobLocalFile: FileAsset {
     public var downloadURLString: String { return "" }
-    public var localPathString: String? { return self.localPath }
+    public var localPathString: String? { return self.uploadPathURL.path }
     public var relatedFileAssets: [FileAsset] { return self.related }
     public var fileTypeString: String? { return VCSFileType(rawValue: self.name.pathExtension)?.rawValue }
     public var resourceURI: String { return "" }
@@ -105,23 +134,23 @@ extension LocalFileForUpload: FileAsset {
     @objc public var realPrefix: String { return self.prefix.VCSNormalizedURLString() }
 }
 
-extension LocalFileForUpload: VCSCachable {
-    public typealias RealmModel = RealmLocalFileForUpload
+extension UploadJobLocalFile: VCSCachable {
+    public typealias RealmModel = RealmUploadJobLocalFile
     private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
+
     public func addToCache() {
-        LocalFileForUpload.realmStorage.addOrUpdate(item: self)
+        UploadJobLocalFile.realmStorage.addOrUpdate(item: self)
     }
-    
+
     public func addOrPartialUpdateToCache() {
-        if LocalFileForUpload.realmStorage.getByIdOfItem(item: self) != nil {
-            LocalFileForUpload.realmStorage.partialUpdate(item: self)
+        if UploadJobLocalFile.realmStorage.getByIdOfItem(item: self) != nil {
+            UploadJobLocalFile.realmStorage.partialUpdate(item: self)
         } else {
-            LocalFileForUpload.realmStorage.addOrUpdate(item: self)
+            UploadJobLocalFile.realmStorage.addOrUpdate(item: self)
         }
     }
-    
+
     public func partialUpdateToCache() {
-        LocalFileForUpload.realmStorage.partialUpdate(item: self)
+        UploadJobLocalFile.realmStorage.partialUpdate(item: self)
     }
 }

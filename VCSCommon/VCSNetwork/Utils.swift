@@ -134,6 +134,14 @@ public extension NotificationCenter {
         DispatchQueue.main.async { NotificationCenter.default.post(name: notificationName, object: nil, userInfo: userInfo) }
     }
     
+    static func postUploadNotification(modelID: String, progress: Double) {
+        let notificationName = Notification.Name("uploading:\(modelID)")
+        var userInfo: [String : Any] = [:]
+        userInfo["progress"] =  progress
+        userInfo["modelID"] = modelID
+        DispatchQueue.main.async { NotificationCenter.default.post(name: notificationName, object: nil, userInfo: userInfo) }
+    }
+    
     static func postDownloadNotification(model: FileAsset, progress: Double) {
         let notificationName = Notification.Name("downloading:\(model.rID)")
         let userInfo: [String : Any] = [
@@ -230,6 +238,10 @@ public extension URL {
     var fileSizeString: String {
         let result = String((try? self.resourceValues(forKeys:[.fileSizeKey]).fileSize) ?? 0)
         return result
+    }
+    
+    var exists: Bool {
+        return FileManager.default.fileExists(atPath: self.path)
     }
 }
 

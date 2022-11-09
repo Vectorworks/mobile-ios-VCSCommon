@@ -44,7 +44,7 @@ public class FilenameValidator {
             return true
         }
         
-        if VCSGenericRealmModelStorage<LocalFileForUpload.RealmModel>().getAll(predicate: predicate).first != nil {
+        if VCSGenericRealmModelStorage<UploadJobLocalFile.RealmModel>().getAll(predicate: predicate).first != nil {
             return true
         }
         

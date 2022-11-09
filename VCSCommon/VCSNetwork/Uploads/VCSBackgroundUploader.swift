@@ -1,108 +1,95 @@
 import Foundation
+import CocoaLumberjackSwift
 import Dispatch
 
-public class VCSBackgroungSession: NSObject {
-    public static var `default` = VCSBackgroungSession()
-
+public class VCSBackgroundSession: NSObject {
+    public static var `default` = VCSBackgroundSession()
+    
     public var appGroupSetting: String? = nil
     public let sessionIdentifierBackground: String = "net.nemetschek.Nomad.MainApp.session.upload.background"
-
+    public var backgroundCompletionHandler: (() -> Void)?
+    
+    
+    public let operationQueue = OperationQueue()
+    
+    internal var uploadJobs: [String: UploadDataOperation] = [:]
+    public static var uploadsResponse = [String : VCSUploadDataResponse]()
+    public static var uploadsResponseData = [String : Data]()
+    
     @objc public lazy var backgroundSession: URLSession = {
+        self.operationQueue.maxConcurrentOperationCount = 3
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackground)
         configuration.sharedContainerIdentifier = appGroupSetting
-        let session = URLSession(configuration: configuration, delegate: VCSBackgroundUploader.default, delegateQueue: OperationQueue.main)
+        configuration.isDiscretionary = false
+        configuration.sessionSendsLaunchEvents = false
+        let session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
         return session
     }()
-}
-
-public class VCSBackgroundUploader: NSObject {
-    public static var `default` = VCSBackgroundUploader()
     
-    let uploadSemaphore = DispatchSemaphore(value: 0)
-    public static var uploads = [String : URLSessionUploadTask]()
-    public static var uploadsResponse = [String : URLResponse]()
-    public static var uploadsResponseData = [String : Data]()
-    public static var uploadsFuture = [String : Data]()
-    
-    
-    func uploadFile(fileURL: URL, uploadURL: VCSUploadURL, progressForFile: FileAsset? = nil, onURLSessionTaskCreation: ((URLSessionTask) -> Void)? = nil) -> Future<VCSUploadDataResponse, Error> {
-        print("###### uploadFile ---> \(Thread.current)")
-        return Future<VCSUploadDataResponse, Error> { (completion) in
-            guard let request = try? APIRouter.uploadFileURL(uploadURL: uploadURL).asURLRequest() else {
-                completion(.failure(VCSNetworkError.GenericException("URL convetions failed")))
-                return
-            }
-            print("###### Future ---> \(Thread.current)")
-            let task = VCSBackgroungSession.default.backgroundSession.uploadTask(with: request, fromFile: fileURL)
-            if let progressForFile = progressForFile {
-                VCSBackgroundUploader.uploads[progressForFile.rID] = task
-                VCSBackgroundUploader.uploadsResponseData[progressForFile.rID] = Data()
-                APIClient.updateUploadProgress(progressForFile: progressForFile, progress: ProgressValues.Started.rawValue)
-                task.taskDescription = progressForFile.rID
-            }
-            task.resume()
-            switch VCSBackgroundUploader.default.uploadSemaphore.wait(timeout: .now() + 10) {
-            case .success:
-                if let progressForFileValue = progressForFile,
-                    let receivedData = VCSBackgroundUploader.uploadsResponseData[progressForFileValue.rID],
-                    let response = VCSBackgroundUploader.uploadsResponse[progressForFileValue.rID] as? HTTPURLResponse
-                {
-                    let resultDate = APIClient.getDateFromUploadResponse(response, data: receivedData)
-                    let jsonResponse = try? JSONSerialization.jsonObject(with: receivedData, options: []) as? [String: Any]
-                    let result = VCSUploadDataResponse(resultDate, googleDriveID: (jsonResponse?["id"] as? String), googleDriveVerID: (jsonResponse?["headRevisionId"] as? String))
-                    APIClient.updateUploadProgress(progressForFile: progressForFileValue, progress: ProgressValues.Finished.rawValue)
-                    completion(.success(result))
-                }
-                else {
-                    completion(.failure(VCSNetworkError.GenericException("URL result convetion failed")))
-                }
-                return
-            case .timedOut:
-                completion(.failure(VCSNetworkError.GenericException("timedOut")))
-                return
-            }
-        }
+    public static func updateUploadProgress(modelID: String, progress: Double) {
+        NotificationCenter.postUploadNotification(modelID: modelID, progress: progress)
+        DDLogDebug("Uploading \(modelID): \(progress)")
     }
 }
 
-extension VCSBackgroundUploader: URLSessionDataDelegate {
+extension VCSBackgroundSession: URLSessionDataDelegate {
+    
+    public func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        print("urlSessionDidFinishEvents")
+        print(session)
+        DispatchQueue.main.async { VCSBackgroundSession.default.backgroundCompletionHandler?() }
+    }
     
     public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         if let uploadTask = task as? URLSessionUploadTask, let itemID = uploadTask.taskDescription {
             let uploadProgress:Float = Float(totalBytesSent) / Float(totalBytesExpectedToSend)
             
-            let notificationName = Notification.Name("uploading:\(itemID)")
-            var userInfo: [String : Any] = [:]
-            userInfo["progress"] =  uploadProgress
-            DispatchQueue.main.async { NotificationCenter.default.post(name: notificationName, object: nil, userInfo: userInfo) }
+            VCSBackgroundSession.updateUploadProgress(modelID: itemID, progress: Double(uploadProgress))
         }
-    }
-    
-    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
-        if let uploadTask = dataTask as? URLSessionUploadTask, let itemID = uploadTask.taskDescription {
-            VCSBackgroundUploader.uploadsResponse[itemID] = response
-        }
-        completionHandler(.allow)
     }
     
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         if let uploadTask = dataTask as? URLSessionUploadTask, let itemID = uploadTask.taskDescription {
-            var receivedData = VCSBackgroundUploader.uploadsResponseData[itemID]
-            receivedData?.append(data)
-            VCSBackgroundUploader.uploadsResponseData[itemID] = receivedData
+            var receivedData = VCSBackgroundSession.uploadsResponseData[itemID] ?? Data()
+            receivedData.append(data)
+            VCSBackgroundSession.uploadsResponseData[itemID] = receivedData
         }
     }
     
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let uploadTask = task as? URLSessionUploadTask, let itemID = uploadTask.taskDescription {
-            NetworkLogger.log("urlSession(_ session: URLSession, task: -> TASK \(itemID) is done")
-            if let receivedData = VCSBackgroundUploader.uploadsResponseData[itemID] {
-                NetworkLogger.log("urlSession(_ session: URLSession, task: -> TASK result:\n\(String(data: receivedData, encoding: .utf8))")
+            DDLogInfo("urlSession(_ session: URLSession, task: -> TASK \(itemID) is done")
+            if let responseData = VCSBackgroundSession.uploadsResponseData[itemID], let uploadJob = self.uploadJobs[itemID], let httpResponse = task.response as? HTTPURLResponse {
+                //DDLogInfo("urlSession(_ session: URLSession, task: -> TASK result:\n\(String(data: responseData, encoding: .utf8))")
+                
+                let resultDate = APIClient.getDateFromUploadResponse(httpResponse, data: responseData)
+                let jsonResponse = try? JSONSerialization.jsonObject(with: responseData ?? Data(), options: []) as? [String: Any]
+                let result = VCSUploadDataResponse(resultDate, googleDriveID: (jsonResponse?["id"] as? String), googleDriveVerID: (jsonResponse?["headRevisionId"] as? String))
+                
+                VCSBackgroundSession.updateUploadProgress(modelID: itemID, progress: Double(ProgressValues.Finished.rawValue))
+                
+                uploadJob.result = .success(result)
+                uploadJob.state = .finished
+            }
+            else {
+                DDLogError("Taks \(task.taskDescription) is not completing correctly.")
             }
             
-            
         } else {
-            NetworkLogger.log("urlSession(_ session: URLSession, task: -> TASK is unknown")
+            DDLogError("urlSession(_ session: URLSession, task: -> TASK is unknown")
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
