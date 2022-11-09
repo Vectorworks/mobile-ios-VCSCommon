@@ -15,7 +15,7 @@ import CocoaLumberjackSwift
     public let jobOperation: JobType
     public let localFiles: [UploadJobLocalFile]
     
-    public init(jobID: String = UUID().uuidString, jobOperation: JobType, localFiles: [UploadJobLocalFile]) {
+    public init(jobID: String = UUID().uuidString, jobOperation: JobType = .MultipleFileUpload, localFiles: [UploadJobLocalFile]) {
         self.jobID = jobID
         self.jobOperation = jobOperation
         self.localFiles = localFiles
@@ -26,7 +26,7 @@ import CocoaLumberjackSwift
         self.reCheckState()
     }
     
-    public convenience init(jobID: String = UUID().uuidString, jobOperation: JobType, localFile: UploadJobLocalFile) {
+    public convenience init(jobID: String = UUID().uuidString, jobOperation: JobType = .SingleFileUpload, localFile: UploadJobLocalFile) {
         self.init(jobID: jobID, jobOperation: jobOperation, localFiles: [localFile])
     }
     

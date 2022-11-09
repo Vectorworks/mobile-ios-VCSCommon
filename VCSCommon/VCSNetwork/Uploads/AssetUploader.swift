@@ -75,12 +75,21 @@ fileprivate struct MetadataForVCSFileResponse {
     
     public func upload(_ name: String, pathExtention: String? = nil, containingFolder: ContainingFolderMetadata, tempFile: URL, owner: String, withCompletionHandler handler: ((Result<VCSFileResponse, Error>) -> Void)?) {
         let unuploadedFile = GenericFile.construct(withName: name, pathExtention: pathExtention, fileURL: tempFile, containerInfo: containingFolder, owner: owner)
-        UnuploadedFileActions.saveUnuploadedFiles([unuploadedFile])
         
         if AssetUploader.useNewUploadLogic() {
-            let operations = SimpleFileUploadOperations().getOperations(localFile: unuploadedFile, completion: handler)
-            VCSBackgroundSession.default.operationQueue.addOperations(operations, waitUntilFinished: false)
+            let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile)
+            uploadJob.addToCache()
+            uploadJob.startUploadOperations() { (result) in
+                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+                switch result {
+                case .success(let value):
+                    handler?(.success(value))
+                case .failure(let error):
+                    handler?(.failure(error))
+                }
+            }
         } else {
+            UnuploadedFileActions.saveUnuploadedFiles([unuploadedFile])
             Uploader.uploadSingle(file: unuploadedFile).execute { (result) in
                 switch result {
                 case .success(let value):
@@ -103,8 +112,17 @@ fileprivate struct MetadataForVCSFileResponse {
     public func upload(unuploadedFiles: [UploadJobLocalFile], owner: String, withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) {
         self.isUploadingQueued = true
         if AssetUploader.useNewUploadLogic() {
-            let operations = SimpleFileMultipleUploadsOperations().getOperations(localFiles: unuploadedFiles, completion: handler)
-            VCSBackgroundSession.default.operationQueue.addOperations(operations, waitUntilFinished: false)
+            let uploadJob = UploadJob(localFiles: unuploadedFiles)
+            uploadJob.addToCache()
+            uploadJob.startUploadOperations() { (result) in
+                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+//                switch result {
+//                case .success(let value):
+//                    handler?(.success(value))
+//                case .failure(let error):
+//                    handler?(.failure(error))
+//                }
+            }
         } else {
             Uploader.uploadMultiple(files: unuploadedFiles).execute(onSuccess: { (files) in
                 NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
@@ -139,13 +157,21 @@ fileprivate struct MetadataForVCSFileResponse {
             return Photo.construct(withName: photo.name, tempFile: photo.pathURL, containerInfo: containingFolder, owner: owner)
         }
         
-        UnuploadedFileActions.saveUnuploadedFiles(unuploadedPhotos)
-        
         if AssetUploader.useNewUploadLogic() {
             //TODO: iiliev add completion
-            let operations = SimpleFileMultipleUploadsOperations().getOperations(localFiles: unuploadedPhotos, completion: handler)
-            VCSBackgroundSession.default.operationQueue.addOperations(operations, waitUntilFinished: false)
+            let uploadJob = UploadJob(localFiles: unuploadedPhotos)
+            uploadJob.addToCache()
+            uploadJob.startUploadOperations() { (result) in
+                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+//                switch result {
+//                case .success(let value):
+//                    handler?(.success(value))
+//                case .failure(let error):
+//                    handler?(.failure(error))
+//                }
+            }
         } else {
+            UnuploadedFileActions.saveUnuploadedFiles(unuploadedPhotos)
             Uploader.uploadMultiple(files: unuploadedPhotos).execute { (result) in
                 switch result {
                 case .success(let files):
@@ -180,8 +206,17 @@ fileprivate struct MetadataForVCSFileResponse {
         
         if AssetUploader.useNewUploadLogic() {
             //TODO: iiliev add completion
-            let operations = SimpleFileMultipleUploadsOperations().getOperations(localFiles: unuploadedFiles)
-            VCSBackgroundSession.default.operationQueue.addOperations(operations, waitUntilFinished: false)
+            let uploadJob = UploadJob(localFiles: unuploadedFiles)
+            uploadJob.addToCache()
+            uploadJob.startUploadOperations() { (result) in
+                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+//                switch result {
+//                case .success(let value):
+//                    handler?(.success(value))
+//                case .failure(let error):
+//                    handler?(.failure(error))
+//                }
+            }
         } else {
             Uploader.uploadMultiple(files: unuploadedFiles).execute { (result) in
                 switch result {
@@ -219,13 +254,13 @@ fileprivate struct MetadataForVCSFileResponse {
             didFinish?(.success(0))
             return
         }
-
+        
         var uploadsCount = 0
         AssetUploader.shared.upload(unuploadedFiles: localFilesForUpload, owner: owner.login) { (result) in
             uploadsCount += 1
             var hasFailed = false
             var lastError = VCSNetworkError.GenericException("nil - queueUploadsFromOffline") as Error
-
+            
             switch result {
             case .success:
                 DDLogDebug("OK")
@@ -234,7 +269,7 @@ fileprivate struct MetadataForVCSFileResponse {
                 hasFailed = true
                 lastError = error
             }
-
+            
             if (uploadsCount == localFilesForUpload.count) {
                 if hasFailed {
                     didFinish?(.success(0))
