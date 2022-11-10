@@ -42,10 +42,10 @@ class UploadDataOperation: AsyncOperation {
         self.localFile.addToCache()
         
         backgroundTask = session.backgroundSession.uploadTask(with: request, fromFile: self.localFile.uploadPathURL)
-        backgroundTask?.taskDescription = name
+        backgroundTask?.taskDescription = self.localFile.rID
         backgroundTask?.countOfBytesClientExpectsToSend = Int64(self.localFile.sizeAsInt + 1024);
         backgroundTask?.resume()
         
-        VCSBackgroundSession.updateUploadProgress(modelID: self.name ?? "error-name-id", progress: Double(ProgressValues.Started.rawValue))
+        VCSBackgroundSession.updateUploadProgress(modelID: self.localFile.rID, progress: Double(ProgressValues.Started.rawValue))
     }
 }
