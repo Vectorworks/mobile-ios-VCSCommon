@@ -18,7 +18,7 @@ public class VCSHapticFeedbackManager {
         notificationHaptic.notificationOccurred(type)
     }
     
-    func triggerRigidImpactHaptic() {
+    public func triggerRigidImpactHaptic() {
         let rigidImpact = UIImpactFeedbackGenerator(style: .rigid)
         rigidImpact.prepare()
         rigidImpact.impactOccurred()
