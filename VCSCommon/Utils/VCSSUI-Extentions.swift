@@ -13,4 +13,8 @@ public extension View {
             self
         }
     }
+    
+    var UIIdiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+    var isPhone: Bool { UIIdiom == .phone }
+    var isPad: Bool { UIIdiom == .pad }
 }
