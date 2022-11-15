@@ -11,7 +11,6 @@ public enum VCSFileType: String
     case THUMB_3D
     case SCENE
     case MATERIALS
-    case VWG
     case VWXP
     case VWXW
     case IMG
