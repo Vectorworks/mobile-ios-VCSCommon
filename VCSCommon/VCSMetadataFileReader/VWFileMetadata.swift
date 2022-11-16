@@ -15,6 +15,7 @@ import simd
     @objc public init(withFile: String) {
         self.filePath = withFile
         super.init()
+        self.parse()
     }
     
     func parse() {
