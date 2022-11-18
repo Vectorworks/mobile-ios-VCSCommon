@@ -284,7 +284,7 @@ public enum APIRouter: URLRequestConvertible {
         case .mountFolder(let storageType, let ownerLogin, let prefix, _):
             return "/\(storageType)/shared_with_me/folder/:mount/o:\(ownerLogin)/p:\(prefix)/"
         case .branding:
-            return "/branding"
+            return "/branding/"
         }
     }
     
