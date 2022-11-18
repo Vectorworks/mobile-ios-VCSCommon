@@ -1,5 +1,6 @@
 import Foundation
 import RealmSwift
+import Realm
 import CocoaLumberjackSwift
 
 public class VCSRealmDB {
@@ -90,12 +91,29 @@ public class VCSGenericRealmModelStorage<VCSRealmModel: VCSRealmObject>: VCSMode
         return result
     }
     
+    internal func getAllRealm(whereCheck: ((Query<VCSRealmModel>) -> Query<Bool>)? = nil, sortKeyPath: String? = nil, ascending: Bool = true) -> Results<VCSRealmModel> {
+        var result = VCSRealmDB.realm.objects(VCSRealmModel.self)
+        
+        if let filterWhere = whereCheck {
+            result = result.where(filterWhere)
+        }
+        if let keyPath = sortKeyPath {
+            result = result.sorted(byKeyPath: keyPath, ascending: ascending)
+        }
+        
+        return result
+    }
+    
     public func getAll(sortKeyPath: String? = nil, ascending: Bool = true) -> [BaseType] {
-        return self.getAllRealm(sortKeyPath: sortKeyPath, ascending: ascending).map { $0.entity }
+        return self.getAllRealm(predicate: nil, sortKeyPath: sortKeyPath, ascending: ascending).map { $0.entity }
     }
     
     public func getAll(predicate: NSPredicate, sortKeyPath: String? = nil, ascending: Bool = true) -> [BaseType] {
         return self.getAllRealm(predicate: predicate, sortKeyPath: sortKeyPath, ascending: ascending).map { $0.entity }
+    }
+    
+    public func getAll(whereCheck: @escaping ((Query<VCSRealmModel>) -> Query<Bool>), sortKeyPath: String? = nil, ascending: Bool = true) -> [BaseType] {
+        return self.getAllRealm(whereCheck: whereCheck, sortKeyPath: sortKeyPath, ascending: ascending).map { $0.entity }
     }
     
     public func getById(id: String) -> BaseType? {

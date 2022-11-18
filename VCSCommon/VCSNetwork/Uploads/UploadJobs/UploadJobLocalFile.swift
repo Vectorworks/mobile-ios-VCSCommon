@@ -1,4 +1,5 @@
 import Foundation
+import RealmSwift
 
 @objc public class UploadJobLocalFile: NSObject {
     public enum UploadingState: String {
@@ -64,8 +65,19 @@ import Foundation
     }
     
     public func removeFromCache() {
-        self.related.forEach { UploadJobLocalFile.realmStorage.delete(item: $0) }
+        self.related.forEach { $0.removeFromCache() }
+        AssetUploader.removeUploadedFileFromAPIClient(self)
         UploadJobLocalFile.realmStorage.delete(item: self)
+    }
+    
+    public static func resetStateOnStartUp() {
+        let inProgressStatesCollection = [UploadingState.Waiting.rawValue, UploadingState.Uploading.rawValue, UploadingState.Error.rawValue]
+        let uploadingLocalFiles = VCSRealmDB.realm.objects(RealmUploadJobLocalFile.self).where({
+            $0.uploadingState == UploadingState.Waiting.rawValue
+            || $0.uploadingState == UploadingState.Uploading.rawValue
+            || $0.uploadingState == UploadingState.Error.rawValue
+        })
+        uploadingLocalFiles.forEach { $0.uploadingState = UploadingState.Ready.rawValue }
     }
     
     public var isNameValid: Bool {

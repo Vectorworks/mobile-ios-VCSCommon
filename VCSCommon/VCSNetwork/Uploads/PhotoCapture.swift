@@ -74,8 +74,8 @@ public struct PhotoCapture: Identifiable {
     @discardableResult
     private func writeImage() -> Bool {
         let imageUrl = self.imageLocalURL
-        DDLogDebug("Saving: \(imageUrl.path)...")
-        DDLogDebug("Depth Data = \(String(describing: photo.depthData))")
+        DDLogVerbose("Saving: \(imageUrl.path)...")
+        DDLogVerbose("Depth Data = \(String(describing: photo.depthData))")
         do {
             try photo.fileDataRepresentation()!
                 .write(to: URL(fileURLWithPath: imageUrl.path), options: .atomic)
@@ -95,11 +95,11 @@ public struct PhotoCapture: Identifiable {
         
         let gravityString = String(format: "%lf,%lf,%lf", gravityVector.x, gravityVector.y, gravityVector.z)
         let gravityUrl = self.gravityLocalURL
-        DDLogDebug("Writing gravity metadata to: \"\(gravityUrl.path)\"...")
+        DDLogVerbose("Writing gravity metadata to: \"\(gravityUrl.path)\"...")
         do {
             try gravityString.write(toFile: gravityUrl.path, atomically: true,
                                     encoding: .utf8)
-            DDLogDebug("... done.")
+            DDLogVerbose("... done.")
             return true
         } catch {
             DDLogError(
@@ -111,12 +111,12 @@ public struct PhotoCapture: Identifiable {
     @discardableResult
     private func writeDepthIfAvailable() -> Bool {
         guard let depthMapData = depthData else {
-            DDLogWarn("No depth data to save!")
+            DDLogVerbose("No depth data to save!")
             return false
         }
         
         let depthMapUrl = self.depthLocalURL
-        DDLogDebug("Writing depth data to path=\"\(depthMapUrl.path)\"...")
+        DDLogVerbose("Writing depth data to path=\"\(depthMapUrl.path)\"...")
         do {
             try depthMapData.write(to: URL(fileURLWithPath: depthMapUrl.path), options: .atomic)
             return true

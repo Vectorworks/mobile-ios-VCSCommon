@@ -60,12 +60,11 @@ public extension UploadJob {
     
     private func getMultipleFileUpload(completion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil) -> [Operation] {
         let localFiles = self.localFiles.filter { $0.uploadingState != .Done }
-        return SimpleFileMultipleUploadsOperations().getOperations(localFiles: self.localFiles, completion: completion)
+        return SimpleFileMultipleUploadsOperations().getOperations(localFiles: localFiles, completion: completion)
     }
     
     private func getPDFFileUpload(completion: ((Result<VCSFileResponse, Error>) -> Void)? = nil) -> [Operation] {
-        guard let pdfFile = self.localFiles.first, pdfFile.uploadingState != .Done, pdfFile.related.allSatisfy({ $0.uploadingState != .Done }) else { return [] }
-        #warning("handle pdf related files state")
+        guard let pdfFile = self.localFiles.first, (pdfFile.uploadingState != .Done || pdfFile.related.contains(where: { $0.uploadingState != .Done })) else { return [] }
         return PDFFileUploadOperations().getOperations(localFile: pdfFile, completion: completion)
     }
 }
