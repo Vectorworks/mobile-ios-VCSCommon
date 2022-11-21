@@ -2,10 +2,10 @@ import Foundation
 import simd
 
 @objc public class CameraData: NSObject {
-    public var eyeVector: float3 = []
-    public var upVector: float3 = []
-    public var centerVector: float3 = []
-    public var centerPt: float2 = []
+    public var eyeVector = SIMD3<Float>()
+    public var upVector = SIMD3<Float>()
+    public var centerVector = SIMD3<Float>()
+    public var centerPt = SIMD2<Float>()
     public var latBounds: CGRect = CGRect.zero
     
     public var projection: Int = 0
