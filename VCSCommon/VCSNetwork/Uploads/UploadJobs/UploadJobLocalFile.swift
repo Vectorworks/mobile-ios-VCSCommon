@@ -1,5 +1,6 @@
 import Foundation
 import RealmSwift
+import CocoaLumberjackSwift
 
 @objc public class UploadJobLocalFile: NSObject {
     public enum UploadingState: String {
@@ -29,7 +30,7 @@ import RealmSwift
     }
 
         
-    public init(ownerLogin: String, storageType: StorageType, prefix: String, tempFileURL: URL, related: [UploadJobLocalFile]) {
+    public init?(ownerLogin: String, storageType: StorageType, prefix: String, tempFileURL: URL, related: [UploadJobLocalFile]) {
         self.VCSID = tempFileURL.lastPathComponent
         
         self.ownerLogin = ownerLogin
@@ -42,7 +43,14 @@ import RealmSwift
         
         //move files to uploads temp folder and save only the suffix
         if self.uploadPathURL.exists == false {
-            try? FileManager.default.moveItem(at: tempFileURL, to: self.uploadPathURL)
+            do {
+                try FileManager.default.moveItem(at: tempFileURL, to: self.uploadPathURL)
+                try FileManager.default.removeItem(at: tempFileURL)
+            } catch {
+                return nil
+                DDLogError("UploadJobLocalFile init(ownerLogin: " + error.localizedDescription)
+            }
+            
         }
     }
     

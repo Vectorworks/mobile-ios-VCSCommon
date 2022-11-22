@@ -6,4 +6,5 @@ public enum VCSError: Error, Equatable {
     case UserCancelled
     case CapturedRoomIsNil
     case OperationNotExecuted
+    case LocalFileNotCreated
 }

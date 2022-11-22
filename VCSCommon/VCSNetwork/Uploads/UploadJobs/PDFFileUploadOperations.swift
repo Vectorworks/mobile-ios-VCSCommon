@@ -7,7 +7,7 @@ import Foundation
     var operations: [Operation] = []
     
     @objc public static func objcStartOperations(_ PDFTempFile: URL, pdfMetadata: FileAsset, newName name: String, thumbnail: UploadJobLocalFile?, owner: String) {
-        let unuploadedPDF = PDF.construct(relatedTo: pdfMetadata, withName: name, PDFTempFile: PDFTempFile, thumbnail: thumbnail)
+        guard let unuploadedPDF = PDF.construct(relatedTo: pdfMetadata, withName: name, PDFTempFile: PDFTempFile, thumbnail: thumbnail) else { return }
         let operations = PDFFileUploadOperations().getOperations(localFile: unuploadedPDF)
         
         VCSBackgroundSession.default.operationQueue.addOperations(operations, waitUntilFinished: false)
@@ -17,8 +17,7 @@ import Foundation
         self.operations.removeAll()
         
         self.operations = SimpleFileUploadOperations().getOperations(localFile: localFile)
-        guard let getUploadURLOpr = self.operations.first(where: { $0 is GetUploadURLOperation }) as? GetUploadURLOperation,
-              let uploadDataOpr = self.operations.first(where: { $0 is UploadDataOperation }) as? UploadDataOperation,
+        guard let uploadDataOpr = self.operations.first(where: { $0 is UploadDataOperation }) as? UploadDataOperation,
               let adapterURLOpr = self.operations.first(where: { $0 is BlockOperation }) as? BlockOperation,
               let getUploadedFileDataOpr = self.operations.first(where: { $0 is GetUploadedFileDataOperation }) as? GetUploadedFileDataOperation else { return self.operations }
         

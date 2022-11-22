@@ -69,16 +69,7 @@ public class SimpleFileUploadOperations: OperationsGenerator {
     public func getOperations(localFile: UploadJobLocalFile, completion: ((Result<VCSFileResponse, Error>) -> Void)? = nil) -> [Operation] {
         self.operations.removeAll()
         
-        let getUploadURLOpr = GetUploadURLOperation(localFile: localFile)
-        let uploadDataOpr = UploadDataOperation(vcsUplaodURL: nil, localFile: localFile)
-        let adapterURLOpr = BlockOperation(block: {
-            switch getUploadURLOpr.result {
-            case .success(let value):
-                uploadDataOpr.vcsUplaodURL = value
-            case .failure(let error):
-                uploadDataOpr.result = .failure(error)
-            }
-        })
+        let uploadDataOpr = UploadDataOperation(localFile: localFile)
         let getUplaodedFileDataOpr = GetUploadedFileDataOperation(localFile: localFile)
         let adapterUploadDataOpr = BlockOperation(block: {
             switch uploadDataOpr.result {
@@ -98,10 +89,8 @@ public class SimpleFileUploadOperations: OperationsGenerator {
             }
         })
         
-        getUploadURLOpr ==> adapterURLOpr ==> uploadDataOpr ==> adapterUploadDataOpr ==> getUplaodedFileDataOpr ==> adapterUpdateLocalOpr ==> updateLocalFileOperation
+        uploadDataOpr ==> adapterUploadDataOpr ==> getUplaodedFileDataOpr ==> adapterUpdateLocalOpr ==> updateLocalFileOperation
         
-        self.operations.append(getUploadURLOpr)
-        self.operations.append(adapterURLOpr)
         self.operations.append(uploadDataOpr)
         self.operations.append(adapterUploadDataOpr)
         self.operations.append(getUplaodedFileDataOpr)

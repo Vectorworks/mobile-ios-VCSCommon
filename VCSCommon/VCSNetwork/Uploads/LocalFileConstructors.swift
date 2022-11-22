@@ -14,7 +14,7 @@ struct Measurement {
 }
 
 public struct Photo {
-    public static func construct(withName name: String, tempFile: URL, containerInfo: ContainingFolderMetadata, owner: String) -> UploadJobLocalFile {
+    public static func construct(withName name: String, tempFile: URL, containerInfo: ContainingFolderMetadata, owner: String) -> UploadJobLocalFile? {
         let newName = name.pathExtension.lowercased() == Photo.fileExtension ? name : name.appendingPathExtension(Photo.fileExtension)
         let localFileForUpload = UploadJobLocalFile(ownerLogin: owner,
                                                     storageType: containerInfo.storageType,
@@ -29,7 +29,7 @@ public struct Photo {
 }
 
 struct PDF {
-    static func construct(relatedTo file: FileAsset, withName name: String, PDFTempFile: URL, thumbnail: UploadJobLocalFile?) -> UploadJobLocalFile {
+    static func construct(relatedTo file: FileAsset, withName name: String, PDFTempFile: URL, thumbnail: UploadJobLocalFile?) -> UploadJobLocalFile? {
         
         let measurement = Measurement.construct(relatedTo: file, withName: name)
         let snap = Snap.construct(relatedTo: file, withName: name)
@@ -45,7 +45,7 @@ struct PDF {
         return localFileForUpload
     }
     
-    static func constructFromFilesApp(ownerLogin: String, storageType: StorageType, prefix: String, fileURL: URL, thumbnail: UploadJobLocalFile? = nil) -> UploadJobLocalFile {
+    static func constructFromFilesApp(ownerLogin: String, storageType: StorageType, prefix: String, fileURL: URL, thumbnail: UploadJobLocalFile? = nil) -> UploadJobLocalFile? {
         let relatedFiles = [thumbnail].compactMap { $0 }
         
         let localFileForUpload = UploadJobLocalFile(ownerLogin: ownerLogin,
@@ -59,7 +59,7 @@ struct PDF {
 }
 
 public struct GenericFile {
-    public static func construct(withName name: String, pathExtention: String? = nil, fileURL: URL, containerInfo: ContainingFolderMetadata, owner: String, thumbnail: UploadJobLocalFile? = nil) -> UploadJobLocalFile {
+    public static func construct(withName name: String, pathExtention: String? = nil, fileURL: URL, containerInfo: ContainingFolderMetadata, owner: String, thumbnail: UploadJobLocalFile? = nil) -> UploadJobLocalFile? {
         var newName = name
         if let pExtention = pathExtention {
             newName = name.stringByReplacingPathExtension(pExtention) ?? name

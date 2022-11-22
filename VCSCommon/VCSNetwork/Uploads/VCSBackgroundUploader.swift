@@ -5,6 +5,11 @@ import Dispatch
 public class VCSBackgroundSession: NSObject {
     public static var `default` = VCSBackgroundSession()
     
+    public override init() {
+        self.operationQueue.maxConcurrentOperationCount = 3
+        super.init()
+    }
+    
     public var appGroupSetting: String? = nil
     public let sessionIdentifierBackground: String = "net.nemetschek.Nomad.MainApp.session.upload.background"
     public var backgroundCompletionHandler: (() -> Void)?
@@ -17,7 +22,6 @@ public class VCSBackgroundSession: NSObject {
     public static var uploadsResponseData = [String : Data]()
     
     @objc public lazy var backgroundSession: URLSession = {
-        self.operationQueue.maxConcurrentOperationCount = 3
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackground)
         configuration.sharedContainerIdentifier = appGroupSetting
         configuration.isDiscretionary = false

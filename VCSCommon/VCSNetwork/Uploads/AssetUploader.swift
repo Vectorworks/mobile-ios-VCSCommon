@@ -26,7 +26,7 @@ fileprivate struct MetadataForVCSFileResponse {
     }
     
     @objc public func upload(_ PDFTempFile: URL, pdfMetadata: FileAsset, newName name: String, thumbnail: UploadJobLocalFile?, owner: String) {
-        let unuploadedPDF = PDF.construct(relatedTo: pdfMetadata, withName: name, PDFTempFile: PDFTempFile, thumbnail: thumbnail)
+        guard let unuploadedPDF = PDF.construct(relatedTo: pdfMetadata, withName: name, PDFTempFile: PDFTempFile, thumbnail: thumbnail) else { return }
         
         let storage = VCSGenericRealmModelStorage<VCSFileResponse.RealmModel>()
         if let oldFile = storage.getById(id: unuploadedPDF.rID) {
@@ -74,7 +74,10 @@ fileprivate struct MetadataForVCSFileResponse {
     }
     
     public func upload(_ name: String, pathExtention: String? = nil, containingFolder: ContainingFolderMetadata, tempFile: URL, owner: String, withCompletionHandler handler: ((Result<VCSFileResponse, Error>) -> Void)?) {
-        let unuploadedFile = GenericFile.construct(withName: name, pathExtention: pathExtention, fileURL: tempFile, containerInfo: containingFolder, owner: owner)
+        guard let unuploadedFile = GenericFile.construct(withName: name, pathExtention: pathExtention, fileURL: tempFile, containerInfo: containingFolder, owner: owner) else {
+            handler?(.failure(VCSError.LocalFileNotCreated))
+            return
+        }
         
         if AssetUploader.useNewUploadLogic() {
             let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile)
@@ -136,7 +139,10 @@ fileprivate struct MetadataForVCSFileResponse {
     }
     
     public func uploadFromFilesApp(_ fileURL: URL, ownerLogin: String, storageType: StorageType, prefix: String, thumbnail: UploadJobLocalFile? = nil, onURLSessionTaskCreation: ((URLSessionTask) -> Void)? = nil, completion: ((Result<VCSFileResponse, Error>) -> Void)? = nil) {
-        let unuploadedPDF = PDF.constructFromFilesApp(ownerLogin: ownerLogin, storageType: storageType, prefix: prefix, fileURL: fileURL, thumbnail: thumbnail)
+        guard let unuploadedPDF = PDF.constructFromFilesApp(ownerLogin: ownerLogin, storageType: storageType, prefix: prefix, fileURL: fileURL, thumbnail: thumbnail) else {
+            completion?(.failure(VCSError.LocalFileNotCreated))
+            return
+        }
         
         Uploader.uploadSingle(file: unuploadedPDF, filesApp: true, onURLSessionTaskCreation: onURLSessionTaskCreation).execute { (result) in
             switch result {
@@ -190,15 +196,14 @@ fileprivate struct MetadataForVCSFileResponse {
         var unuploadedFiles: [UploadJobLocalFile] = []
         
         photos.forEach { (capture: PhotoCapture) in
-            let image = GenericFile.construct(withName: capture.uploadImageFileName, fileURL: capture.imageLocalURL, containerInfo: containingFolder, owner: owner)
-            unuploadedFiles.append(image)
-            if capture.gravity != nil {
-                let gravity = GenericFile.construct(withName: capture.uploadGravityFileName, fileURL: capture.gravityLocalURL, containerInfo: containingFolder, owner: owner)
-                unuploadedFiles.append(gravity)
-            }
-            if capture.depthData != nil {
-                let depth = GenericFile.construct(withName: capture.uploadDepthFileName, fileURL: capture.depthLocalURL, containerInfo: containingFolder, owner: owner)
-                unuploadedFiles.append(depth)
+            if let image = GenericFile.construct(withName: capture.uploadImageFileName, fileURL: capture.imageLocalURL, containerInfo: containingFolder, owner: owner) {
+                unuploadedFiles.append(image)
+                if capture.gravity != nil, let gravity = GenericFile.construct(withName: capture.uploadGravityFileName, fileURL: capture.gravityLocalURL, containerInfo: containingFolder, owner: owner) {
+                    unuploadedFiles.append(gravity)
+                }
+                if capture.depthData != nil, let depth = GenericFile.construct(withName: capture.uploadDepthFileName, fileURL: capture.depthLocalURL, containerInfo: containingFolder, owner: owner) {
+                    unuploadedFiles.append(depth)
+                }
             }
         }
         
