@@ -15,6 +15,7 @@ import FirebaseAnalytics
     @objc public static let LIST_ACTION__REMOVE_FROM_HOME                       = "list_action__remove_from_Home"
     
     @objc public static let LIST_ACTION__ITEM_OPEN__PDF_VIEWER                  = "list_action__item_open__pdf_viewer"
+    @objc public static let LIST_ACTION__ITEM_OPEN__OLD_PDF_VIEWER              = "list_action__item_open__old_pdf_viewer"
     @objc public static let LIST_ACTION__ITEM_OPEN__SYSTEM_PREVIEWER            = "list_action__item_open__system_previewer"
     @objc public static let LIST_ACTION__ITEM_OPEN__VGM                         = "list_action__item_open__vgm"
     @objc public static let LIST_ACTION__ITEM_OPEN__AR_Viewer                   = "list_action__item_open__ar_viewer"
