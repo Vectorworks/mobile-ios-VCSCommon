@@ -45,7 +45,6 @@ import CocoaLumberjackSwift
         if self.uploadPathURL.exists == false {
             do {
                 try FileManager.default.moveItem(at: tempFileURL, to: self.uploadPathURL)
-                try FileManager.default.removeItem(at: tempFileURL)
             } catch {
                 return nil
                 DDLogError("UploadJobLocalFile init(ownerLogin: " + error.localizedDescription)

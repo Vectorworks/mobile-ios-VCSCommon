@@ -69,24 +69,12 @@ class Uploader {
             return APIClient.uploadFileURL(fileURL: file.uploadPathURL, uploadURL: url, progressForFile: file, onURLSessionTaskCreation: onURLSessionTaskCreation)
         }
         
-//        let uploadDataBG: (VCSUploadURL) -> Future<VCSUploadDataResponse, Error> = { (url) in
-//            return VCSBackgroundUploader.default.uploadFile(fileURL: file.metadata.localPathURL, uploadURL: url, progressForFile: file.metadata, onURLSessionTaskCreation: onURLSessionTaskCreation)
-//        }
-        
         let getJustUploaded: (VCSUploadDataResponse) -> Future<VCSFileResponse, Error> = { (uploadResponse: VCSUploadDataResponse) in
             return APIClient.fileData(owner: owner, storage: file.storageType.rawValue, filePrefix: file.prefix, updateFromStorage: true, googleDriveID: uploadResponse.googleDriveID, googleDriveVerID: uploadResponse.googleDriveVerID)
         }
         
-//        let delay5: (VCSUploadDataResponse) -> Future<VCSUploadDataResponse, Error> = { (response) in
-//            Thread.sleep(forTimeInterval: 55)
-//            return Future(result: .success(response))
-//        }
-        
-        
         return APIClient.getUploadURL(owner: owner, storage: file.storageType.rawValue, filePrefix: file.prefix, size: Int(file.size) ?? 0)
             .andThen(uploadData)
-//            .andThen(uploadDataBG)
-//            .andThen(delay5)
             .andThen(getJustUploaded)
     }
     

@@ -1,4 +1,5 @@
 import Foundation
+import CocoaLumberjackSwift
 
 @objc public class LocalFile: NSObject {
     private(set) public var uuid: String = UUID().uuidString
@@ -29,9 +30,15 @@ import Foundation
         
         if let fileURL = tempFileURL {
             let localFileURL = URL(fileURLWithPath: self.localPath)
-            try? FileUtils.createURL(localFileURL.deletingLastPathComponent())
-            try? FileUtils.deleteItem(localFileURL.path)
-            try? FileManager.default.moveItem(at: fileURL, to: localFileURL)
+            do {
+                try FileUtils.createURL(localFileURL.deletingLastPathComponent())
+                try FileUtils.deleteItem(localFileURL.path)
+//                try FileUtils.moveItem(at: fileURL, to: localFileURL)
+                try FileManager.default.copyItem(at: fileURL, to: localFileURL)
+            } catch {
+                DDLogError("LocalFile init(name: " + error.localizedDescription)
+            }
+            
         }
     }
 }

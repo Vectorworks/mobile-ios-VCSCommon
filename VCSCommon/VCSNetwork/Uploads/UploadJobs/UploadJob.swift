@@ -90,7 +90,8 @@ extension UploadJob: VCSCachable {
     }
     
     public func removeFromCache() {
-        self.localFiles.forEach { $0.removeFromCache() }
+        UnuploadedFileActions.deleteUnuploadedFiles(self.localFiles)
+//        self.localFiles.forEach { $0.removeFromCache() }
         UploadJob.realmStorage.delete(item: self)
     }
 }

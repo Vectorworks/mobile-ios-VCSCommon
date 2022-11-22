@@ -1,4 +1,5 @@
 import Foundation
+import CocoaLumberjackSwift
 
 public class UnuploadedFileActions {
     
@@ -28,7 +29,11 @@ public class UnuploadedFileActions {
         guard file.isAvailableOnDevice else { return }
         
         file.removeFromCache()
-        try? FileUtils.deleteItem(file.uploadPathURL.path)
+        do {
+            try FileUtils.deleteItem(file.uploadPathURL.path)
+        } catch {
+            DDLogError("UnuploadedFileActions deleteUnuploadedFile(_ file:" + error.localizedDescription)
+        }
         
         file.related.forEach { UnuploadedFileActions.deleteUnuploadedFile($0) }
     }
