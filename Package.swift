@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.7
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,14 +6,10 @@ import PackageDescription
 let package = Package(
     name: "mobile-ios-VCSCommon",
     platforms: [
-        .iOS(.v14),
-//        .macOS(.v10_13),
-//        .tvOS(.v12),
-//        .watchOS(.v5),
+        .iOS(.v15),
         
     ],
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "mobile-ios-VCSCommon",
             targets: [
@@ -22,15 +18,15 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/robbiehanson/KissXML.git", .exact("5.3.3")),
-        .package(url: "https://github.com/CocoaLumberjack/CocoaLumberjack.git", .exact("3.8.0")),
-        .package(url: "https://github.com/Alamofire/Alamofire.git", .exact("5.6.2")),
-        .package(url: "https://github.com/weichsel/ZIPFoundation.git", .exact("0.9.15")),
-        .package(url: "https://github.com/realm/realm-cocoa.git", .exact("10.32.3")),
-        .package(url: "https://github.com/scalessec/Toast-Swift.git", .exact("5.0.1")),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", .exact("10.2.0")),
+        .package(url: "https://github.com/robbiehanson/KissXML.git", exact: "5.3.3"),
+        .package(url: "https://github.com/CocoaLumberjack/CocoaLumberjack.git", exact: "3.8.0"),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.6.2"),
+        .package(url: "https://github.com/weichsel/ZIPFoundation.git", exact: "0.9.15"),
+        .package(url: "https://github.com/realm/realm-cocoa.git", exact: "10.32.3"),
+        .package(url: "https://github.com/scalessec/Toast-Swift.git", exact: "5.0.1"),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "10.2.0"),
         
-        .package(url: "https://github.com/Vectorworks/OAuth2.git", .exact("5.2.1")),
+        .package(url: "https://github.com/Vectorworks/OAuth2.git", exact: "5.2.1"),
     ],
     targets: [
         .target(
@@ -54,21 +50,6 @@ let package = Package(
             exclude: [
                 "PromisedFuture/README.md",
                 "Info.plist",
-            ]),
-//        .testTarget(
-//            name: "mobile-ios-VCSCommonTests",
-//            dependencies: [
-//                "VCSCommon",
-//                .product(name: "KissXML", package: "KissXML"),
-//                .product(name: "CocoaLumberjack", package: "CocoaLumberjack"),
-//                .product(name: "CocoaLumberjackSwift", package: "CocoaLumberjack"),
-//                .product(name: "Toast", package: "Toast"),
-//                .product(name: "ZIPFoundation", package: "ZIPFoundation"),
-//                .product(name: "FirebaseAnalytics", package: "Firebase"),
-//                .product(name: "FirebaseCrashlytics", package: "Firebase"),
-//                .product(name: "FirebaseDynamicLinks", package: "Firebase"),],
-//            path: "VCSCommonTests",
-//            exclude: ["VCSNetworkTests/Info.plist"]
-//        ),
+            ])
     ]
 )
