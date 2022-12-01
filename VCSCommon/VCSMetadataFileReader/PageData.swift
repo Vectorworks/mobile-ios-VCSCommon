@@ -46,8 +46,8 @@ import UIKit
     @objc public var y: Double = 0.0
     @objc public var rotation: Double = 0.0
     @objc public var scale: Double = 0.0
-    @objc public var viewportRegion: UIBezierPath?
-    @objc public var viewportLayer: MeasurementLayer?
+    @objc public var bezierPath: UIBezierPath?
+    @objc public var measurementLayer: MeasurementLayer?
     
     @objc public var cropRect: CropRect?
     @objc public var cropPoly: CropPoly?
