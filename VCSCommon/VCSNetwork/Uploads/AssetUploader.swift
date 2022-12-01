@@ -13,8 +13,6 @@ fileprivate struct MetadataForVCSFileResponse {
 
 @objc public class AssetUploader: NSObject {
     @objc public static var shared: AssetUploader = AssetUploader()
-    @objc public class func useNewUploadLogic() -> Bool { return true }
-    public var isUploadingQueued: Bool = false
     
     @objc public class func removeUploadedFileIDFromAPIClient(_ rID: String) {
         APIClient.uploads[rID] = nil
@@ -33,31 +31,17 @@ fileprivate struct MetadataForVCSFileResponse {
             storage.delete(item: oldFile)
         }
         
-        if AssetUploader.useNewUploadLogic() {
-            let uploadJob = UploadJob(jobOperation: .PDFFileUpload, localFile: unuploadedPDF)
-            uploadJob.addToCache()
-            uploadJob.startUploadOperations() { (result) in
-                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
-                switch result {
-                case .success(_):
-                    DDLogDebug("Successfully uploaded \(unuploadedPDF.name) and its related")
-                case .failure(let error):
-                    DDLogError("Error on upload. \(error.localizedDescription)")
-                }
+        let uploadJob = UploadJob(jobOperation: .PDFFileUpload, localFile: unuploadedPDF, parentFolder: nil)
+        uploadJob.addToCache()
+        uploadJob.startUploadOperations(singleFileCompletion:  { (result) in
+            NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+            switch result {
+            case .success(_):
+                DDLogDebug("Successfully uploaded \(unuploadedPDF.name) and its related")
+            case .failure(let error):
+                DDLogError("Error on upload. \(error.localizedDescription)")
             }
-        } else {
-            UnuploadedFileActions.saveUnuploadedFiles([unuploadedPDF])
-            Uploader.uploadSingle(file: unuploadedPDF).execute { (result) in
-                AssetUploader.removeUploadedFileFromAPIClient(unuploadedPDF)
-                switch result {
-                case .success(_):
-                    DDLogDebug("Successfully uploaded \(unuploadedPDF.name) and its related")
-                    NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
-                case .failure(let error):
-                    DDLogError("Error on upload. \(error.localizedDescription)")
-                }
-            }
-        }
+        })
     }
     
     internal static func updateUploadedFile(_ file: VCSFileResponse, withLocalFileForUnuploadedFile unuploadedFile: UploadJobLocalFile) {
@@ -79,82 +63,55 @@ fileprivate struct MetadataForVCSFileResponse {
             return
         }
         
-        if AssetUploader.useNewUploadLogic() {
-            let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile)
-            uploadJob.addToCache()
-            uploadJob.startUploadOperations() { (result) in
-                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
-                switch result {
-                case .success(let value):
-                    handler?(.success(value))
-                case .failure(let error):
-                    handler?(.failure(error))
-                }
-            }
-        } else {
-            UnuploadedFileActions.saveUnuploadedFiles([unuploadedFile])
-            Uploader.uploadSingle(file: unuploadedFile).execute { (result) in
-                switch result {
-                case .success(let value):
-                    NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
-                    handler?(.success(value))
-                case .failure(let error):
-                    handler?(.failure(error))
-                }
-            }
-        }
-    }
-    
-    public func upload(uploadJob: UploadJob, withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) {
-        if AssetUploader.useNewUploadLogic() {
-            uploadJob.addToCache()
-            uploadJob.startUploadOperations()
-        }
-    }
-    
-    public func upload(unuploadedFiles: [UploadJobLocalFile], owner: String, withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) {
-        self.isUploadingQueued = true
-        if AssetUploader.useNewUploadLogic() {
-            let uploadJob = UploadJob(localFiles: unuploadedFiles)
-            uploadJob.addToCache()
-            uploadJob.startUploadOperations() { (result) in
-                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
-//                switch result {
-//                case .success(let value):
-//                    handler?(.success(value))
-//                case .failure(let error):
-//                    handler?(.failure(error))
-//                }
-            }
-        } else {
-            Uploader.uploadMultiple(files: unuploadedFiles).execute(onSuccess: { (files) in
-                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
-                self.isUploadingQueued = false
-                handler?(.success(files))
-            }) { (error) in
-                self.isUploadingQueued = false
+        let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile, parentFolder: nil)
+        uploadJob.addToCache()
+        uploadJob.startUploadOperations() { (result) in
+            NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+            switch result {
+            case .success(let value):
+                handler?(.success(value))
+            case .failure(let error):
                 handler?(.failure(error))
             }
         }
     }
     
-    public func uploadFromFilesApp(_ fileURL: URL, ownerLogin: String, storageType: StorageType, prefix: String, thumbnail: UploadJobLocalFile? = nil, onURLSessionTaskCreation: ((URLSessionTask) -> Void)? = nil, completion: ((Result<VCSFileResponse, Error>) -> Void)? = nil) {
-        guard let unuploadedPDF = PDF.constructFromFilesApp(ownerLogin: ownerLogin, storageType: storageType, prefix: prefix, fileURL: fileURL, thumbnail: thumbnail) else {
-            completion?(.failure(VCSError.LocalFileNotCreated))
+    public func upload(fileURL: URL, owner: String, storage: StorageType, prefix: String, withCompletionHandler handler: ((Result<VCSFileResponse, Error>) -> Void)?) {
+        guard let unuploadedFile = GenericFile.construct(fileURL: fileURL, owner: owner, storage: storage, prefix: prefix) else {
+            handler?(.failure(VCSError.LocalFileNotCreated))
             return
         }
         
-        Uploader.uploadSingle(file: unuploadedPDF, filesApp: true, onURLSessionTaskCreation: onURLSessionTaskCreation).execute { (result) in
+        let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile, parentFolder: nil)
+        uploadJob.addToCache()
+        uploadJob.startUploadOperations() { (result) in
+            NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
-            case .success(let file):
-                DDLogDebug("Successfully uploaded \(unuploadedPDF.name) and its related")
-                completion?(.success(file))
-                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+            case .success(let value):
+                handler?(.success(value))
             case .failure(let error):
-                DDLogError("Error on upload. \(error.localizedDescription)")
-                completion?(.failure(error))
+                handler?(.failure(error))
             }
         }
+    }
+    
+    public func upload(uploadJob: UploadJob, singleFileCompletion: ((Result<VCSFileResponse, Error>) -> Void)? = nil, multiFileCompletion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil) {
+        uploadJob.addToCache()
+        uploadJob.startUploadOperations(singleFileCompletion: singleFileCompletion, multiFileCompletion: multiFileCompletion)
+    }
+    
+    public func upload(unuploadedFiles: [UploadJobLocalFile], withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) {
+        let uploadJob = UploadJob(localFiles: unuploadedFiles, parentFolder: nil)
+        uploadJob.addToCache()
+        uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
+            NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+            switch result {
+            case .success(let value):
+                handler?(.success(value))
+            case .failure(let error):
+                handler?(.failure(error))
+            }
+        })
     }
     
     @discardableResult
@@ -162,32 +119,18 @@ fileprivate struct MetadataForVCSFileResponse {
         let unuploadedPhotos = photos.compactMap { (photo) -> UploadJobLocalFile? in
             return Photo.construct(withName: photo.name, tempFile: photo.pathURL, containerInfo: containingFolder, owner: owner)
         }
-        
-        if AssetUploader.useNewUploadLogic() {
-            //TODO: iiliev add completion
-            let uploadJob = UploadJob(localFiles: unuploadedPhotos)
-            uploadJob.addToCache()
-            uploadJob.startUploadOperations() { (result) in
-                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
-//                switch result {
-//                case .success(let value):
-//                    handler?(.success(value))
-//                case .failure(let error):
-//                    handler?(.failure(error))
-//                }
+        //TODO: iiliev add completion
+        let uploadJob = UploadJob(localFiles: unuploadedPhotos, parentFolder: nil)
+        uploadJob.addToCache()
+        uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
+            NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+            switch result {
+            case .success(let value):
+                handler?(.success(value))
+            case .failure(let error):
+                handler?(.failure(error))
             }
-        } else {
-            UnuploadedFileActions.saveUnuploadedFiles(unuploadedPhotos)
-            Uploader.uploadMultiple(files: unuploadedPhotos).execute { (result) in
-                switch result {
-                case .success(let files):
-                    NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
-                    handler?(.success(files))
-                case .failure(let error):
-                    handler?(.failure(error))
-                }
-            }
-        }
+        })
         
         return unuploadedPhotos
     }
@@ -207,32 +150,18 @@ fileprivate struct MetadataForVCSFileResponse {
             }
         }
         
-        UnuploadedFileActions.saveUnuploadedFiles(unuploadedFiles)
-        
-        if AssetUploader.useNewUploadLogic() {
-            //TODO: iiliev add completion
-            let uploadJob = UploadJob(localFiles: unuploadedFiles)
-            uploadJob.addToCache()
-            uploadJob.startUploadOperations() { (result) in
-                NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
-//                switch result {
-//                case .success(let value):
-//                    handler?(.success(value))
-//                case .failure(let error):
-//                    handler?(.failure(error))
-//                }
+        //TODO: iiliev add completion
+        let uploadJob = UploadJob(localFiles: unuploadedFiles, parentFolder: nil)
+        uploadJob.addToCache()
+        uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
+            NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+            switch result {
+            case .success(let value):
+                handler?(.success(value))
+            case .failure(let error):
+                handler?(.failure(error))
             }
-        } else {
-            Uploader.uploadMultiple(files: unuploadedFiles).execute { (result) in
-                switch result {
-                case .success(let files):
-                    NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
-                    handler?(.success(files))
-                case .failure(let error):
-                    handler?(.failure(error))
-                }
-            }
-        }
+        })
         
         return unuploadedFiles
     }
@@ -243,47 +172,20 @@ fileprivate struct MetadataForVCSFileResponse {
             didFinish?(.failure(VCSNetworkError.GenericException("Uploads from offline already queued. Discarding.")))
             return
         }
-        guard let owner = AuthCenter.shared.user else {
-            didFinish?(.failure(VCSNetworkError.GenericException("No AuthCenter.shared.login, any files queued for upload will not be uploaded.")))
-            return
-        }
-        guard AssetUploader.shared.isUploadingQueued == false else {
-            didFinish?(.failure(VCSNetworkError.GenericException("Uploading already started. Discarding.")))
-            return
-        }
         
-        AssetUploader.shared.isUploadingQueued = true
-        
-        let localFilesForUpload = VCSGenericRealmModelStorage<RealmUploadJobLocalFile>().getAll()
-        guard localFilesForUpload.isEmpty == false else {
+        let localUploadJobs = VCSGenericRealmModelStorage<UploadJob.RealmModel>().getAll()
+        guard localUploadJobs.isEmpty == false else {
             didFinish?(.success(0))
             return
         }
         
-        var uploadsCount = 0
-        AssetUploader.shared.upload(unuploadedFiles: localFilesForUpload, owner: owner.login) { (result) in
-            uploadsCount += 1
-            var hasFailed = false
-            var lastError = VCSNetworkError.GenericException("nil - queueUploadsFromOffline") as Error
-            
-            switch result {
-            case .success:
-                DDLogDebug("OK")
-            case .failure(let error):
-                DDLogError("Error on upload on connection restore. \(error.localizedDescription)")
-                hasFailed = true
-                lastError = error
-            }
-            
-            if (uploadsCount == localFilesForUpload.count) {
-                if hasFailed {
-                    didFinish?(.success(0))
-                } else {
-                    didFinish?(.failure(lastError))
+        localUploadJobs.forEach { jobToUpload in
+            if jobToUpload.localFiles.allSatisfy({ $0.uploadingState != .Waiting && $0.uploadingState != .Uploading }) {
+                DDLogInfo("Start Upload for job \(jobToUpload.jobID)")
+                AssetUploader.shared.upload(uploadJob: jobToUpload) { _ in
+                    DDLogInfo("Finished upload for job: \(jobToUpload.jobID)")
                 }
             }
-            
-            AssetUploader.shared.isUploadingQueued = false
         }
     }
 }

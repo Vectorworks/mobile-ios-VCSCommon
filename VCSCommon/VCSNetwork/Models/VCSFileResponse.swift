@@ -28,7 +28,8 @@ import Foundation
     
     public var VCSID: String
     @objc public let downloadURL: String
-    public let versionID, thumbnail, size, lastModified: String
+    public let versionID, size, lastModified: String
+    public var thumbnail: String
     public let thumbnail3D: String?
     public let previousVersions: [VCSFileResponse]
     public let fileType: String?
@@ -329,6 +330,10 @@ extension VCSFileResponse: VCSCachable {
     
     public func partialUpdateToCache() {
         VCSFileResponse.realmStorage.partialUpdate(item: self)
+    }
+    
+    public func removeFromCache() {
+        VCSFileResponse.realmStorage.delete(item: self)
     }
 }
 

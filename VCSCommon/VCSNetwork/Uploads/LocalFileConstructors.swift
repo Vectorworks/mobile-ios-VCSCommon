@@ -76,6 +76,17 @@ public struct GenericFile {
         return localFileForUpload
     }
     
+    public static func construct(fileURL: URL, owner: String, storage: StorageType, prefix: String, thumbnail: UploadJobLocalFile? = nil) -> UploadJobLocalFile? {
+        let relatedFiles = [thumbnail].compactMap { $0 }
+        let localFileForUpload = UploadJobLocalFile(ownerLogin: owner,
+                                                    storageType: storage,
+                                                    prefix: prefix,
+                                                    tempFileURL: fileURL,
+                                                    related: relatedFiles)
+        
+        return localFileForUpload
+    }
+    
     public static func construct(relatedTo file: FileAsset, withName name: String, withExtension: VCSFileType) -> UploadJobLocalFile? {
         guard let relatedFile = file.related(withExtension: withExtension),
               let relatedFileLocalPath = relatedFile.localPathString,

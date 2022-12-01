@@ -13,44 +13,49 @@ import CocoaLumberjackSwift
     
     public let jobID: String
     public let jobOperation: JobType
-    public let localFiles: [UploadJobLocalFile]
+    public var localFiles: [UploadJobLocalFile]
+    public let parentFolder: VCSFolderResponse?
     
-    public init(jobID: String = UUID().uuidString, jobOperation: JobType = .MultipleFileUpload, localFiles: [UploadJobLocalFile]) {
+    public init(jobID: String = UUID().uuidString, jobOperation: JobType = .MultipleFileUpload, localFiles: [UploadJobLocalFile], parentFolder: VCSFolderResponse?) {
         self.jobID = jobID
         self.jobOperation = jobOperation
         self.localFiles = localFiles
+        self.parentFolder = parentFolder
         super.init()
         if UploadJob.uploadJobs.contains(where: { $0.jobID == self.jobID }) == false {
             UploadJob.uploadJobs.append(self)
         }
-        self.reCheckState()
     }
     
-    public convenience init(jobID: String = UUID().uuidString, jobOperation: JobType = .SingleFileUpload, localFile: UploadJobLocalFile) {
-        self.init(jobID: jobID, jobOperation: jobOperation, localFiles: [localFile])
+    public convenience init(jobID: String = UUID().uuidString, jobOperation: JobType = .SingleFileUpload, localFile: UploadJobLocalFile, parentFolder: VCSFolderResponse?) {
+        self.init(jobID: jobID, jobOperation: jobOperation, localFiles: [localFile], parentFolder: parentFolder)
     }
     
-    func reCheckState() {
+    func reCheckState(localFile: UploadJobLocalFile) {
         DDLogInfo("UploadJob:reCheckState - \(self.localFiles.filter({ $0.uploadingState == .Done }).count) of \(self.localFiles.count)")
+        self.localFiles.removeAll { $0.rID == localFile.rID }
+        self.addToCache()
+        UploadJob.deleteUnuploadedFile(localFile)
         guard self.localFiles.allSatisfy({ $0.uploadingState == .Done }) else { return }
         self.removeFromCache()
+        NotificationCenter.postNotification(name: Notification.Name("VCSUpdateLocalDataSources"), userInfo: nil)
     }
 }
 
 public extension UploadJob {
-    func startUploadOperations(completion: ((Result<VCSFileResponse, Error>) -> Void)? = nil) {        
+    func startUploadOperations(singleFileCompletion: ((Result<VCSFileResponse, Error>) -> Void)? = nil, multiFileCompletion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil) {
         var operations: [Operation] = []
         switch self.jobOperation {
         case .SingleFileUpload:
-            operations = getSimpleFileUpload(completion: completion)
+            operations = getSimpleFileUpload(completion: singleFileCompletion)
         case .MultipleFileUpload:
-            #warning("add completion handler")
-            operations = getMultipleFileUpload()
+            operations = getMultipleFileUpload(completion: multiFileCompletion)
         case .PDFFileUpload:
-            operations = getPDFFileUpload(completion: completion)
+            operations = getPDFFileUpload(completion: singleFileCompletion)
         }
         
         VCSBackgroundSession.default.operationQueue.addOperations(operations, waitUntilFinished: false)
+        NotificationCenter.postNotification(name: Notification.Name("VCSUpdateLocalDataSources"), userInfo: nil)
     }
     
     private func getSimpleFileUpload(completion: ((Result<VCSFileResponse, Error>) -> Void)? = nil) -> [Operation] {
@@ -90,8 +95,27 @@ extension UploadJob: VCSCachable {
     }
     
     public func removeFromCache() {
-        UnuploadedFileActions.deleteUnuploadedFiles(self.localFiles)
+        UploadJob.deleteUnuploadedFiles(self.localFiles)
 //        self.localFiles.forEach { $0.removeFromCache() }
         UploadJob.realmStorage.delete(item: self)
+    }
+}
+
+extension UploadJob {
+    public static func deleteUnuploadedFiles(_ files: [UploadJobLocalFile]) {
+        files.forEach { UploadJob.deleteUnuploadedFile($0) }
+    }
+    
+    static private func deleteUnuploadedFile(_ file: UploadJobLocalFile) { // after successful upload
+        guard file.isAvailableOnDevice else { return }
+        
+        file.removeFromCache()
+        do {
+            try FileUtils.deleteItem(file.uploadPathURL.path)
+        } catch {
+            DDLogError("UnuploadedFileActions deleteUnuploadedFile(_ file:" + error.localizedDescription)
+        }
+        
+        file.related.forEach { UploadJob.deleteUnuploadedFile($0) }
     }
 }

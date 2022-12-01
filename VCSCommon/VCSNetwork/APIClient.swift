@@ -211,56 +211,6 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.getUploadURL(owner: owner, storage: storage, filePrefix: filePrefix, size: size))
     }
     
-    public static func uploadFileURL(fileURL: URL, uploadURL: VCSUploadURL, progressForFile: FileAsset? = nil, onURLSessionTaskCreation: ((URLSessionTask) -> Void)? = nil) -> Future<VCSUploadDataResponse, Error> {
-        return Future { (completion) in
-            let uploadRequest = AF.upload(fileURL, with: APIRouter.uploadFileURL(uploadURL: uploadURL))
-            if let progressForFile = progressForFile {
-                APIClient.uploads[progressForFile.rID] = uploadRequest
-                APIClient.updateUploadProgress(progressForFile: progressForFile, progress: ProgressValues.Started.rawValue)
-            }
-            
-            uploadRequest.response { (dataResponse: DataResponse<Data?, AFError>) in
-                switch dataResponse.result {
-                case .success(let value):
-                    let resultDate = getDateFromUploadResponse(dataResponse.response, data: value)
-                    let jsonResponse = try? JSONSerialization.jsonObject(with: value ?? Data(), options: []) as? [String: Any]
-                    let result = VCSUploadDataResponse(resultDate, googleDriveID: (jsonResponse?["id"] as? String), googleDriveVerID: (jsonResponse?["headRevisionId"] as? String))
-                    if let progressForFile = progressForFile {
-                        Uploader.uploadResponses[progressForFile.rID] = result
-                    }
-                    APIClient.updateUploadProgress(progressForFile: progressForFile, progress: ProgressValues.Finished.rawValue)
-                    completion(.success(result))
-                case .failure(let error):
-                    DDLogDebug("APIClient.uploadData - failure")
-                    APIClient.lastErrorData = dataResponse.data
-                    NetworkLogger.log("##### VCSNetwork error:\t\(dataResponse)")
-                    NetworkLogger.log("##### VCSNetwork error code:\t\(dataResponse.response?.statusCode ?? 0)")
-                    NetworkLogger.log("##### VCSNetwork error URL:\t\(dataResponse.request?.url?.absoluteString ?? "")")
-                    if let errorData = dataResponse.data {
-                        NetworkLogger.log("##### VCSNetwork data:\t\(String(data: errorData, encoding: .utf8) ?? "nil")")
-                    }
-                    completion(.failure(error))
-                }
-            }
-            
-            uploadRequest.uploadProgress { (progress: Progress) in
-                APIClient.updateUploadProgress(progressForFile: progressForFile, progress: progress.fractionCompleted)
-            }
-            
-            if let onURLSessionTaskCreationValue = onURLSessionTaskCreation {
-                uploadRequest.onURLSessionTaskCreation(perform: onURLSessionTaskCreationValue)
-            }
-            
-            uploadRequest.validate()
-        }
-    }
-    
-    public static func updateUploadProgress(progressForFile: FileAsset?, progress: Double) {
-        guard let file = progressForFile else { return }
-        NotificationCenter.postUploadNotification(model: file, progress: progress)
-        DDLogDebug("Uploading \(file.name): \(progress)")
-    }
-    
     @available(*, deprecated, renamed: "deleteAsset")
     public static func deleteData(resourceURL: String) -> Future<VCSEmptyResponse, Error> {
         return performRequest(route: APIRouter.deleteResource(resourceURL: resourceURL.VCSNormalizedURLString()))

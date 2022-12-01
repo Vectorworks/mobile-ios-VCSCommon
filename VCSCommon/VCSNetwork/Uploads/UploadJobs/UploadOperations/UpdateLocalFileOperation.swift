@@ -32,15 +32,19 @@ class UpdateLocalFileOperation: AsyncOperation {
         AssetUploader.updateUploadedFile(fileResponse, withLocalFileForUnuploadedFile: self.localFile)
         
         VCSCache.addToCache(item: fileResponse)
+        if let parentFolderID = self.localFile.parentUploadJob?.parentFolder?.rID {
+            //Work with the Database to exclude ram caching bugs
+            VCSGenericRealmModelStorage<VCSFolderResponse.RealmModel>().getById(id: parentFolderID)?.appendFile(fileResponse)
+        }
         
         DDLogInfo("Successfully uploaded \(self.localFile.name) and its related")
-        NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
+        NotificationCenter.postNotification(name: Notification.Name("VCSUpdateLocalDataSources"), userInfo: ["file" : localFile])
         
         self.result = .success(fileResponse)
         
         self.localFile.uploadingState = .Done
         self.localFile.addToCache()
-        self.localFile.parentUploadJob?.reCheckState()
+        self.localFile.parentUploadJob?.reCheckState(localFile: self.localFile)
         
         self.state = .finished
     }

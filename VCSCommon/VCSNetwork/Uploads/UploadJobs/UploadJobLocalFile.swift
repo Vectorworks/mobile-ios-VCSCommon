@@ -31,12 +31,13 @@ import CocoaLumberjackSwift
 
         
     public init?(ownerLogin: String, storageType: StorageType, prefix: String, tempFileURL: URL, related: [UploadJobLocalFile]) {
-        self.VCSID = tempFileURL.lastPathComponent
+        let UUIDString = UUID().uuidString
+        self.VCSID = UUIDString
         
         self.ownerLogin = ownerLogin
         self.storageType = storageType
         self.prefix = prefix
-        self.uploadPathSuffix = UUID().uuidString
+        self.uploadPathSuffix = UUIDString
         self.related = related
         
         super.init()
@@ -45,9 +46,9 @@ import CocoaLumberjackSwift
         if self.uploadPathURL.exists == false {
             do {
                 try FileManager.default.moveItem(at: tempFileURL, to: self.uploadPathURL)
-            } catch {
-                return nil
+            } catch { 
                 DDLogError("UploadJobLocalFile init(ownerLogin: " + error.localizedDescription)
+                return nil
             }
             
         }
@@ -78,13 +79,16 @@ import CocoaLumberjackSwift
     }
     
     public static func resetStateOnStartUp() {
-        let inProgressStatesCollection = [UploadingState.Waiting.rawValue, UploadingState.Uploading.rawValue, UploadingState.Error.rawValue]
         let uploadingLocalFiles = VCSRealmDB.realm.objects(RealmUploadJobLocalFile.self).where({
             $0.uploadingState == UploadingState.Waiting.rawValue
             || $0.uploadingState == UploadingState.Uploading.rawValue
             || $0.uploadingState == UploadingState.Error.rawValue
         })
-        uploadingLocalFiles.forEach { $0.uploadingState = UploadingState.Ready.rawValue }
+        try? VCSRealmDB.realm.write {
+            uploadingLocalFiles.forEach {
+                $0.uploadingState = UploadingState.Ready.rawValue
+            }
+        }
     }
     
     public var isNameValid: Bool {

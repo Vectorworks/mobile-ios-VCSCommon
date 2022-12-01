@@ -9,6 +9,7 @@ public class RealmUploadJob: Object, VCSRealmObject, ObjectKeyIdentifiable {
     
     @objc dynamic var jobOperation: String = ""
     public dynamic var localFiles: List<RealmUploadJobLocalFile> = List()
+    public dynamic var parentFolder: RealmFolder?
     
     public required convenience init(model: Model) {
         self.init()
@@ -31,7 +32,8 @@ public class RealmUploadJob: Object, VCSRealmObject, ObjectKeyIdentifiable {
         
         return UploadJob(jobID: self.RealmID,
                          jobOperation: UploadJob.JobType(rawValue: jobOperation) ?? UploadJob.JobType.MultipleFileUpload,
-                         localFiles: arrLocalFiles)
+                         localFiles: arrLocalFiles,
+                         parentFolder: self.parentFolder?.entity)
     }
     
     public var partialUpdateModel: [String : Any] {
