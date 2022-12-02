@@ -35,24 +35,23 @@ public class OperationsUtils {
         guard let finalOpr = completion else { return }
         
         let resultOpr = ArrayResultOperation(operationID: operationID, completion: finalOpr)
-        lastUploadOperations.forEach { opearation in
+        lastUploadOperations.forEach { operation in
             let adapterResultOpr = BlockOperation(block: {
-                switch opearation.result {
+                switch operation.result {
                 case .success(let fileResponse):
                     do {
                         let prevResult = try resultOpr.result.get()
                         var resultArray = [fileResponse]
                         resultArray.append(contentsOf: prevResult)
                         resultOpr.result = .success(resultArray)
-                    } catch {
+                    } catch let error {
                         resultOpr.result = .failure(error)
                     }
                 case .failure(let error):
                     resultOpr.result = .failure(error)
                 }
             })
-            adapterResultOpr.addDependency(opearation)
-            resultOpr.addDependency(adapterResultOpr)
+            operation ==> adapterResultOpr ==> resultOpr
             operations.append(adapterResultOpr)
         }
         

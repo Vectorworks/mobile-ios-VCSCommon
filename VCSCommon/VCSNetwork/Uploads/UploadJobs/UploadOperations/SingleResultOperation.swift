@@ -23,7 +23,7 @@ class SingleResultOperation: AsyncOperation {
 
 class ArrayResultOperation: AsyncOperation {
     var completion: ((Result<[VCSFileResponse], Error>) -> Void)?
-    var result: Result<[VCSFileResponse], Error> = .failure(VCSError.OperationNotExecuted)
+    var result: Result<[VCSFileResponse], Error> = .success([])
     
     init(operationID: String, completion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil) {
         self.completion = completion

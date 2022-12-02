@@ -16,8 +16,8 @@ public class SimpleFileMultipleUploadsOperations: OperationsGenerator {
         
         var lastUpdateLocalFileOperations: [UpdateLocalFileOperation] = []
         localFiles.forEach({
-            var operations = SimpleFileUploadOperations().getOperations(localFile:$0)
-            if let updateLocalFileOperation = self.operations.last as? UpdateLocalFileOperation {
+            let operations = SimpleFileUploadOperations().getOperations(localFile:$0)
+            if let updateLocalFileOperation = operations.last as? UpdateLocalFileOperation {
                 lastUpdateLocalFileOperations.append(updateLocalFileOperation)
             }
             self.operations.append(contentsOf: operations)
