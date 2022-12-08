@@ -19,7 +19,7 @@ class UpdateLocalFileOperation: AsyncOperation {
         guard let fileResponse else {
             DDLogInfo("Skipping UpdateLocalFileOperation")
             self.localFile.uploadingState = .Error
-            self.localFile.addToCache()
+            VCSCache.addToCache(item: self.localFile)
             self.state = .finished
             return
         }
@@ -43,7 +43,7 @@ class UpdateLocalFileOperation: AsyncOperation {
         self.result = .success(fileResponse)
         
         self.localFile.uploadingState = .Done
-        self.localFile.addToCache()
+        VCSCache.addToCache(item: self.localFile)
         self.localFile.parentUploadJob?.reCheckState(localFile: self.localFile)
         
         self.state = .finished

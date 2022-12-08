@@ -32,7 +32,7 @@ fileprivate struct MetadataForVCSFileResponse {
         }
         
         let uploadJob = UploadJob(jobOperation: .PDFFileUpload, localFile: unuploadedPDF, parentFolder: nil)
-        uploadJob.addToCache()
+        VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations(singleFileCompletion:  { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
@@ -64,7 +64,7 @@ fileprivate struct MetadataForVCSFileResponse {
         }
         
         let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile, parentFolder: nil)
-        uploadJob.addToCache()
+        VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations() { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
@@ -83,7 +83,7 @@ fileprivate struct MetadataForVCSFileResponse {
         }
         
         let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile, parentFolder: nil)
-        uploadJob.addToCache()
+        VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations() { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
@@ -96,7 +96,7 @@ fileprivate struct MetadataForVCSFileResponse {
     }
     
     public func upload(uploadJob: UploadJob, singleFileCompletion: ((Result<VCSFileResponse, Error>) -> Void)? = nil, multiFileCompletion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil) {
-        uploadJob.addToCache()
+        VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations(singleFileCompletion: singleFileCompletion, multiFileCompletion: multiFileCompletion)
     }
     
@@ -121,7 +121,7 @@ fileprivate struct MetadataForVCSFileResponse {
         }
         //TODO: iiliev add completion
         let uploadJob = UploadJob(localFiles: unuploadedPhotos, parentFolder: nil)
-        uploadJob.addToCache()
+        VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
@@ -152,7 +152,7 @@ fileprivate struct MetadataForVCSFileResponse {
         
         //TODO: iiliev add completion
         let uploadJob = UploadJob(localFiles: unuploadedFiles, parentFolder: nil)
-        uploadJob.addToCache()
+        VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {

@@ -34,7 +34,7 @@ import CocoaLumberjackSwift
     func reCheckState(localFile: UploadJobLocalFile) {
         DDLogInfo("UploadJob:reCheckState - \(self.localFiles.filter({ $0.uploadingState == .Done }).count) of \(self.localFiles.count)")
         self.localFiles.removeAll { $0.rID == localFile.rID }
-        self.addToCache()
+        VCSCache.addToCache(item: self)
         UploadJob.deleteUnuploadedFile(localFile)
         guard self.localFiles.allSatisfy({ $0.uploadingState == .Done }) else { return }
         self.removeFromCache()

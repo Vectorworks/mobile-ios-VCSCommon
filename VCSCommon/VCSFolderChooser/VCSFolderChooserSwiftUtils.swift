@@ -31,7 +31,7 @@ extension VCSStorageResponse {
         
         APIClient.getStoragePagesList(storagePagesURI: pagesURL).execute { (result: StoragePagesList) in
             self.setStoragePagesList(storagePages: result)
-            self.addToCache()
+            VCSCache.addToCache(item: self)
             
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             result.forEach { (storagePage) in
@@ -62,7 +62,7 @@ extension VCSStorageResponse {
         
         APIClient.getStoragePagesList(storagePagesURI: pagesURL).execute { (result: StoragePagesList) in
             self.setStoragePagesList(storagePages: result)
-            self.addToCache()
+            VCSCache.addToCache(item: self)
             
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             result.forEach { (storagePage) in
