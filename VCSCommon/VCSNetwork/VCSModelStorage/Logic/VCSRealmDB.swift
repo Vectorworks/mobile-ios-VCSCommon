@@ -188,7 +188,7 @@ public class VCSRealmConfig {
         )
     }
     
-    private static var getRealmSchemaVersion: UInt64 { return 20 }
+    private static var getRealmSchemaVersion: UInt64 { return 21 }
     private static var getRealmMigrations: RealmSwift.MigrationBlock {
         return { migration, oldSchemaVersion in
             if (oldSchemaVersion < 2) {
@@ -322,6 +322,11 @@ public class VCSRealmConfig {
                     newObject?["top"] = 0
                     newObject?["left"] = 0
                     newObject?["logoAR"] = 0
+                }
+            }
+            if (oldSchemaVersion < 20) {
+                migration.enumerateObjects(ofType: RealmUploadJob.className()) { (oldObject: MigrationObject?, newObject: MigrationObject?) in
+                    newObject?["owner"] = ""
                 }
             }
         }

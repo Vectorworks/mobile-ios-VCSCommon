@@ -8,6 +8,7 @@ public class RealmUploadJob: Object, VCSRealmObject, ObjectKeyIdentifiable {
     @objc dynamic public var RealmID: String = "nil"
     
     @objc dynamic var jobOperation: String = ""
+    @objc dynamic var owner: String = ""
     public dynamic var localFiles: List<RealmUploadJobLocalFile> = List()
     public dynamic var parentFolder: RealmFolder?
     
@@ -16,6 +17,7 @@ public class RealmUploadJob: Object, VCSRealmObject, ObjectKeyIdentifiable {
         self.RealmID = model.jobID
         
         self.jobOperation = model.jobOperation.rawValue
+        self.owner = model.owner
         
         let localFilesArray = model.localFiles
         let realmLocalFilesArray = List<RealmUploadJobLocalFile>()
@@ -33,6 +35,7 @@ public class RealmUploadJob: Object, VCSRealmObject, ObjectKeyIdentifiable {
         return UploadJob(jobID: self.RealmID,
                          jobOperation: UploadJob.JobType(rawValue: jobOperation) ?? UploadJob.JobType.MultipleFileUpload,
                          localFiles: arrLocalFiles,
+                         owner: self.owner,
                          parentFolder: self.parentFolder?.entity)
     }
     

@@ -15,20 +15,22 @@ import CocoaLumberjackSwift
     public let jobOperation: JobType
     public var localFiles: [UploadJobLocalFile]
     public let parentFolder: VCSFolderResponse?
+    public let owner: String
     
-    public init(jobID: String = UUID().uuidString, jobOperation: JobType = .MultipleFileUpload, localFiles: [UploadJobLocalFile], parentFolder: VCSFolderResponse?) {
+    public init(jobID: String = UUID().uuidString, jobOperation: JobType = .MultipleFileUpload, localFiles: [UploadJobLocalFile], owner: String, parentFolder: VCSFolderResponse?) {
         self.jobID = jobID
         self.jobOperation = jobOperation
         self.localFiles = localFiles
         self.parentFolder = parentFolder
+        self.owner = owner
         super.init()
         if UploadJob.uploadJobs.contains(where: { $0.jobID == self.jobID }) == false {
             UploadJob.uploadJobs.append(self)
         }
     }
     
-    public convenience init(jobID: String = UUID().uuidString, jobOperation: JobType = .SingleFileUpload, localFile: UploadJobLocalFile, parentFolder: VCSFolderResponse?) {
-        self.init(jobID: jobID, jobOperation: jobOperation, localFiles: [localFile], parentFolder: parentFolder)
+    public convenience init(jobID: String = UUID().uuidString, jobOperation: JobType = .SingleFileUpload, localFile: UploadJobLocalFile, owner: String, parentFolder: VCSFolderResponse?) {
+        self.init(jobID: jobID, jobOperation: jobOperation, localFiles: [localFile], owner: owner, parentFolder: parentFolder)
     }
     
     func reCheckState(localFile: UploadJobLocalFile) {

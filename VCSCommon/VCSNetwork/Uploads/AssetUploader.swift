@@ -31,7 +31,7 @@ fileprivate struct MetadataForVCSFileResponse {
             storage.delete(item: oldFile)
         }
         
-        let uploadJob = UploadJob(jobOperation: .PDFFileUpload, localFile: unuploadedPDF, parentFolder: nil)
+        let uploadJob = UploadJob(jobOperation: .PDFFileUpload, localFile: unuploadedPDF, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations(singleFileCompletion:  { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
@@ -63,7 +63,7 @@ fileprivate struct MetadataForVCSFileResponse {
             return
         }
         
-        let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile, parentFolder: nil)
+        let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations() { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
@@ -82,7 +82,7 @@ fileprivate struct MetadataForVCSFileResponse {
             return
         }
         
-        let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile, parentFolder: nil)
+        let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations() { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
@@ -100,8 +100,8 @@ fileprivate struct MetadataForVCSFileResponse {
         uploadJob.startUploadOperations(singleFileCompletion: singleFileCompletion, multiFileCompletion: multiFileCompletion)
     }
     
-    public func upload(unuploadedFiles: [UploadJobLocalFile], withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) {
-        let uploadJob = UploadJob(localFiles: unuploadedFiles, parentFolder: nil)
+    public func upload(unuploadedFiles: [UploadJobLocalFile], owner: String, withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) {
+        let uploadJob = UploadJob(localFiles: unuploadedFiles, owner: owner, parentFolder: nil)
         uploadJob.addToCache()
         uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
@@ -119,8 +119,8 @@ fileprivate struct MetadataForVCSFileResponse {
         let unuploadedPhotos = photos.compactMap { (photo) -> UploadJobLocalFile? in
             return Photo.construct(withName: photo.name, tempFile: photo.pathURL, containerInfo: containingFolder, owner: owner)
         }
-        //TODO: iiliev add completion
-        let uploadJob = UploadJob(localFiles: unuploadedPhotos, parentFolder: nil)
+        
+        let uploadJob = UploadJob(localFiles: unuploadedPhotos, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
@@ -150,8 +150,7 @@ fileprivate struct MetadataForVCSFileResponse {
             }
         }
         
-        //TODO: iiliev add completion
-        let uploadJob = UploadJob(localFiles: unuploadedFiles, parentFolder: nil)
+        let uploadJob = UploadJob(localFiles: unuploadedFiles, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
@@ -180,11 +179,15 @@ fileprivate struct MetadataForVCSFileResponse {
         }
         
         localUploadJobs.forEach { jobToUpload in
+            guard jobToUpload.owner == AuthCenter.shared.user?.login else { return }
+            
             if jobToUpload.localFiles.allSatisfy({ $0.uploadingState != .Waiting && $0.uploadingState != .Uploading }) {
                 DDLogInfo("Start Upload for job \(jobToUpload.jobID)")
-                AssetUploader.shared.upload(uploadJob: jobToUpload) { _ in
+                AssetUploader.shared.upload(uploadJob: jobToUpload, singleFileCompletion: { _ in
                     DDLogInfo("Finished upload for job: \(jobToUpload.jobID)")
-                }
+                }, multiFileCompletion:  { _ in
+                    DDLogInfo("Finished upload for job: \(jobToUpload.jobID)")
+                })
             }
         }
     }
