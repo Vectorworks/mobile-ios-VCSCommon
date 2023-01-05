@@ -1,9 +1,46 @@
 import Foundation
 import UIKit
 import Toast
+import QuickLook
 
 public extension Bundle {
     static let VCSCommon: Bundle = Bundle.module
+}
+
+public extension Notification.Name {
+    static let VCSSwiftUIShowTabBar = Notification.Name("VCSSwiftUIShowTabBar")
+    static let VCSSwiftUIHideTabBar = Notification.Name("VCSSwiftUIHideTabBar")
+}
+
+@objc open class VCSToggleSwiftUITabBarVC: UIViewController {
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        if self.hidesBottomBarWhenPushed == true {
+            NotificationCenter.default.post(name: .VCSSwiftUIHideTabBar, object: nil)
+        }
+    }
+    
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if self.hidesBottomBarWhenPushed == true {
+            NotificationCenter.default.post(name: .VCSSwiftUIShowTabBar, object: nil)
+        }
+    }
+}
+open class VCSToggleSwiftUITabBarQLVC : QLPreviewController {
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        if self.hidesBottomBarWhenPushed == true {
+            NotificationCenter.default.post(name: .VCSSwiftUIHideTabBar, object: nil)
+        }
+    }
+    
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if self.hidesBottomBarWhenPushed == true {
+            NotificationCenter.default.post(name: .VCSSwiftUIShowTabBar, object: nil)
+        }
+    }
 }
 
 @objc public extension UIViewController {
