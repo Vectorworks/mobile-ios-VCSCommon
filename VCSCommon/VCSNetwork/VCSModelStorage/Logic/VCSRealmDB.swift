@@ -325,8 +325,13 @@ public class VCSRealmConfig {
                 }
             }
             if (oldSchemaVersion < 20) {
-                migration.enumerateObjects(ofType: RealmUploadJob.className()) { (oldObject: MigrationObject?, newObject: MigrationObject?) in
+                migration.enumerateObjects(ofType: RealmUploadJob.className()) { (_, newObject: MigrationObject?) in
                     newObject?["owner"] = ""
+                    migration.enumerateObjects(ofType: RealmVCSUser.className()) { oldObject, _ in
+                        if (oldObject?["isLoggedIn"] as? Bool ?? false) == true {
+                            newObject?["owner"] = oldObject?["RealmID"] ?? ""
+                        }
+                    }
                 }
             }
         }
