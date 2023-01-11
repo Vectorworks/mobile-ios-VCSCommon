@@ -10,6 +10,7 @@ public extension Bundle {
 public extension Notification.Name {
     static let VCSSwiftUIShowTabBar = Notification.Name("VCSSwiftUIShowTabBar")
     static let VCSSwiftUIHideTabBar = Notification.Name("VCSSwiftUIHideTabBar")
+    static let VCSSwiftUIHidePlusMenu = Notification.Name("VCSSwiftUIHidePlusMenu")
 }
 
 @objc open class VCSToggleSwiftUITabBarVC: UIViewController {
