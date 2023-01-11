@@ -3,6 +3,7 @@ import UIKit
 
 @objc public class PageData: NSObject {
     @objc public static let DEFAULT_DEC_DIM_PRECISION: Int = 2
+    @objc public static let DEFAULT_DPI: Int = 72
     @objc public var name: String = ""
     @objc public var dpi: Int = 0
     @objc public var style: Int = 0
