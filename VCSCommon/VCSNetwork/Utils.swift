@@ -175,6 +175,12 @@ public extension FileManager {
         return result.path
     }
     
+    class var AppShareExtDirectory: URL {
+        let result = FileManager.AppDocumentsDirectoryURL.appendingPathComponent("ShareExt")
+        try? FileUtils.createURL(result)
+        return result
+    }
+    
     class var AppTempDirectory: String {
         let tmp = NSTemporaryDirectory()
         try? FileUtils.createPath(tmp)

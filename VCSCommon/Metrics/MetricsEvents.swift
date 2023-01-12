@@ -7,6 +7,7 @@ import FirebaseAnalytics
     @objc public static let LIST_ACTION__REALOD_ITEMS                           = "list_action__reload_items"
     @objc public static let LIST_ACTION__DOWNLOAD                               = "list_action__download"
     @objc public static let LIST_ACTION__SHARE_WITH_USER                        = "list_action__share_with_user"
+    @objc public static let LIST_ACTION__SHARE_WITH_OS                          = "list_action__share_with_OS"
     @objc public static let LIST_ACTION__SHARE_LINK                             = "list_action__share_link"
     @objc public static let LIST_ACTION__DELETE                                 = "list_action__delete"
     @objc public static let LIST_ACTION__STOP_SHARING                           = "list_action__stop_sharing"
