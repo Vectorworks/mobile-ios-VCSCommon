@@ -1,4 +1,5 @@
 import Foundation
+import CocoaLumberjackSwift
 
 protocol OperationsGenerator {
     func getOperations(localFile: UploadJobLocalFile, completion: ((Result<VCSFileResponse, Error>) -> Void)?) -> [Operation]
@@ -22,6 +23,13 @@ public class OperationsUtils {
         let resultOpr = SingleResultOperation(operationID: operationID, completion: finalOpr)
         let adapterResultOpr = BlockOperation(block: {
             resultOpr.result = lastUploadOperation.result
+            
+            switch resultOpr.result {
+            case .failure(let error):
+                DDLogError("Error on single upload. \(error.localizedDescription)")
+            case .success(_):
+                break
+            }
         })
         
         adapterResultOpr.addDependency(lastUploadOperation)
@@ -49,6 +57,13 @@ public class OperationsUtils {
                     }
                 case .failure(let error):
                     resultOpr.result = .failure(error)
+                }
+                
+                switch resultOpr.result {
+                case .failure(let error):
+                    DDLogError("Error on multi upload. \(error.localizedDescription)")
+                case .success(_):
+                    break
                 }
             })
             operation ==> adapterResultOpr ==> resultOpr
