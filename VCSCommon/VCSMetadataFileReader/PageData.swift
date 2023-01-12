@@ -5,7 +5,11 @@ import UIKit
     @objc public static let DEFAULT_DEC_DIM_PRECISION: Int = 2
     @objc public static let DEFAULT_DPI: Int = 72
     @objc public var name: String = ""
-    @objc public var dpi: Int = 0
+    @objc private var _dpi: Int = 0
+    @objc public var dpi: Int {
+        set { _dpi = newValue }
+        get { return _dpi == .zero ? PageData.DEFAULT_DPI : _dpi }
+    }
     @objc public var style: Int = 0
     @objc public var unitsPerInch: Double = 0.0
     @objc public var unitMark: String = ""
