@@ -31,7 +31,7 @@ public class APIClient: NSObject {
     @objc public static let ssoCustomRedirectURI: String = "vcsnomad://oauth-callback/ssologin"
     
     public static var LogoutClearFieldsNotification: Notification.Name { return Notification.Name(rawValue: APIClient.LogoutClearFieldsNotificationName) }
-    public static var hasNetworkConnectivity: Bool { return VCSReachability.default.netStatus != .unavailable }
+    public static var hasNetworkConnectivity: Bool { return VCSReachability.default.isConnected }
     public static var loggingEnabled: Bool = false
     public static var isAnonymousMode: Bool = false
     public static var lastErrorData: Data?
