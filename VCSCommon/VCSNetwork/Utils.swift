@@ -169,6 +169,12 @@ public extension FileManager {
         return result
     }
     
+    class var AppImportDirectory: URL {
+        let result = FileManager.AppDocumentsDirectoryURL.appendingPathComponent("Imported")
+        try? FileUtils.createURL(result)
+        return result
+    }
+    
     class var AppMeasurementsDirectory: String {
         let result = FileManager.AppDocumentsDirectoryURL.appendingPathComponent("Measurements")
         try? FileUtils.createURL(result)
@@ -230,6 +236,18 @@ public extension FileManager {
     class func uploadPath(folderName: String) -> URL {
         let uploadsURL = FileManager.AppUploadsDirectory
         let result = uploadsURL.appendingPathComponent(folderName)
+        return result
+    }
+    
+    class func importPath(uuidString: String = UUID().uuidString, pathExtension: String) -> URL {
+        let fileName = uuidString.appendingPathExtension(pathExtension)
+        let result = FileManager.importPath(fileName: fileName)
+        return result
+    }
+    
+    class func importPath(fileName: String) -> URL {
+        let uploadsURL = FileManager.AppImportDirectory
+        let result = uploadsURL.appendingPathComponent(fileName)
         return result
     }
 }
