@@ -4,8 +4,6 @@ import CocoaLumberjackSwift
 
 @objc public class VCSReachability: NSObject {
     public static var `default`: VCSReachability = VCSReachability(startMonitoring: false)
-//    @objc
-//    public static var defaultOBJC: VCSReachability { return VCSReachability.default }
     
     @Published public private(set) var isConnected = true
     @Published public private(set) var isCellular = false
@@ -21,15 +19,8 @@ import CocoaLumberjackSwift
         nwMonitor.start(queue: workerQueue)
         nwMonitor.pathUpdateHandler = { [weak self] path in
             DispatchQueue.main.async {
-                guard let self else { return }
-                let newIsConnected = path.status == .satisfied
-                if self.isConnected != newIsConnected {
-                    self.isConnected = newIsConnected
-                }
-                let newIsCellular = path.usesInterfaceType(.cellular)
-                if self.isCellular != newIsCellular {
-                    self.isCellular = newIsCellular
-                }
+                self?.isConnected = (path.status == .satisfied)
+                self?.isCellular = path.usesInterfaceType(.cellular)
             }
         }
     }
