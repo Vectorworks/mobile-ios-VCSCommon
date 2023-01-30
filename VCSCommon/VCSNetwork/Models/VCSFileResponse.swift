@@ -24,8 +24,6 @@ import Foundation
         self.ownerLogin = login
     }
     
-    public let id: Int
-    
     public var VCSID: String
     @objc public let downloadURL: String
     public let versionID, size, lastModified: String
@@ -162,7 +160,6 @@ import Foundation
         self.flags = try? container.decode(VCSFlagsResponse.self, forKey: CodingKeys.flags)
         self.ownerInfo = try? container.decode(VCSOwnerInfoResponse.self, forKey: CodingKeys.ownerInfo)
         
-        self.id = try container.decode(Int.self, forKey: CodingKeys.id)
         self.versionID = try container.decode(String.self, forKey: CodingKeys.versionID)
         self.thumbnail = try container.decode(String.self, forKey: CodingKeys.thumbnail)
         self.thumbnail3D = try? container.decode(String.self, forKey: CodingKeys.thumbnail3D)
@@ -192,7 +189,6 @@ import Foundation
         try container.encode(self.storageType, forKey: CodingKeys.storageType)
         try container.encode(self.ownerInfo, forKey: CodingKeys.ownerInfo)
         
-        try container.encode(self.id, forKey: CodingKeys.id)
         try container.encode(self.versionID, forKey: CodingKeys.versionID)
         try container.encode(self.thumbnail, forKey: CodingKeys.thumbnail)
         try container.encode(self.thumbnail3D, forKey: CodingKeys.thumbnail3D)
@@ -207,8 +203,7 @@ import Foundation
         
     }
     
-    init(id: Int,
-         versionID: String,
+    init(versionID: String,
          thumbnail: String,
          size: String,
          downloadURL: String,
@@ -243,7 +238,6 @@ import Foundation
         self.flags = flags
         self.ownerInfo = ownerInfo
         
-        self.id = id
         self.versionID = versionID
         self.thumbnail = thumbnail
         self.size = size
@@ -260,7 +254,7 @@ import Foundation
     }
     
     final public class func ==(lhs: VCSFileResponse, rhs: VCSFileResponse) -> Bool {
-        return lhs.id == rhs.id
+        return lhs.rID == rhs.rID
     }
 }
 

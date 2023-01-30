@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
 
-public protocol VCSRealmObject: Object {
+public protocol VCSRealmObject: Object, ObjectKeyIdentifiable {
     associatedtype Model
     
     init(model: Model)

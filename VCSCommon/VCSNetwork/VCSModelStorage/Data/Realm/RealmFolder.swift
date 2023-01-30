@@ -10,7 +10,7 @@ public class RealmFolder: Object, VCSRealmObject {
     @objc dynamic var resourceID: String = ""
     @objc dynamic var exists: Bool = false
     @objc dynamic var isNameValid: Bool = false
-    @objc dynamic var name: String = ""
+    @objc public dynamic var name: String = ""
     @objc dynamic var sharingInfo: RealmSharingInfo?
     @objc dynamic var prefix: String = ""
     @objc dynamic var storageType: String = StorageType.S3.rawValue

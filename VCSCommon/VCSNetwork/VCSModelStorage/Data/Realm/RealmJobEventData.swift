@@ -6,7 +6,7 @@ public class RealmJobEventData: Object, VCSRealmObject {
     override public class func primaryKey() -> String { return "RealmID" }
     
     @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var id: Int = 0
+    @objc dynamic public var id: Int = 0
     @objc dynamic var jobType: String = ""
     @objc dynamic var lastUpdate: String = ""
     @objc dynamic var sequenceNumber: Int = 0

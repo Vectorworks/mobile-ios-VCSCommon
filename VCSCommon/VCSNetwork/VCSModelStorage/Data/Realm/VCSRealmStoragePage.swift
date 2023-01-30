@@ -6,7 +6,7 @@ public class VCSRealmStoragPages: Object, VCSRealmObject {
     override public class func primaryKey() -> String { return "RealmID" }
     
     @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var id: String = ""
+    @objc dynamic public var id: String = ""
     @objc dynamic var name: String = ""
     @objc dynamic var folderURI: String = ""
     dynamic var sharedPaths: List<String> = List()

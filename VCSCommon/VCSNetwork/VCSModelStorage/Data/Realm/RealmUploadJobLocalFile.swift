@@ -1,7 +1,7 @@
 import Foundation
 import RealmSwift
 
-public class RealmUploadJobLocalFile: Object, VCSRealmObject, Identifiable {
+public class RealmUploadJobLocalFile: Object, VCSRealmObject {
     public typealias Model = UploadJobLocalFile
     override public class func primaryKey() -> String { return "RealmID" }
     

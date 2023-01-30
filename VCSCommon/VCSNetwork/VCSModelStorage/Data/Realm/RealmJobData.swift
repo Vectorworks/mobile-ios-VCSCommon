@@ -6,7 +6,7 @@ public class RealmJobData: Object, VCSRealmObject {
     override public class func primaryKey() -> String { return "RealmID" }
     
     @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var id: Int = 0
+    @objc dynamic public var id: Int = 0
     @objc dynamic var user: String = ""
     @objc dynamic var fileVersion: RealmJobFileVersion?
     @objc dynamic var vw: Int = 0

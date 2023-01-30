@@ -16,7 +16,6 @@ public class RealmFile: Object, VCSRealmObject {
     @objc dynamic var storageType: String = StorageType.S3.rawValue
     @objc dynamic var flags: RealmFlags?
     @objc dynamic var ownerInfo: RealmOwnerInfo?
-    @objc dynamic var id: Int = 0
     @objc dynamic var versionID: String = ""
     @objc dynamic var thumbnail: String = ""
     @objc dynamic var size: String = ""
@@ -34,7 +33,6 @@ public class RealmFile: Object, VCSRealmObject {
     public required convenience init(model: Model) {
         self.init()
         
-        self.id = model.id
         self.RealmID = model.VCSID
         
         self.resourceURI = model.resourceURI
@@ -98,8 +96,7 @@ public class RealmFile: Object, VCSRealmObject {
         let relatedArray = self.related.compactMap({ $0.entity })
         let arrRelated = Array(relatedArray)
         
-        return VCSFileResponse(id: self.id,
-                    versionID: self.versionID,
+        return VCSFileResponse(versionID: self.versionID,
                     thumbnail: self.thumbnail,
                     size: self.size,
                     downloadURL: self.downloadURL,
@@ -129,7 +126,6 @@ public class RealmFile: Object, VCSRealmObject {
         var result: [String : Any] = [:]
         
         result["RealmID"] = self.RealmID
-        result["id"] = self.id
         result["versionID"] = self.versionID
         result["thumbnail"] = self.thumbnail
         result["size"] = self.size
