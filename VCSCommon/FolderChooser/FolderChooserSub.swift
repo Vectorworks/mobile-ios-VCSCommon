@@ -102,7 +102,9 @@ struct FolderChooserSub: View {
                     Button {
                         self.result = currentFolder
                         self.isPresented = false
-                        self.parentIsPresented = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            self.parentIsPresented = true
+                        }
                     } label: {
                         Text(FolderChooserSettings.selectButtonTitle.vcsLocalized)
                     }

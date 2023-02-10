@@ -1,4 +1,5 @@
 import SwiftUI
+import CocoaLumberjackSwift
 
 public struct FolderChooser: View {
     public static var currentFolderRouteData: FCRouteData?
@@ -21,6 +22,25 @@ public struct FolderChooser: View {
         } else {
             self.rootRouteData = routeData
         }
+        
+        if let folderResponse = routeData.folderResponse {
+            let routePrefixes = folderResponse.prefix.split(separator: "/")
+            var resourceURIBase = String(folderResponse.resourceURI.split(separator: "p:").first ?? "")
+            var isFirst = true
+            var initialPathValue: [FCRouteData] = []
+            routePrefixes.forEach {
+                let prefix = String($0)
+                let pathComponent = isFirst ? "p:" + prefix : prefix
+                isFirst = false
+                resourceURIBase = resourceURIBase.appendingPathComponent(pathComponent)
+                let pathRoute = FCRouteData(resourceURI: resourceURIBase, breadcrumbsName: prefix)
+                
+                initialPathValue.append(pathRoute)
+                DDLogDebug("Folder Chooser adding to path: \(pathRoute.resourceURI)")
+            }
+            _path = State(initialValue: initialPathValue)
+            DDLogInfo("Folder Chooser path value: \(path.compactMap({ $0.resourceURI }))")
+        }
     }
     
     public var body: some View {
@@ -31,21 +51,6 @@ public struct FolderChooser: View {
                 }
         }
         .tint(Color(uiColor: .label))
-        .onAppear() {
-            if let routePrefixes = routeData.folderResponse?.prefix.split(separator: "/"), routePrefixes.count > 0 {
-                var resourceURIBase = String(routeData.resourceURI.split(separator: "p:").first ?? "")
-                var isFirst = true
-                routePrefixes.forEach {
-                    let prefix = String($0)
-                    let pathComponent = isFirst ? "p:" + prefix : prefix
-                    isFirst = false
-                    resourceURIBase = resourceURIBase.appendingPathComponent(pathComponent)
-                    let pathRoute = FCRouteData(resourceURI: resourceURIBase, breadcrumbsName: prefix)
-                    path.append(pathRoute)
-                    print(pathRoute.resourceURI)
-                }
-            }
-        }
     }
 }
 
