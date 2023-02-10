@@ -341,6 +341,14 @@ public extension Error {
     }
 }
 
+public enum VCSNetworkErrorCode: Int {
+    case noInternet = 13
+    case unauthorised = 401
+    case forbidden = 403
+    case notFound = 404
+    case preconditionRequired = 428
+}
+
 public extension Data {
     /// count as String.
     var size: String {

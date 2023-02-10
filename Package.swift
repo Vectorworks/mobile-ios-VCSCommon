@@ -6,8 +6,7 @@ import PackageDescription
 let package = Package(
     name: "mobile-ios-VCSCommon",
     platforms: [
-        .iOS(.v14),
-        
+        .iOS(.v16),
     ],
     products: [
         .library(
