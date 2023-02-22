@@ -30,7 +30,7 @@ import CocoaLumberjackSwift
     }
 
         
-    public init?(ownerLogin: String, storageType: StorageType, prefix: String, tempFileURL: URL, related: [UploadJobLocalFile]) {
+    public init?(ownerLogin: String, storageType: StorageType, prefix: String, tempFileURL: URL, copyFile: Bool = false, related: [UploadJobLocalFile]) {
         let UUIDString = UUID().uuidString
         self.VCSID = UUIDString
         
@@ -45,7 +45,11 @@ import CocoaLumberjackSwift
         //move files to uploads temp folder and save only the suffix
         if self.uploadPathURL.exists == false {
             do {
-                try FileManager.default.moveItem(at: tempFileURL, to: self.uploadPathURL)
+                if copyFile {
+                    try FileManager.default.copyItem(at: tempFileURL, to: self.uploadPathURL)
+                } else {
+                    try FileManager.default.moveItem(at: tempFileURL, to: self.uploadPathURL)
+                }
             } catch { 
                 DDLogError("UploadJobLocalFile init(ownerLogin: " + error.localizedDescription)
                 return nil

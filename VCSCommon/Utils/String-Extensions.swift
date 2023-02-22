@@ -11,6 +11,7 @@ public extension String {
     
     func appendingPathComponent(_ path: String) -> String { return (self as NSString).appendingPathComponent(path) }
     func appendingPathExtension(_ ext: String) -> String { return (self as NSString).appendingPathExtension(ext) ?? ext }
+    func appendingPathExtensionIfNeeded(_ ext: String) -> String { return self.pathExtension == ext ? self : self.appendingPathExtension(ext) }
     
     var MD5Hex: String {
         let digest = Insecure.MD5.hash(data: self.data(using: .utf8) ?? Data())

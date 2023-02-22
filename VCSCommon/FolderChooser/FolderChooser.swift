@@ -3,6 +3,7 @@ import CocoaLumberjackSwift
 
 public struct FolderChooser: View {
     public static var currentFolderRouteData: FCRouteData?
+    public static var itemsURLs: [UploadJobLocalFile]?
     
     @State var path: [FCRouteData] = []
     @State var routeData: FCRouteData

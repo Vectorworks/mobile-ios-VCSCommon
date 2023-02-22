@@ -12,6 +12,12 @@ import Foundation
         self.prefix = prefix == "/" ? "" : prefix
     }
     
+    public init(folder: VCSFolderResponse) {
+        self.ownerLogin = folder.ownerLogin
+        self.storageType = folder.storageType
+        self.prefix = folder.prefix == "/" ? "" : folder.prefix
+    }
+    
     @objc public convenience init(ownerLogin: String, storageTypeString: String, prefix: String) {
         let storageType = StorageType.typeFromString(type: storageTypeString)
         self.init(ownerLogin: ownerLogin, storageType: storageType, prefix: prefix)

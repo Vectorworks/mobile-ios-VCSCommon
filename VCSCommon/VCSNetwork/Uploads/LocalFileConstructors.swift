@@ -59,7 +59,7 @@ struct PDF {
 }
 
 public struct GenericFile {
-    public static func construct(withName name: String, pathExtention: String? = nil, fileURL: URL, containerInfo: ContainingFolderMetadata, owner: String, thumbnail: UploadJobLocalFile? = nil) -> UploadJobLocalFile? {
+    public static func construct(withName name: String, pathExtention: String? = nil, fileURL: URL, copyFile: Bool = false, containerInfo: ContainingFolderMetadata, owner: String, thumbnail: UploadJobLocalFile? = nil) -> UploadJobLocalFile? {
         var newName = name
         if let pExtention = pathExtention {
             newName = name.stringByReplacingPathExtension(pExtention) ?? name
