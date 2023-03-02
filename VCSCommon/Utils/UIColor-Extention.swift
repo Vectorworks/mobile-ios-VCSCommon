@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import SwiftUI
 
 @objc public extension UIColor {
     convenience init(red: Int, green: Int, blue: Int) {
@@ -28,4 +29,11 @@ import UIKit
         
         self.init(hex: Int(truncatingIfNeeded: rgbValue))
     }
+}
+
+public extension Color {
+    static var label: Color { return Color(uiColor: .label) }
+    static var secondaryLabel: Color { return Color(uiColor: .secondaryLabel) }
+    static var tertiaryLabel: Color { return Color(uiColor: .tertiaryLabel) }
+    static var quaternaryLabel: Color { return Color(uiColor: .quaternaryLabel) }
 }

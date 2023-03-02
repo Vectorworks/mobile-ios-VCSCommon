@@ -131,41 +131,6 @@ public class CreateProjectLocalizedAlert: FileNameValidationAlert {
     }
 }
 
-public class CreateFolderLocalizedAlert: FileNameValidationAlert {
-    public let fileType: FileTypeForAlert = .folder
-    
-    public var title: String = "Folder name".vcsLocalized
-    
-    public var message: String {
-        return modifiedMessage ?? ""
-    }
-    
-    public var modifiedMessage: String?
-    
-    public var defaultActionTitle: String = "Create".vcsLocalized
-    
-    public var defaultActionTitleIsEnabled: Bool = true
-    
-    public var defaultActionHandler: (UIAlertAction, String) -> Void
-    
-    public var textFieldPlaceholder: String = "Folder name".vcsLocalized
-    
-    public var textFieldConfigurationHandler: ((UITextField) -> Void)?
-    
-    public var cancelActionTitle: String = "Cancel".vcsLocalized
-    
-    public var cancelActionTitleIsEnabled: Bool = true
-    
-    public var cancelActionHandler: (UIAlertAction) -> Void {
-        return { (_) in }
-    }
-    
-    public init(defaultActionHandler: @escaping (UIAlertAction, String) -> Void, textFieldConfigurationHandler: ((UITextField) -> Void)?) {
-        self.defaultActionHandler = defaultActionHandler
-        self.textFieldConfigurationHandler = textFieldConfigurationHandler
-    }
-}
-
 public class AssetsToPhotogramLocalizedAlert: FileNameValidationAlert {
     public let fileType: FileTypeForAlert = .assets
     

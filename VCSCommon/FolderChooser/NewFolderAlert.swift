@@ -9,6 +9,9 @@ public struct NewFolderAlert: ViewModifier {
     @State private var newFolderMessage = ""
     @State var onSuccess: ((VCSFolderResponse) -> Void)?
     @State var onFailure: ((Error) -> Void)?
+    @State var isCreateButtonDisabled = false
+    
+    var nameValidator = VCSAlertTextFieldValidator.defaultWithMessage("")
     
     public func body(content: Content) -> some View {
         content
@@ -17,28 +20,26 @@ public struct NewFolderAlert: ViewModifier {
             }, message: {
                 Text(newFolderMessage)
             })
-            .alert(FolderChooserSettings.folderNameTitle.vcsLocalized, isPresented: $isPresented, actions: {
-                TextField(FolderChooserSettings.newFolderButtonTitle.vcsLocalized, text: $folderName)
-                Button(FolderChooserSettings.createButtonTitle.vcsLocalized, action: {
-                    guard let currentFolder = currentFolder ?? FolderChooser.currentFolderRouteData?.folderResponse else { return }
-                    APIClient.createFolder(storage: currentFolder.storageType, name: folderName, parentFolderPrefix: currentFolder.prefix, owner: currentFolder.ownerLogin).execute(onSuccess: { (result: VCSFolderResponse) in
-                        VCSCache.addToCache(item: result)
-                        folderName = ""
-                        onSuccess?(result)
-                    }, onFailure: { (error: Error) in
-                        DDLogError("APIClient.createFolder(storage: currentFolder.storageType - \(error)")
-                        newFolderMessage = FolderChooserSettings.invalidNameMessage.vcsLocalized
-                        if error.responseCode == 409 {
-                            newFolderMessage = FolderChooserSettings.folderWithTheSameName___Message.vcsLocalized
-                        }
-                        showAlertError = true
-                        onFailure?(error)
-                    })
+            .customAlert(isPresented: $isPresented, title: FolderChooserSettings.folderNameTitle.vcsLocalized, message: $newFolderMessage, textFieldName: FolderChooserSettings.newFolderButtonTitle.vcsLocalized, textFieldValue: $folderName, leftButtonName: FolderChooserSettings.folderNameTitle.vcsLocalized, leftButtonAction: {
+                self.isPresented = false
+                guard let currentFolder = currentFolder ?? FolderChooser.currentFolderRouteData?.folderResponse else { return }
+                APIClient.createFolder(storage: currentFolder.storageType, name: folderName, parentFolderPrefix: currentFolder.prefix, owner: currentFolder.ownerLogin).execute(onSuccess: { (result: VCSFolderResponse) in
+                    VCSCache.addToCache(item: result)
+                    folderName = ""
+                    newFolderMessage = ""
+                    onSuccess?(result)
+                }, onFailure: { (error: Error) in
+                    DDLogError("APIClient.createFolder(storage: currentFolder.storageType - \(error)")
+                    newFolderMessage = FolderChooserSettings.invalidNameMessage.vcsLocalized
+                    if error.responseCode == 409 {
+                        newFolderMessage = FolderChooserSettings.folderWithTheSameName___Message.vcsLocalized
+                    }
+                    showAlertError = true
+                    onFailure?(error)
                 })
-                Button(FolderChooserSettings.cancelButtonTitle.vcsLocalized, role: .cancel, action: {})
-            }, message: {
-                Text(newFolderMessage)
-            })
+            }, rightButtonName: FolderChooserSettings.cancelButtonTitle.vcsLocalized) {
+                self.isPresented = false
+            }
     }
 }
 

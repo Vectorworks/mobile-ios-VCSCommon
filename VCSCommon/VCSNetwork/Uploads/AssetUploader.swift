@@ -33,7 +33,7 @@ fileprivate struct MetadataForVCSFileResponse {
         
         let uploadJob = UploadJob(jobOperation: .PDFFileUpload, localFile: unuploadedPDF, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
-        uploadJob.startUploadOperations(singleFileCompletion:  { (result) in
+        uploadJob.startUploadOperations(singleFileCompletion: { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
             case .success(_):
@@ -103,7 +103,7 @@ fileprivate struct MetadataForVCSFileResponse {
     public func upload(unuploadedFiles: [UploadJobLocalFile], owner: String, withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) {
         let uploadJob = UploadJob(localFiles: unuploadedFiles, owner: owner, parentFolder: nil)
         uploadJob.addToCache()
-        uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
+        uploadJob.startUploadOperations(multiFileCompletion: { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
             case .success(let value):
@@ -122,7 +122,7 @@ fileprivate struct MetadataForVCSFileResponse {
         
         let uploadJob = UploadJob(localFiles: unuploadedPhotos, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
-        uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
+        uploadJob.startUploadOperations(multiFileCompletion: { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
             case .success(let value):
@@ -152,7 +152,7 @@ fileprivate struct MetadataForVCSFileResponse {
         
         let uploadJob = UploadJob(localFiles: unuploadedFiles, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
-        uploadJob.startUploadOperations(multiFileCompletion:  { (result) in
+        uploadJob.startUploadOperations(multiFileCompletion: { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
             case .success(let value):
@@ -185,7 +185,7 @@ fileprivate struct MetadataForVCSFileResponse {
                 DDLogInfo("Start Upload for job \(jobToUpload.jobID)")
                 AssetUploader.shared.upload(uploadJob: jobToUpload, singleFileCompletion: { _ in
                     DDLogInfo("Finished upload for job: \(jobToUpload.jobID)")
-                }, multiFileCompletion:  { _ in
+                }, multiFileCompletion: { _ in
                     DDLogInfo("Finished upload for job: \(jobToUpload.jobID)")
                 })
             }

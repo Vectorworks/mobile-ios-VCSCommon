@@ -1,5 +1,5 @@
-import UIKit
 import Foundation
+import SwiftUI
 
 @objc public class VCSAlertTextFieldValidator: NSObject, UITextFieldDelegate {
     public static var privateDefaultInstance: VCSAlertTextFieldValidator = VCSAlertTextFieldValidator()
@@ -10,6 +10,12 @@ import Foundation
     @objc public static func defaultWithPresenter(_ presenter: UIViewController) -> VCSAlertTextFieldValidator {
         VCSAlertTextFieldValidator.default.presenter = presenter
         VCSAlertTextFieldValidator.default.originalMessage = nil
+        return VCSAlertTextFieldValidator.default
+    }
+    
+    public static func defaultWithMessage(_ message: String) -> VCSAlertTextFieldValidator {
+        VCSAlertTextFieldValidator.default.presenter = nil
+        VCSAlertTextFieldValidator.default.originalMessage = message
         return VCSAlertTextFieldValidator.default
     }
     
@@ -57,6 +63,37 @@ import Foundation
         
         if result {
             alert.message = self.originalMessage
+        }
+        
+        return result
+    }
+    
+    public func isNameValid(_ name: String, alertMessage: inout String) -> Bool {
+        var result = true
+        
+        if name.count > 255 {
+            alertMessage = "The maximum length is 255 characters.".vcsLocalized
+            result = false
+        }
+        
+        let invalidCharacters = CharacterSet(charactersIn: VCSCommonConstants.invalidCharacterList)
+        if name.rangeOfCharacter(from: invalidCharacters) != nil {
+            alertMessage = String(format: "%@ %@\n", "The following characters are invalid:".vcsLocalized, String(format: VCSCommonConstants.invalidCharacterListStringFormat, "and".vcsLocalized))
+            result = false
+        }
+        
+        if name.containsEmoji {
+            alertMessage = "Emojis are not allowed.".vcsLocalized
+            result = false
+        }
+        
+        if name.isEmpty {
+            alertMessage = self.originalMessage ?? ""
+            result = false
+        }
+        
+        if result {
+            alertMessage = self.originalMessage ?? ""
         }
         
         return result

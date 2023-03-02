@@ -51,7 +51,7 @@ public struct FolderChooser: View {
                     FolderChooserSub(path: $path, rootRouteData: $rootRouteData, routeData: routeValue, resultFolder: routeValue.folderResult, result: $resultFolder, isPresented: $isPresented, parentIsPresented: $parentIsPresented)
                 }
         }
-        .tint(Color(uiColor: .label))
+        .tint(.label)
     }
 }
 
