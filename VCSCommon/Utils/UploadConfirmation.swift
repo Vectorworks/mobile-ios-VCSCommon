@@ -12,10 +12,10 @@ public class UploadConfirmationViewModel: ObservableObject {
     var uploadButtonName: String
     var uploadButtonAction: ((UploadConfirmationResult) -> Void)?
     
+    var isChangeNameEnabled: Bool
     var isNFAPresented: Binding<Bool>
     
     var changeNameButtonName: String
-    var isChangeNameEnabled: Bool { return self.changeNameButtonName.isEmpty == false }
     var fileNameTitle: String
     var fileNameFieldTitle: String
     var fileNameButtonName: String
@@ -31,6 +31,7 @@ public class UploadConfirmationViewModel: ObservableObject {
          changeFolderButtonName: String,
          uploadButtonName: String,
          uploadButtonAction: ((UploadConfirmationResult) -> Void)? = nil,
+         isChangeNameEnabled: Bool,
          isNFAPresented: Binding<Bool>,
          changeNameButtonName: String,
          fileNameTitle: String,
@@ -46,6 +47,7 @@ public class UploadConfirmationViewModel: ObservableObject {
         self.changeFolderButtonName = changeFolderButtonName
         self.uploadButtonName = uploadButtonName
         self.uploadButtonAction = uploadButtonAction
+        self.isChangeNameEnabled = isChangeNameEnabled
         self.isNFAPresented = isNFAPresented
         self.changeNameButtonName = changeNameButtonName
         self.fileNameTitle = fileNameTitle
@@ -133,6 +135,7 @@ public extension View {
                                   changeButtonName: String = "Change folder".vcsLocalized,
                                   uploadButtonName: String = "Start upload".vcsLocalized,
                                   uploadButtonAction: ((UploadConfirmationResult) -> Void)?,
+                                  isChangeNameEnabled: Bool = false,
                                   isNFAPresented: Binding<Bool> = .constant(false),
                                   changeNameButtonName: String = "Change file name".vcsLocalized,
                                   fileNameTitle: String = "Enter File Name".vcsLocalized,
@@ -148,6 +151,7 @@ public extension View {
                                                                        changeFolderButtonName: changeButtonName,
                                                                        uploadButtonName: uploadButtonName,
                                                                        uploadButtonAction: uploadButtonAction,
+                                                                       isChangeNameEnabled: isChangeNameEnabled,
                                                                        isNFAPresented: isNFAPresented,
                                                                        changeNameButtonName: changeNameButtonName,
                                                                        fileNameTitle: fileNameTitle,
