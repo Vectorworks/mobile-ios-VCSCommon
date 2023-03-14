@@ -71,6 +71,7 @@ public struct GenericFile {
                                                     storageType: containerInfo.storageType,
                                                     prefix: containerInfo.prefix.appendingPathComponent(newName),
                                                     tempFileURL: fileURL,
+                                                    copyFile: copyFile,
                                                     related: relatedFiles)
         
         return localFileForUpload
