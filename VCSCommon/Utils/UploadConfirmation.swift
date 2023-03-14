@@ -19,7 +19,7 @@ public class UploadConfirmationViewModel: ObservableObject {
     var fileNameTitle: String
     var fileNameFieldTitle: String
     var fileNameButtonName: String
-    var fileNameMessage: String
+//    var fileNameMessage: String
     
     var cancelButtonName: String
     var cancelButtonAction: (() -> Void)?
@@ -37,7 +37,7 @@ public class UploadConfirmationViewModel: ObservableObject {
          fileNameTitle: String,
          fileNameFieldTitle: String,
          fileNameButtonName: String,
-         fileNameMessage: String,
+//         fileNameMessage: String,
          cancelButtonName: String,
          cancelButtonAction: (() -> Void)? = nil) {
         self.isPresented = isPresented
@@ -53,7 +53,7 @@ public class UploadConfirmationViewModel: ObservableObject {
         self.fileNameTitle = fileNameTitle
         self.fileNameFieldTitle = fileNameFieldTitle
         self.fileNameButtonName = fileNameButtonName
-        self.fileNameMessage = fileNameMessage
+//        self.fileNameMessage = fileNameMessage
         self.cancelButtonName = cancelButtonName
         self.cancelButtonAction = cancelButtonAction
     }
@@ -63,6 +63,8 @@ public struct UploadConfirmation: ViewModifier {
     @ObservedObject var model: UploadConfirmationViewModel
     @State var newFileName: String = FileNameUtils.appendingTimeStampToName(name: "Nomad")
     @State var uploadFolder: VCSFolderResponse
+    @State private var newFolderMessage = ""
+    @State private var tempFileName = ""
     
     var generatedMessage: String {
         var result = self.model.message + "\n" + "\(self.uploadFolder.displayedPrefix)"
@@ -83,6 +85,7 @@ public struct UploadConfirmation: ViewModifier {
                 }
                 if model.isChangeNameEnabled {
                     Button {
+                        self.tempFileName = self.newFileName
                         model.isNFAPresented.wrappedValue = true
                     } label: {
                         Text(model.changeNameButtonName)
@@ -108,20 +111,17 @@ public struct UploadConfirmation: ViewModifier {
             .fullScreenCover(isPresented: model.isUFCPresented, content: {
                 FolderChooser(routeData: FCRouteData(folder: self.uploadFolder), folderResult: self.$uploadFolder, isPresented: model.isUFCPresented, parentIsPresented: model.isPresented)
             })
-            .alert(model.fileNameTitle, isPresented: model.isNFAPresented) {
-                TextField(model.fileNameFieldTitle, text: self.$newFileName)
-                    .textInputAutocapitalization(.never)
-                Button(model.fileNameButtonName) {
-                    if self.newFileName.isEmpty {
-                        self.newFileName = FileNameUtils.appendingTimeStampToName(name: "Nomad")
-                    }
-                    model.isNFAPresented.wrappedValue = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        model.isPresented.wrappedValue = true
-                    }
+            .customAlert(isPresented: model.isNFAPresented, title: model.fileNameTitle, message: $newFolderMessage, textFieldName: model.fileNameFieldTitle, textFieldValue: self.$newFileName, leftButtonName: model.fileNameButtonName, leftButtonAction: {
+                model.isNFAPresented.wrappedValue = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    model.isPresented.wrappedValue = true
                 }
-            } message: {
-                Text(model.fileNameMessage)
+            }, rightButtonName: FolderChooserSettings.cancelButtonTitle.vcsLocalized) {
+                model.isNFAPresented.wrappedValue = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.newFileName = self.tempFileName
+                    model.isPresented.wrappedValue = true
+                }
             }
     }
 }
@@ -141,7 +141,7 @@ public extension View {
                                   fileNameTitle: String = "Enter File Name".vcsLocalized,
                                   fileNameFieldTitle: String = "File name".vcsLocalized,
                                   fileNameButtonName: String = "Save file name".vcsLocalized,
-                                  fileNameMessage: String = "",
+//                                  fileNameMessage: String = "",
                                   cancelButtonName: String = "",
                                   cancelButtonAction: (() -> Void)? = nil) -> some View {
         modifier(UploadConfirmation(model: UploadConfirmationViewModel(isPresented: isPresented,
@@ -157,7 +157,7 @@ public extension View {
                                                                        fileNameTitle: fileNameTitle,
                                                                        fileNameFieldTitle: fileNameFieldTitle,
                                                                        fileNameButtonName: fileNameButtonName,
-                                                                       fileNameMessage: fileNameMessage,
+//                                                                       fileNameMessage: fileNameMessage,
                                                                        cancelButtonName: cancelButtonName,
                                                                        cancelButtonAction: cancelButtonAction),
                                     uploadFolder: uploadFolder))
