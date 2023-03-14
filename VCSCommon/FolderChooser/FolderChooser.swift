@@ -40,7 +40,7 @@ public struct FolderChooser: View {
                 DDLogDebug("Folder Chooser adding to path: \(pathRoute.resourceURI)")
             }
             _path = State(initialValue: initialPathValue)
-            DDLogInfo("Folder Chooser path value: \(path.compactMap({ $0.resourceURI }))")
+            DDLogDebug("Folder Chooser path value: \(path.compactMap({ $0.resourceURI }))")
         }
     }
     

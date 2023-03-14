@@ -13,7 +13,7 @@ import CocoaLumberjackSwift
     
     public var VCSID: String
     
-    public let ownerLogin: String
+    public var ownerLogin: String
     public let storageType: StorageType
     public var prefix: String
     public var size: String { return self.uploadPathURL.fileSizeString }
