@@ -84,18 +84,18 @@ public class SimpleFileUploadOperations: OperationsGenerator {
         self.operations.removeAll()
         
         let uploadDataOpr = UploadDataOperation(localFile: localFile)
-        let getUplaodedFileDataOpr = GetUploadedFileDataOperation(localFile: localFile)
+        let getUploadedFileDataOpr = GetUploadedFileDataOperation(localFile: localFile)
         let adapterUploadDataOpr = BlockOperation(block: {
             switch uploadDataOpr.result {
             case .success(let value):
-                getUplaodedFileDataOpr.uploadResponseResult = value
+                getUploadedFileDataOpr.uploadResponseResult = value
             case .failure(let error):
-                getUplaodedFileDataOpr.result = .failure(error)
+                getUploadedFileDataOpr.result = .failure(error)
             }
         })
         let updateLocalFileOperation = UpdateLocalFileOperation(localFile: localFile, fileResponse: nil)
         let adapterUpdateLocalOpr = BlockOperation(block: {
-            switch getUplaodedFileDataOpr.result {
+            switch getUploadedFileDataOpr.result {
             case .success(let value):
                 updateLocalFileOperation.fileResponse = value
             case .failure(let error):
@@ -103,11 +103,11 @@ public class SimpleFileUploadOperations: OperationsGenerator {
             }
         })
         
-        uploadDataOpr ==> adapterUploadDataOpr ==> getUplaodedFileDataOpr ==> adapterUpdateLocalOpr ==> updateLocalFileOperation
+        uploadDataOpr ==> adapterUploadDataOpr ==> getUploadedFileDataOpr ==> adapterUpdateLocalOpr ==> updateLocalFileOperation
         
         self.operations.append(uploadDataOpr)
         self.operations.append(adapterUploadDataOpr)
-        self.operations.append(getUplaodedFileDataOpr)
+        self.operations.append(getUploadedFileDataOpr)
         self.operations.append(adapterUpdateLocalOpr)
         self.operations.append(updateLocalFileOperation)
         

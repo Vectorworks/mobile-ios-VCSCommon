@@ -57,13 +57,14 @@ fileprivate struct MetadataForVCSFileResponse {
         }
     }
     
-    public func upload(_ name: String, pathExtention: String? = nil, containingFolder: ContainingFolderMetadata, tempFile: URL, owner: String, withCompletionHandler handler: ((Result<VCSFileResponse, Error>) -> Void)?) {
-        guard let unuploadedFile = GenericFile.construct(withName: name, pathExtention: pathExtention, fileURL: tempFile, containerInfo: containingFolder, owner: owner) else {
+    public func upload(_ name: String, pathExtention: String? = nil, containingFolder: ContainingFolderMetadata, tempFile: URL, owner: String, thumbnail: UploadJobLocalFile? = nil, withCompletionHandler handler: ((Result<VCSFileResponse, Error>) -> Void)?) {
+        guard let unuploadedFile = GenericFile.construct(withName: name, pathExtention: pathExtention, fileURL: tempFile, containerInfo: containingFolder, owner: owner, thumbnail: thumbnail) else {
             handler?(.failure(VCSError.LocalFileNotCreated))
             return
         }
         
-        let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile, owner: owner, parentFolder: nil)
+        let jobOperation: UploadJob.JobType = (thumbnail == nil) ? .SingleFileUpload : .PDFFileUpload
+        let uploadJob = UploadJob(jobOperation: jobOperation, localFile: unuploadedFile, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations() { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)

@@ -3,7 +3,7 @@ import CocoaLumberjackSwift
 
 class SingleResultOperation: AsyncOperation {
     var completion: ((Result<VCSFileResponse, Error>) -> Void)?
-    var result: Result<VCSFileResponse, Error> = .failure(VCSError.OperationNotExecuted)
+    var result: Result<VCSFileResponse, Error> = .failure(VCSError.OperationNotExecuted("SingleResultOperation"))
     
     init(operationID: String, completion: ((Result<VCSFileResponse, Error>) -> Void)? = nil) {
         self.completion = completion

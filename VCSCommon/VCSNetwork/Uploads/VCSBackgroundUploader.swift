@@ -74,11 +74,11 @@ extension VCSBackgroundSession: URLSessionDataDelegate {
                 
                 uploadJob.result = .success(result)
                 uploadJob.state = .finished
-            }
-            else {
+            } else if let responseError = error{
+                DDLogError("urlSession didCompleteWithError: \(responseError.localizedDescription)")
+            } else {
                 DDLogError("Taks \(task.taskDescription) is not completing correctly.")
             }
-            
         } else {
             DDLogError("urlSession(_ session: URLSession, task: -> TASK is unknown")
         }

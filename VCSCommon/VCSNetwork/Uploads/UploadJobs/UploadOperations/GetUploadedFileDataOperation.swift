@@ -5,7 +5,7 @@ class GetUploadedFileDataOperation: AsyncOperation {
     var uploadResponseResult: VCSUploadDataResponse?
     var localFile: UploadJobLocalFile
     
-    var result: Result<VCSFileResponse, Error> = .failure(VCSError.OperationNotExecuted)
+    var result: Result<VCSFileResponse, Error> = .failure(VCSError.OperationNotExecuted("GetUploadedFileDataOperation"))
     
     init(localFile: UploadJobLocalFile) {
         self.localFile = localFile
@@ -16,7 +16,7 @@ class GetUploadedFileDataOperation: AsyncOperation {
     
     override func main() {
         guard let uploadResponse = self.uploadResponseResult else {
-            DDLogInfo("Skipping GetUplaodedFileDataOperation")
+            DDLogInfo("Skipping GetUplaodedFileDataOperation - \(localFile.name)")
             self.localFile.uploadingState = .Error
             VCSCache.addToCache(item: self.localFile)
             self.state = .finished

@@ -50,28 +50,28 @@ public final class SelectFilenameDialogCreator: NSObject {
         presentCreationAlert(createFileAlert: createFileAlert, presenter: presenter, alertInfo: alertInfo, handler: handler)
     }
     
-    @objc public static func createAndPresentMeasureProjectCreationAlert(path: String, presenter: UIViewController, alertInfo: FileNameValidationAlert) {
-        let createFileAlert = createCreationAlert(alertInfo: alertInfo)
-        let handler: ((UIAlertAction) -> Void)? = { [unowned presenter] (action) in
-            guard let fileName = createFileAlert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
-            let projectPrefix = path.appendingPathComponent(fileName)
-            
-            
-            let validationResult = FilenameValidator.validateMeasureProjectPath(path: projectPrefix)
-            switch validationResult {
-            case .valid:
-                alertInfo.defaultActionHandler(action, fileName)
-            case .invalid(.containsInvalidCharacters):
-                alertInfo.modifiedMessage = "A space at the beginning of the name is not allowed, and the following characters are invalid:".vcsLocalized + "\\ ? < > : * | %% & \" / ~ %@ #."
-            case .invalid(.empty):
-                alertInfo.modifiedMessage = "Please enter a filename.".vcsLocalized
-            case .invalid(.exists):
-                presentExistingMeasureProjectAlert(alertInfo: alertInfo, path: path, presenter: presenter, fileName: fileName)
-            }
-        }
-        
-        presentCreationAlert(createFileAlert: createFileAlert, presenter: presenter, alertInfo: alertInfo, handler: handler)
-    }
+//    @objc public static func createAndPresentMeasureProjectCreationAlert(path: String, presenter: UIViewController, alertInfo: FileNameValidationAlert) {
+//        let createFileAlert = createCreationAlert(alertInfo: alertInfo)
+//        let handler: ((UIAlertAction) -> Void)? = { [unowned presenter] (action) in
+//            guard let fileName = createFileAlert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+//            let projectPrefix = path.appendingPathComponent(fileName)
+//            
+//            
+//            let validationResult = FilenameValidator.validateMeasureProjectPath(path: projectPrefix)
+//            switch validationResult {
+//            case .valid:
+//                alertInfo.defaultActionHandler(action, fileName)
+//            case .invalid(.containsInvalidCharacters):
+//                alertInfo.modifiedMessage = "A space at the beginning of the name is not allowed, and the following characters are invalid:".vcsLocalized + "\\ ? < > : * | %% & \" / ~ %@ #."
+//            case .invalid(.empty):
+//                alertInfo.modifiedMessage = "Please enter a filename.".vcsLocalized
+//            case .invalid(.exists):
+//                presentExistingMeasureProjectAlert(alertInfo: alertInfo, path: path, presenter: presenter, fileName: fileName)
+//            }
+//        }
+//        
+//        presentCreationAlert(createFileAlert: createFileAlert, presenter: presenter, alertInfo: alertInfo, handler: handler)
+//    }
     
     //TODO: Cover all file type cases
     private static func appendFileExtensionIfNeeded(filePrefix: String, fileType: FileTypeForAlert) -> String {
@@ -118,7 +118,7 @@ public final class SelectFilenameDialogCreator: NSObject {
         let existingFilenameAlert: UIAlertController
         if (alertInfo.fileType == .folder) {
             existingFilenameAlert = existingFolderNameAlert(defaultHandler: { [unowned presenter] _ in
-                createAndPresentMeasureProjectCreationAlert(path: path, presenter: presenter, alertInfo: alertInfo)
+//                createAndPresentMeasureProjectCreationAlert(path: path, presenter: presenter, alertInfo: alertInfo)
             })
         }
         else {

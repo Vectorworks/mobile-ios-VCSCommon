@@ -5,7 +5,7 @@ class UpdateLocalFileOperation: AsyncOperation {
     let localFile: UploadJobLocalFile
     var fileResponse: VCSFileResponse?
     
-    var result: Result<VCSFileResponse, Error> = .failure(VCSError.OperationNotExecuted)
+    var result: Result<VCSFileResponse, Error> = .failure(VCSError.OperationNotExecuted("UpdateLocalFileOperation"))
     
     init(localFile: UploadJobLocalFile, fileResponse: VCSFileResponse?) {
         self.localFile = localFile
@@ -17,7 +17,7 @@ class UpdateLocalFileOperation: AsyncOperation {
     
     override func main() {
         guard let fileResponse else {
-            DDLogInfo("Skipping UpdateLocalFileOperation")
+            DDLogInfo("Skipping UpdateLocalFileOperation - \(localFile.name)")
             self.localFile.uploadingState = .Error
             VCSCache.addToCache(item: self.localFile)
             self.state = .finished

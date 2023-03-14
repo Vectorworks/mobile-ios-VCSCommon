@@ -6,7 +6,7 @@ class UploadDataOperation: AsyncOperation {
     var session: VCSBackgroundSession
     var backgroundTask: URLSessionUploadTask? = nil
     
-    var result: Result<VCSUploadDataResponse, Error> = .failure(VCSError.OperationNotExecuted)
+    var result: Result<VCSUploadDataResponse, Error> = .failure(VCSError.OperationNotExecuted("UploadDataOperation"))
     
     init(localFile: UploadJobLocalFile, session: VCSBackgroundSession = VCSBackgroundSession.default) {
         self.session = session

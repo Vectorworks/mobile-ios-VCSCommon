@@ -35,6 +35,8 @@ public enum VCSFileType: String
     case PTS
     case HEIC
     case TIF
+    case JSON
+    case VMSR
     
     public func isInFileName(_ oName: String?) -> Bool {
         guard let name = oName else { return false }
@@ -53,4 +55,6 @@ public enum VCSFileType: String
     private func isInFileNameSuffix(name: String) -> Bool {
         return name.uppercased().hasSuffix(self.rawValue)
     }
+    
+    public var pathExt: String { return self.rawValue.lowercased() }
 }
