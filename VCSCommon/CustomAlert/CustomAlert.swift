@@ -91,17 +91,16 @@ struct CustomAlert: View {
                                 .multilineTextAlignment(.center)
                         }
                         
-                        //if textFieldValue.isEmpty == false {
-                            TextField(textFieldName, text: $textFieldValue)
-                                .font(.footnote)
-                                .multilineTextAlignment(.center)
-                                .onAppear() {
-                                    self.checkNameAndSetButtonState(name: textFieldValue)
-                                }
-                                .onChange(of: textFieldValue) { newValue in
-                                    self.checkNameAndSetButtonState(name: newValue)
-                                }
-                        //}
+                        TextField(textFieldName, text: $textFieldValue)
+                            .background(RoundedRectangle(cornerRadius: 4).fill(Color.secondarySystemBackground))
+                            .font(.body)
+                            .multilineTextAlignment(.center)
+                            .onAppear() {
+                                self.checkNameAndSetButtonState(name: textFieldValue)
+                            }
+                            .onChange(of: textFieldValue) { newValue in
+                                self.checkNameAndSetButtonState(name: newValue)
+                            }
                     }
                     .foregroundColor(.primary)
                     .padding(.horizontal, 8)

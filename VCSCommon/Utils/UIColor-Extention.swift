@@ -36,4 +36,8 @@ public extension Color {
     static var secondaryLabel: Color { return Color(uiColor: .secondaryLabel) }
     static var tertiaryLabel: Color { return Color(uiColor: .tertiaryLabel) }
     static var quaternaryLabel: Color { return Color(uiColor: .quaternaryLabel) }
+    
+    static var systemBackground: Color { return Color(uiColor: .systemBackground) }
+    static var secondarySystemBackground: Color { return Color(uiColor: .secondarySystemBackground) }
+    static var tertiarySystemBackground: Color { return Color(uiColor: .tertiarySystemBackground) }
 }
