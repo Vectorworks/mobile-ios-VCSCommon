@@ -2,6 +2,7 @@ import Foundation
 import Alamofire
 import UIKit
 import CocoaLumberjackSwift
+import UniformTypeIdentifiers
 
 public extension Date {
     var VCSISO8061String: String {
@@ -27,7 +28,11 @@ public extension String {
     }
     
     func stringByReplacingPathExtension(_ newExtension: String) -> String? {
-        return self.deletingPathExtension.appendingPathExtension(newExtension)
+        if let type = UTType(filenameExtension: self.pathExtension), type.isDeclared {
+            return self.deletingPathExtension.appendingPathExtension(newExtension)
+        } else {
+            return self.appendingPathExtension(newExtension)
+        }
     }
     
     func stringByAppendingPath(path: String) -> String {
