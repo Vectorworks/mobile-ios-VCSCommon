@@ -3,6 +3,7 @@ import Foundation
 public struct FolderChooserSettings {
     public static var cancelButtonTitle = "Cancel"
     public static var selectButtonTitle = "Select"
+    public static var closeButtonTitle = "Close"
     public static var createButtonTitle = "Create"
     public static var newFolderButtonTitle = "New folder"
     public static var newFolderButtonIcon = "add-folder"

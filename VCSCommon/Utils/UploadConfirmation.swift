@@ -108,20 +108,28 @@ public struct UploadConfirmation: ViewModifier {
                     Text(self.generatedMessage)
                 }
             })
-            .fullScreenCover(isPresented: model.isUFCPresented, content: {
+            .sheet(isPresented: model.isUFCPresented, onDismiss: {
+                model.isPresented.wrappedValue = true
+            }, content: {
                 FolderChooser(routeData: FCRouteData(folder: self.uploadFolder), folderResult: self.$uploadFolder, isPresented: model.isUFCPresented, parentIsPresented: model.isPresented)
             })
-            .customAlert(isPresented: model.isNFAPresented, title: model.fileNameTitle, message: $newFolderMessage, textFieldName: model.fileNameFieldTitle, textFieldValue: self.$newFileName, leftButtonName: model.fileNameButtonName, leftButtonAction: {
-                model.isNFAPresented.wrappedValue = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    model.isPresented.wrappedValue = true
+//            .fullScreenCover(isPresented: model.isUFCPresented, content: {
+//                FolderChooser(routeData: FCRouteData(folder: self.uploadFolder), folderResult: self.$uploadFolder, isPresented: model.isUFCPresented, parentIsPresented: model.isPresented)
+//            })
+            .alert(model.fileNameTitle, isPresented: model.isNFAPresented) {
+                TextField(model.fileNameFieldTitle, text: self.$newFileName)
+                    .textInputAutocapitalization(.never)
+                Button(model.fileNameButtonName) {
+                    if self.newFileName.isEmpty {
+                        self.newFileName = FileNameUtils.appendingTimeStampToName(name: "Nomad")
+                    }
+                    model.isNFAPresented.wrappedValue = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        model.isPresented.wrappedValue = true
+                    }
                 }
-            }, rightButtonName: FolderChooserSettings.cancelButtonTitle.vcsLocalized) {
-                model.isNFAPresented.wrappedValue = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.newFileName = self.tempFileName
-                    model.isPresented.wrappedValue = true
-                }
+            } message: {
+                Text(newFolderMessage)
             }
     }
 }
