@@ -38,6 +38,8 @@ public enum VCSFileType: String
     case JSON
     case VMSR
     
+    case VWX_EXTENDED
+    
     public func isInFileName(_ oName: String?) -> Bool {
         guard let name = oName else { return false }
         return self.isInFileName(name: name)
@@ -47,6 +49,10 @@ public enum VCSFileType: String
         switch self {
         case VCSFileType.XMLZIP, VCSFileType.VWXPNG, VCSFileType.IMGPNG:
             return self.isInFileNameSuffix(name: name)
+        case .VWX_EXTENDED:
+            return (name.pathExtension.uppercased() == VCSFileType.VWX.rawValue)
+            || (name.pathExtension.uppercased() == VCSFileType.VWXP.rawValue)
+            || (name.pathExtension.uppercased() == VCSFileType.VWXW.rawValue)
         default:
             return name.pathExtension.uppercased() == self.rawValue
         }
