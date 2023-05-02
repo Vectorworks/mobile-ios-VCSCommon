@@ -2,7 +2,7 @@ import Foundation
 import RealmSwift
 import CocoaLumberjackSwift
 
-@objc public class UploadJobLocalFile: NSObject {
+@objc public class UploadJobLocalFile: NSObject, Identifiable {
     public enum UploadingState: String {
         case Ready
         case Waiting

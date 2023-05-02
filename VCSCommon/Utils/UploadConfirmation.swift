@@ -5,6 +5,7 @@ public typealias UploadConfirmationResult = (folder: VCSFolderResponse, name: St
 public class UploadConfirmationViewModel: ObservableObject {
     var isPresented: Binding<Bool>
     var isUFCPresented: Binding<Bool>
+    var itemsURLs: [URL]
     
     var title: String
     var message: String
@@ -26,6 +27,7 @@ public class UploadConfirmationViewModel: ObservableObject {
     
     init(isPresented: Binding<Bool>,
          isUFCPresented: Binding<Bool>,
+         itemsURLs: [URL],
          title: String,
          message: String,
          changeFolderButtonName: String,
@@ -42,6 +44,7 @@ public class UploadConfirmationViewModel: ObservableObject {
          cancelButtonAction: (() -> Void)? = nil) {
         self.isPresented = isPresented
         self.isUFCPresented = isUFCPresented
+        self.itemsURLs = itemsURLs
         self.title = title
         self.message = message
         self.changeFolderButtonName = changeFolderButtonName
@@ -77,38 +80,33 @@ public struct UploadConfirmation: ViewModifier {
     
     public func body(content: Content) -> some View {
         content
-            .confirmationDialog(model.title, isPresented: model.isPresented, actions: {
+            .fullScreenCover(isPresented: model.isPresented, content: {
+                List {
+                    ForEach(model.itemsURLs, id: \.absoluteString) { item in
+                        Text(item.lastPathComponent)
+                    }
+                }
                 Button {
                     model.isUFCPresented.wrappedValue = true
                 } label: {
                     Text(model.changeFolderButtonName)
                 }
-                if model.isChangeNameEnabled {
-                    Button {
-                        self.tempFileName = self.newFileName
-                        model.isNFAPresented.wrappedValue = true
-                    } label: {
-                        Text(model.changeNameButtonName)
-                    }
-                }
                 Button {
-                    model.uploadButtonAction?(UploadConfirmationResult(folder: uploadFolder, name: newFileName))
+                    model.cancelButtonAction?()
                 } label: {
-                    Text(model.uploadButtonName)
+                    Text(model.cancelButtonName)
                 }
-                if model.cancelButtonName.isEmpty == false {
-                    Button(role: .cancel, action: {
-                        model.cancelButtonAction?()
-                    }, label: {
-                        Text(model.cancelButtonName)
-                    })
-                }
-            }, message: {
-                if model.message.isEmpty == false {
-                    Text(self.generatedMessage)
-                }
+//                if model.isChangeNameEnabled {
+//                    Button {
+//                        self.tempFileName = self.newFileName
+//                        model.isNFAPresented.wrappedValue = true
+//                    } label: {
+//                        Text(model.changeNameButtonName)
+//                    }
+//                }
+                
             })
-            .sheet(isPresented: model.isUFCPresented, onDismiss: {
+            .fullScreenCover(isPresented: model.isUFCPresented, onDismiss: {
                 model.isPresented.wrappedValue = true
             }, content: {
                 FolderChooser(routeData: FCRouteData(folder: self.uploadFolder), folderResult: self.$uploadFolder, isPresented: model.isUFCPresented, parentIsPresented: model.isPresented)
@@ -137,6 +135,7 @@ public struct UploadConfirmation: ViewModifier {
 public extension View {
     func uploadConfirmationDialog(isPresented: Binding<Bool>,
                                   isUFCPresented: Binding<Bool>,
+                                  itemsURLs: [URL],
                                   uploadFolder: VCSFolderResponse,
                                   title: String = "",
                                   message: String = "The files will be uploaded to:".vcsLocalized,
@@ -154,6 +153,7 @@ public extension View {
                                   cancelButtonAction: (() -> Void)? = nil) -> some View {
         modifier(UploadConfirmation(model: UploadConfirmationViewModel(isPresented: isPresented,
                                                                        isUFCPresented: isUFCPresented,
+                                                                       itemsURLs: itemsURLs,
                                                                        title: title,
                                                                        message: message,
                                                                        changeFolderButtonName: changeButtonName,
