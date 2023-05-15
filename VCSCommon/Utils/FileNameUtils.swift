@@ -2,12 +2,7 @@ import Foundation
 import UIKit
 
 @objc public class FileNameUtils: NSObject {
-    public static func appendingTimeStampToName(name: String) -> String {
-        let filename = FileNameUtils.appendTimeStampToName(name: name) // "Nomad_20191111-163306.9260"
-        return filename
-    }
-    
-    @objc public static func appendTimeStampToName(name: String) -> String {
+    @objc public static func appendingTimeStampToName(name: String) -> String { // "Nomad_20191111-163306.9260"
         let date = Date()
         return FileNameUtils.appendTimeStampToNameWithDate(name: name, date: date)
     }

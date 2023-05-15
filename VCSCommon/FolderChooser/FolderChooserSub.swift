@@ -25,7 +25,6 @@ struct FolderChooserSub: View {
     
     @Binding var result: VCSFolderResponse
     @Binding var isPresented: Bool
-    @Binding var parentIsPresented: Bool
     
     func sortedByName(folders: [VCSFolderResponse]?) -> [VCSFolderResponse] {
         var result = folders ?? []
@@ -90,6 +89,16 @@ struct FolderChooserSub: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItemGroup {
+//                    if asd {
+//                        Button {
+//                            self.isPresented = false
+//                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                                self.parentIsPresented = true
+//                            }
+//                        } label: {
+//                            Text(FolderChooserSettings.closeButtonTitle.vcsLocalized)
+//                        }
+//                    }
                     Button {
                         showNewFolderAlert = true
                     } label: {
@@ -103,7 +112,7 @@ struct FolderChooserSub: View {
                         self.result = currentFolder
                         self.isPresented = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            self.parentIsPresented = true
+                            self.isPresented = true
                         }
                     } label: {
                         Text(FolderChooserSettings.selectButtonTitle.vcsLocalized)
