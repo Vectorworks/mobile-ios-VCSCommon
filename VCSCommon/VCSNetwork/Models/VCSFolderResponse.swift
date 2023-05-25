@@ -261,6 +261,7 @@ extension VCSFolderResponse: VCSCachable {
 }
 
 public extension VCSFolderResponse {
+    static var nilFolder = VCSFolderResponse(files: [], parent: nil, subfolders: [], autoprocessParent: nil, resourceURI: "", resourceID: "", exists: false, isNameValid: false, name: "", prefix: "", storageType: .S3, ownerLogin: "", VCSID: "")
     static var testVCSFolder: VCSFolderResponse? = { return try? JSONDecoder().decode(VCSFolderResponse.self, from: VCSFolderResponse.testFolderJSONString.data(using: .utf8)!) }()
     
     static var testFolderJSONString = """

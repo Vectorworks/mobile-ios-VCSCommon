@@ -3,29 +3,26 @@ import CocoaLumberjackSwift
 
 public class FileUploadViewModel: ObservableObject, Identifiable {
     
-    public static var fileUploadModelBinding: Binding<FileUploadViewModel?> = Binding<FileUploadViewModel?>(
-        get: {
-            return FileUploadViewModel.fileUploadModel
-        },
-        set: { newValue in
-            FileUploadViewModel.fileUploadModel = newValue
-        })
-    public static var fileUploadModel: FileUploadViewModel? = nil
+    public static var sharedModel: FileUploadViewModel = FileUploadViewModel()
     
-    @Published public var isFolderChooserPresented: Bool
-    @Published public var parentFolder: VCSFolderResponse
-    @Published public var itemsLocalNameAndPath: [LocalFileNameAndPath]
+    @Published public var isPresented: Bool = false
+    @Published public var isFolderChooserPresented: Bool = false
+    @Published public var parentFolder: VCSFolderResponse = VCSFolderResponse.nilFolder
+    @Published public var itemsLocalNameAndPath: [LocalFileNameAndPath] = []
     
-    public init(parentFolder: VCSFolderResponse,
-                itemsLocalNameAndPath: [LocalFileNameAndPath]) {
-        self.isFolderChooserPresented = false
-        self.itemsLocalNameAndPath = itemsLocalNameAndPath
+    @MainActor
+    @discardableResult
+    public func setupWithData(parentFolder: VCSFolderResponse, itemsLocalNameAndPath: [LocalFileNameAndPath]) -> FileUploadViewModel {
+        self.isPresented = true
         self.parentFolder = parentFolder
+        self.itemsLocalNameAndPath = itemsLocalNameAndPath
+        
+        return self
     }
     
     public func uploadAction() {
         //TODO: PDF uploaд
-        defer { FileUploadViewModel.fileUploadModel = nil }
+        defer { self.clearView() }
         
         var jobFiles: [UploadJobLocalFile] = []
         
@@ -69,6 +66,12 @@ public class FileUploadViewModel: ObservableObject, Identifiable {
     }
     
     public func cancelAction() {
-        FileUploadViewModel.fileUploadModel = nil
+        self.clearView()
+    }
+    
+    private func clearView() {
+        self.isPresented = false
+        self.parentFolder = VCSFolderResponse.nilFolder
+        self.itemsLocalNameAndPath = []
     }
 }
