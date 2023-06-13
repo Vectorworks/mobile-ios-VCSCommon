@@ -91,7 +91,8 @@ import simd
             
             let xmlLayerElements = xmlElement.elements(forName: "DesignLayer")
             xmlLayerElements.forEach {
-                guard let xmlElement = $0 as? DDXMLElement, let designLayer = self.parseDesignLayerElement(layerElement: xmlElement) else { return }
+                let xmlElement = $0 as DDXMLElement
+                guard let designLayer = self.parseDesignLayerElement(layerElement: xmlElement) else { return }
                 savedView.designLayers.append(designLayer)
             }
             
@@ -141,13 +142,13 @@ import simd
             guard let xmlElement = $0 as? DDXMLElement else { return }
             let pageData = PageData()
             pageData.name = self.firstElementFor(elementName: "Name", fromElement: xmlElement)?.stringValue ?? ""
-            pageData.dpi = Int(self.firstElementFor(elementName: "DPI", fromElement: xmlElement)?.stringValue ?? "") ?? 0
+            pageData.dpi = Int(self.firstElementFor(elementName: "DPI", fromElement: xmlElement)?.stringValue ?? "") ?? PageData.DEFAULT_DPI
             
-            if var units = self.firstElementFor(elementName: "Units", fromElement: xmlElement) {
+            if let units = self.firstElementFor(elementName: "Units", fromElement: xmlElement) {
                 pageData.style = Int(self.firstElementFor(elementName: "Style", fromElement: units)?.stringValue ?? "") ?? 0
                 pageData.unitsPerInch = Double(self.firstElementFor(elementName: "UnitsPerInch", fromElement: units)?.stringValue ?? "") ?? 0
                 pageData.unitMark = self.firstElementFor(elementName: "UnitMark", fromElement: units)?.stringValue ?? ""
-                pageData.decDimPrecision = Int(self.firstElementFor(elementName: "DecDimPrecission", fromElement: units)?.stringValue ?? "") ?? 0
+                pageData.decDimPrecision = Int(self.firstElementFor(elementName: "DecDimPrecission", fromElement: units)?.stringValue ?? "") ?? PageData.DEFAULT_DEC_DIM_PRECISION
                 pageData.angleUnit = Int(self.firstElementFor(elementName: "AngUnit", fromElement: units)?.stringValue ?? "") ?? 0
                 pageData.angleDimPrecision = Int(self.firstElementFor(elementName: "AngDimPrecision", fromElement: units)?.stringValue ?? "") ?? 0
                 pageData.areaPerSqInch = Double(self.firstElementFor(elementName: "AreaPerSqInch", fromElement: units)?.stringValue ?? "") ?? 0
@@ -155,35 +156,35 @@ import simd
                 pageData.areaDecPrecision = Int(self.firstElementFor(elementName: "AreaDecPrecision", fromElement: units)?.stringValue ?? "") ?? 0
                 
                 xmlElement.elements(forName: "Viewport").forEach {
-                    guard let viewportElement = $0 as? DDXMLElement else { return }
+                    let viewportElement = $0 as DDXMLElement
                     let viewport = Viewport()
                     
-                    if var info = self.firstElementFor(elementName: "Info", fromElement: viewportElement) {
+                    if let info = self.firstElementFor(elementName: "Info", fromElement: viewportElement) {
                         viewport.x = Double(self.firstElementFor(elementName: "LocX", fromElement: info)?.stringValue ?? "") ?? 0
                         viewport.y = Double(self.firstElementFor(elementName: "LocY", fromElement: info)?.stringValue ?? "") ?? 0
                         viewport.rotation = Double(self.firstElementFor(elementName: "Rotation", fromElement: info)?.stringValue ?? "") ?? 0
                         viewport.scale = Double(self.firstElementFor(elementName: "Scale", fromElement: info)?.stringValue ?? "") ?? 0
                     }
                     
-                    if var crop = self.firstElementFor(elementName: "Crop", fromElement: viewportElement) {
-                        if var cropRect = self.firstElementFor(elementName: "Rect", fromElement: crop) {
+                    if let crop = self.firstElementFor(elementName: "Crop", fromElement: viewportElement) {
+                        if let cropRect = self.firstElementFor(elementName: "Rect", fromElement: crop) {
                             viewport.cropRect = CropRect()
                             viewport.cropRect?.x = Double(self.firstElementFor(elementName: "X", fromElement: cropRect)?.stringValue ?? "") ?? 0
                             viewport.cropRect?.y = Double(self.firstElementFor(elementName: "Y", fromElement: cropRect)?.stringValue ?? "") ?? 0
                             viewport.cropRect?.width = Double(self.firstElementFor(elementName: "Width", fromElement: cropRect)?.stringValue ?? "") ?? 0
                             viewport.cropRect?.height = Double(self.firstElementFor(elementName: "Height", fromElement: cropRect)?.stringValue ?? "") ?? 0
                         }
-                        if var cropPoly = self.firstElementFor(elementName: "Poly", fromElement: crop) {
+                        if let cropPoly = self.firstElementFor(elementName: "Poly", fromElement: crop) {
                             viewport.cropPoly = CropPoly()
                             cropPoly.elements(forName: "Vertex").forEach {
-                                guard let vertex = $0 as? DDXMLElement else { return }
+                                let vertex = $0 as DDXMLElement
                                 let vwPoint = VWPoint()
                                 vwPoint.x = Double(self.firstElementFor(elementName: "x", fromElement: vertex)?.stringValue ?? "") ?? 0
                                 vwPoint.y = Double(self.firstElementFor(elementName: "y", fromElement: vertex)?.stringValue ?? "") ?? 0
                                 viewport.cropPoly?.vertices.append(vwPoint)
                             }
                         }
-                        if var cropOval = self.firstElementFor(elementName: "Oval", fromElement: crop) {
+                        if let cropOval = self.firstElementFor(elementName: "Oval", fromElement: crop) {
                             viewport.cropOval = CropOval()
                             let center = VWPoint()
                             center.x = Double(self.firstElementFor(elementName: "CenterX", fromElement: cropOval)?.stringValue ?? "") ?? 0

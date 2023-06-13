@@ -13,7 +13,7 @@ import UIKit
     @objc public var style: Int = 0
     @objc public var unitsPerInch: Double = 0.0
     @objc public var unitMark: String = ""
-    @objc public var decDimPrecision: Int = 0
+    @objc public var decDimPrecision: Int = PageData.DEFAULT_DEC_DIM_PRECISION
     @objc public var angleUnit: Int = 0
     @objc public var angleDimPrecision: Int = 0
     @objc public var areaPerSqInch: Double = 0.0
