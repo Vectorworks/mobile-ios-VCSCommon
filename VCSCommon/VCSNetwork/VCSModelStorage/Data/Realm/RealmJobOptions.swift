@@ -9,10 +9,10 @@ public class RealmJobOptions: Object, VCSRealmObject {
     @objc dynamic var srcStorageType: String = ""
     @objc dynamic var outputStorageType: String = ""
     @objc dynamic var options, jobName, operation: String?
+    dynamic var srcFileInfo: RealmJobFileInfo? = nil
     dynamic var srcFileVersions: List<RealmJobFileVersion> = List()
     @objc dynamic var outputLocation: String?
     @objc dynamic var currentFile, logFile: String?
-    dynamic var refFileVersions: List<RealmJobFileVersion> = List()
     
     
     public required convenience init(model: Model) {
@@ -34,24 +34,13 @@ public class RealmJobOptions: Object, VCSRealmObject {
             realmSrcFileVersionsArray.append(RealmJobFileVersion(model: $0))
         }
         self.srcFileVersions = realmSrcFileVersionsArray
-        
-        
-        let refFileVersionsArray = model.refFileVersions
-        let realmRefFileVersionsArray = List<RealmJobFileVersion>()
-        refFileVersionsArray.forEach {
-            realmRefFileVersionsArray.append(RealmJobFileVersion(model: $0))
-        }
-        self.refFileVersions = realmRefFileVersionsArray
     }
     
     public var entity: Model {
         let srcFileVersionsArray = self.srcFileVersions.compactMap({ $0.entity })
         let srcFileVersions = Array(srcFileVersionsArray)
         
-        let refFileVersionsArray = self.refFileVersions.compactMap({ $0.entity })
-        let refFileVersions = Array(refFileVersionsArray)
-        
-        return VCSJobOptionsResponse(srcStorageType: self.srcStorageType, outputStorageType: self.outputStorageType, srcFileVersions: srcFileVersions, refFileVersions: refFileVersions, options: self.options, jobName: self.jobName, operation: self.operation, outputLocation: self.outputLocation, currentFile: self.currentFile, logFile: self.logFile)
+        return VCSJobOptionsResponse(srcStorageType: self.srcStorageType, outputStorageType: self.outputStorageType, srcFileInfo: self.srcFileInfo?.entity, srcFileVersions: srcFileVersions, options: self.options, jobName: self.jobName, operation: self.operation, outputLocation: self.outputLocation, currentFile: self.currentFile, logFile: self.logFile)
     }
     
     public var partialUpdateModel: [String : Any] {

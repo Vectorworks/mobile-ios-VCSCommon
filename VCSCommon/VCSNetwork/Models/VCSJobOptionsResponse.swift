@@ -3,31 +3,31 @@ import Foundation
 @objc public class VCSJobOptionsResponse: NSObject, Codable {
     public let options: String? = nil
     public let jobName, operation: String?
+    public let srcFileInfo: VCSJobFileInfoResponse?
     public let srcFileVersions: [VCSJobFileVersionResponse]
     public let outputLocation: String?
     public let outputStorageType: String
     public let currentFile, logFile: String?
-    public let refFileVersions: [VCSJobFileVersionResponse]
     public let srcStorageType: String
     
     enum CodingKeys: String, CodingKey {
 //        case options
         case jobName = "job_name"
         case operation
+        case srcFileInfo = "src_file_info"
         case srcFileVersions = "src_file_versions"
         case outputLocation = "output_location"
         case outputStorageType = "output_storage_type"
         case currentFile = "current_file"
         case logFile = "log_file"
-        case refFileVersions = "ref_file_versions"
         case srcStorageType = "src_storage_type"
     }
     
-    init(srcStorageType: String, outputStorageType: String, srcFileVersions: [VCSJobFileVersionResponse], refFileVersions: [VCSJobFileVersionResponse], options: String?, jobName: String?, operation: String?, outputLocation: String?, currentFile: String?, logFile: String?) {
+    init(srcStorageType: String, outputStorageType: String, srcFileInfo: VCSJobFileInfoResponse?, srcFileVersions: [VCSJobFileVersionResponse], options: String?, jobName: String?, operation: String?, outputLocation: String?, currentFile: String?, logFile: String?) {
         self.srcStorageType = srcStorageType
         self.outputStorageType = outputStorageType
+        self.srcFileInfo = srcFileInfo
         self.srcFileVersions = srcFileVersions
-        self.refFileVersions = refFileVersions
 //        self.options = options
         self.jobName = jobName
         self.operation = operation

@@ -375,12 +375,16 @@ public enum APIRouter: URLRequestConvertible {
             let queryItemUpdate = URLQueryItem(name: "update_from_storage", value: "true")
             let result = updateFromStorage ? [queryItemUpdate] : []
             return result
+        case .job(_):
+            let queryItemFields = URLQueryItem(name: "fields", value: "(output_location_owner,options.src_file_info,-options.ref_file_versions)")
+            return [queryItemFields]
         case .listJobs(let initialRequest):
             var result: [URLQueryItem]?
             if initialRequest {
                 let queryItemCurrent = URLQueryItem(name: "current", value: "job_type__in=export_pdf,publish,distill,generic,photogram")
                 let queryItemLimit = URLQueryItem(name: "limit", value: "25")
-                result = [queryItemCurrent, queryItemLimit]
+                let queryItemFields = URLQueryItem(name: "fields", value: "(output_location_owner,options.src_file_info,-options.ref_file_versions)")
+                result = [queryItemCurrent, queryItemLimit, queryItemFields]
             }
             return result
         case .unssenNotificationsIDs:
