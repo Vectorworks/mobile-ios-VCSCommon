@@ -9,6 +9,8 @@ public class SharedLink {
     private(set) public var owner:VCSUser?
     public let dateCreated: Date
     
+    public var followUpFileSrcID: String?
+    
     public var isResolved: Bool { return self.sharedAsset != nil }
     
     public var metadataURLSuffixForRequest: String? {
