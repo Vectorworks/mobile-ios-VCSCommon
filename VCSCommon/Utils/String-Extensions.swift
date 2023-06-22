@@ -24,4 +24,10 @@ public extension String {
         guard isEmpty == false else { return nil }
         return self[index(startIndex, offsetBy: 0)]
     }
+    
+    var removingQueries: String {
+        guard var components = URLComponents(string: self) else { return self }
+        components.query = nil
+        return components.url?.absoluteString ?? self
+    }
 }

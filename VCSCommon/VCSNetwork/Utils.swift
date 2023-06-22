@@ -272,6 +272,10 @@ public extension URL {
     var exists: Bool {
         return FileManager.default.fileExists(atPath: self.path)
     }
+    
+    var removingQueries: URL {
+        return URL(string: absoluteString.removingQueries) ?? self
+    }
 }
 
 class NetworkLogger {

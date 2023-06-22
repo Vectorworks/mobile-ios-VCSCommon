@@ -44,7 +44,7 @@ public class SharedLink {
     
     public init(link:String, isSampleFiles:Bool = false, sharedAsset: VCSShareableLinkResponse? = nil, owner: VCSUser? = nil, date: Date? = nil, linkName: String? = nil, linkThumbnailURL: String? = nil) {
         self.isSampleFiles = isSampleFiles
-        self.link = link.VCSNormalizedURLString()
+        self.link = link.removingQueries.VCSNormalizedURLString()
         self.linkName = linkName
         
         if let urlString = linkThumbnailURL {
