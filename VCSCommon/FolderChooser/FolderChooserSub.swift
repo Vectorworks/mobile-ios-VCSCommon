@@ -98,7 +98,6 @@ struct FolderChooserSub: View {
                     }
                 }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    
                     Button {
                         showNewFolderAlert = true
                     } label: {
