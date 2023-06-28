@@ -16,7 +16,7 @@ public struct FileUploadView: View {
         //
         //        return result
         
-        return "The following files will be uploaded:"
+        return "The following files will be uploaded:".vcsLocalized
     }
     
     public var body: some View {
@@ -26,7 +26,7 @@ public struct FileUploadView: View {
             
             List {
                 ForEach(model.itemsLocalNameAndPath.indices, id: \.self) { idx in
-                    TextField("Filename", text: $model.itemsLocalNameAndPath[idx].itemName)
+                    TextField("Filename".vcsLocalized, text: $model.itemsLocalNameAndPath[idx].itemName)
                         .disabled(model.itemsLocalNameAndPath.count > 1)
                         .onSubmit {
                             guard $model.itemsLocalNameAndPath[idx].itemName.wrappedValue.count > 0 else { return }

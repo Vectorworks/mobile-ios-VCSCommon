@@ -88,17 +88,17 @@ struct FolderChooserSub: View {
             .navigationTitle(routeData.breadcrumbsName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItemGroup {
-//                    if asd {
-//                        Button {
-//                            self.isPresented = false
-//                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                                self.parentIsPresented = true
-//                            }
-//                        } label: {
-//                            Text(FolderChooserSettings.closeButtonTitle.vcsLocalized)
-//                        }
-//                    }
+                if routeData == rootRouteData {
+                    ToolbarItemGroup(placement: .navigationBarLeading) {
+                        Button {
+                            self.isPresented = false
+                        } label: {
+                            Text(FolderChooserSettings.closeButtonTitle.vcsLocalized)
+                        }
+                    }
+                }
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    
                     Button {
                         showNewFolderAlert = true
                     } label: {
@@ -111,9 +111,6 @@ struct FolderChooserSub: View {
                     Button {
                         self.result = currentFolder
                         self.isPresented = false
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            self.isPresented = true
-                        }
                     } label: {
                         Text(FolderChooserSettings.selectButtonTitle.vcsLocalized)
                     }

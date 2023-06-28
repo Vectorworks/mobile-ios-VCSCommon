@@ -4,6 +4,7 @@ import CocoaLumberjackSwift
 public struct FolderChooser: View {
     public static var currentFolderRouteData: FCRouteData?
     
+    @State var isPathSetup: Bool = false
     @State var path: [FCRouteData] = []
     @State var routeData: FCRouteData
     @State var rootRouteData: FCRouteData
@@ -20,25 +21,6 @@ public struct FolderChooser: View {
         } else {
             self.rootRouteData = routeData
         }
-        
-        if let folderResponse = routeData.folderResponse {
-            let routePrefixes = folderResponse.prefix.split(separator: "/")
-            var resourceURIBase = String(folderResponse.resourceURI.split(separator: "p:").first ?? "")
-            var isFirst = true
-            var initialPathValue: [FCRouteData] = []
-            routePrefixes.forEach {
-                let prefix = String($0)
-                let pathComponent = isFirst ? "p:" + prefix : prefix
-                isFirst = false
-                resourceURIBase = resourceURIBase.appendingPathComponent(pathComponent)
-                let pathRoute = FCRouteData(resourceURI: resourceURIBase, breadcrumbsName: prefix)
-                
-                initialPathValue.append(pathRoute)
-                DDLogDebug("Folder Chooser adding to path: \(pathRoute.resourceURI)")
-            }
-            _path = State(initialValue: initialPathValue)
-            DDLogDebug("Folder Chooser path value: \(path.compactMap({ $0.resourceURI }))")
-        }
     }
     
     public var body: some View {
@@ -49,6 +31,25 @@ public struct FolderChooser: View {
                 }
         }
         .tint(.label)
+        .onAppear() {
+            if let folderResponse = routeData.folderResponse, isPathSetup == false {
+                isPathSetup = true
+                let routePrefixes = folderResponse.prefix.split(separator: "/")
+                var resourceURIBase = String(folderResponse.resourceURI.split(separator: "p:").first ?? "")
+                var isFirst = true
+                routePrefixes.forEach {
+                    let prefix = String($0)
+                    let pathComponent = isFirst ? "p:" + prefix : prefix
+                    isFirst = false
+                    resourceURIBase = resourceURIBase.appendingPathComponent(pathComponent)
+                    let pathRoute = FCRouteData(resourceURI: resourceURIBase, breadcrumbsName: prefix)
+                    
+                    path.append(pathRoute)
+                    DDLogDebug("Folder Chooser adding to path: \(pathRoute.resourceURI)")
+                }
+                DDLogDebug("Folder Chooser path value: \(path.compactMap({ $0.resourceURI }))")
+            }
+        }
     }
 }
 
