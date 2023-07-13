@@ -9,19 +9,23 @@ public class FileUploadViewModel: ObservableObject, Identifiable {
     @Published public var isFolderChooserPresented: Bool = false
     @Published public var parentFolder: VCSFolderResponse = VCSFolderResponse.nilFolder
     @Published public var itemsLocalNameAndPath: [LocalFileNameAndPath] = []
+    @Published public var jobFilesCallback: (([UploadJobLocalFile]) -> Void)? = nil
+    @Published public var uploadCompletion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil
     
     @MainActor
     @discardableResult
-    public func setupWithData(parentFolder: VCSFolderResponse, itemsLocalNameAndPath: [LocalFileNameAndPath]) -> FileUploadViewModel {
+    public func setupWithData(parentFolder: VCSFolderResponse, itemsLocalNameAndPath: [LocalFileNameAndPath], jobFilesCallback: (([UploadJobLocalFile]) -> Void)? = nil, uploadCompletion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil) -> FileUploadViewModel {
         self.isPresented = true
         self.parentFolder = parentFolder
         self.itemsLocalNameAndPath = itemsLocalNameAndPath
+        self.jobFilesCallback = jobFilesCallback
+        self.uploadCompletion = uploadCompletion
         
         return self
     }
     
     public func uploadAction() {
-        //TODO: PDF uploaд
+        //TODO: PDF upload
         defer { self.clearView() }
         
         var jobFiles: [UploadJobLocalFile] = []
@@ -50,8 +54,8 @@ public class FileUploadViewModel: ObservableObject, Identifiable {
         
         
         
+        self.jobFilesCallback?(jobFiles)
         let job = UploadJob(localFiles: jobFiles, owner: parentFolder.ownerLogin, parentFolder: parentFolder)
-        
         AssetUploader.shared.upload(uploadJob: job, multiFileCompletion:  { (result: Result<[VCSFileResponse], Error>) in
             DispatchQueue.main.async {
                 NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
@@ -61,6 +65,7 @@ public class FileUploadViewModel: ObservableObject, Identifiable {
                 case .failure(let failure):
                     DDLogError("FileUploadViewModel - uploadAction - error: \(failure)")
                 }
+                self.uploadCompletion?(result)
             }
         })
     }
