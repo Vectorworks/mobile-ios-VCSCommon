@@ -34,10 +34,14 @@ public enum APIRouter: URLRequestConvertible {
     
     //NEW API CALLS
     case sharedWithMeAsset(assetURI: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool, related: Bool, branding: Bool)
+    case sharedWithMeFileInfo(rID: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool, related: Bool, branding: Bool)
+    case sharedWithMeFolderInfo(rID: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool, related: Bool, branding: Bool)
     case linkSharedAsset(assetURI: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool, related: Bool, versioning: Bool)
     case markLinkAsVisited(assetURI: String)
     case folderAsset(assetURI: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool)
     case fileAsset(assetURI: String, related: Bool, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileType: Bool, versioning: Bool, sharingInfo: Bool)
+    case folderInfo(rID: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool)
+    case fileInfo(rID: String, related: Bool, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileType: Bool, versioning: Bool, sharingInfo: Bool)
     case sharedFileAsset(assetURI: String, related: Bool, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileType: Bool, versioning: Bool, sharingInfo: Bool)
     case ssoTempUserToken(loginSettings: VCSLoginSettingsResponse)
     case linkDetailsData(link: String)
@@ -103,6 +107,10 @@ public enum APIRouter: URLRequestConvertible {
         //NEW API CALLS
         case .sharedWithMeAsset:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
+        case .sharedWithMeFileInfo:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
+        case .sharedWithMeFolderInfo:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         case .linkSharedAsset:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .markLinkAsVisited:
@@ -111,6 +119,10 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .fileAsset:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
+        case .folderInfo:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
+        case .fileInfo:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         case .sharedFileAsset:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .ssoTempUserToken(let loginSettings):
@@ -265,6 +277,10 @@ public enum APIRouter: URLRequestConvertible {
         //NEW API CALLS
         case .sharedWithMeAsset(let assetURI, _, _, _, _, _, _, _):
             return assetURI
+        case .sharedWithMeFileInfo(let rID, _, _, _, _, _, _, _):
+            return "/_/shared_with_me/file/id:\(rID)/"
+        case .sharedWithMeFolderInfo(let rID, _, _, _, _, _, _, _):
+            return "/_/shared_with_me/folder/id:\(rID)/"
         case .linkSharedAsset(let assetURI, _, _, _, _, _, _, _):
             return assetURI
         case .markLinkAsVisited(let assetURI):
@@ -273,6 +289,10 @@ public enum APIRouter: URLRequestConvertible {
             return assetURI
         case .fileAsset(let assetURI, _, _, _, _, _, _, _):
             return assetURI
+        case .folderInfo(let rID, _, _, _, _, _):
+            return "/_/folder/id:\(rID)/"
+        case .fileInfo(let rID, _, _, _, _, _, _, _):
+            return "/_/file/id:\(rID)/"
         case .sharedFileAsset(let assetURI, _, _, _, _, _, _, _):
             return assetURI.replacingOccurrences(of: "/restapi/public/v2/s3/file", with: "/restapi/public/v2/s3/shared_file")
         case .ssoTempUserToken(_):
@@ -456,7 +476,8 @@ public enum APIRouter: URLRequestConvertible {
             }
             
             return result
-        case .folderAsset(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo):
+        case .folderAsset(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo),
+                .folderInfo(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo):
             var result:[URLQueryItem] = []
             var fields: [String] = []
             
@@ -506,7 +527,8 @@ public enum APIRouter: URLRequestConvertible {
             
             return result
         case .fileAsset(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo),
-             .sharedFileAsset(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo):
+             .sharedFileAsset(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo),
+             .fileInfo(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo):
             var result:[URLQueryItem] = []
             
             if related {
@@ -629,6 +651,10 @@ public enum APIRouter: URLRequestConvertible {
             }
             
             return result
+        case .sharedWithMeFileInfo(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo, let related, let branding):
+             return APIRouter.sharedWithMeAsset(assetURI: "shared_with_me", flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding).queryParameters
+        case .sharedWithMeFolderInfo(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo, let related, let branding):
+             return APIRouter.sharedWithMeAsset(assetURI: "shared_with_me/folder/o:", flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding).queryParameters
         case .ssoTempUserToken:
             var result:[URLQueryItem] = []
             let queryItemRelated = URLQueryItem(name: "system", value: "iOSNomad")
