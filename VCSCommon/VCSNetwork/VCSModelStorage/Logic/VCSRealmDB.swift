@@ -44,8 +44,7 @@ public class VCSRealmDB {
                                                                                     ,RealmSharedFileFolderAssetWrapper.self
                                                                                     ,SharedLink.RealmModel.self
                                                                                     ,VCSSharedWithMeAsset.RealmModel.self
-                                                                                    ,RealmSharedWithMeAssetWrapper.self
-                                                                                    ,RealmWSharedWithInfo.self]
+                                                                                    ,RealmSharedWithMeAssetWrapper.self]
     private(set) public static var  appGroupRealmPathURL: URL?
     private static var  usedRealmConfig: Realm.Configuration = VCSRealmConfig.getRealmDefaultConfiguration
     public static var realm: Realm { return try! Realm(configuration: VCSRealmDB.usedRealmConfig) }
