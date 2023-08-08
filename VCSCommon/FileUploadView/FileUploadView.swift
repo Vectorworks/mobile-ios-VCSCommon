@@ -62,6 +62,7 @@ public struct FileUploadView: View {
                 }
                 Spacer()
                 Button {
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     model.uploadAction()
                 } label: {
                     Text("Upload".vcsLocalized)
