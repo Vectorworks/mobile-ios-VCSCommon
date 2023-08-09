@@ -50,7 +50,7 @@ public struct FileUploadView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            .tint(Color(UIColor.label))
+            .tint(.label)
             .padding()
             .padding(.bottom)
             
