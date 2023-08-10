@@ -721,10 +721,7 @@ public enum APIRouter: URLRequestConvertible {
             }
         case .sendFeedback:
             urlRequest.setValue(VCSServer.default.serverURLString, forHTTPHeaderField: HTTPHeaderField.referer.rawValue)
-        case .ssoTempUserToken(let request):
-            if let getCSRFToken = APIRouter.getCSRFToken(key: request.loginServerCSRFName) {
-                urlRequest.setValue(getCSRFToken, forHTTPHeaderField: HTTPHeaderField.XCSRFToken.rawValue)
-            }
+        case .ssoTempUserToken(_):
             urlRequest.setValue(VCSServer.default.serverURLString, forHTTPHeaderField: HTTPHeaderField.referer.rawValue)
         default:
             break
@@ -794,23 +791,20 @@ public enum APIRouter: URLRequestConvertible {
         request.setValue(ClientVersion.default.userAgent, forHTTPHeaderField: HTTPHeaderField.userAgent.rawValue)
     }
     
-    public static func addDefaultCookiesTo(request: inout URLRequest) {
-        guard let cookies = HTTPCookieStorage.shared.cookies else { return }
-        let cookieDict = HTTPCookie.requestHeaderFields(with: cookies)
-        guard let cookieString = cookieDict["Cookie"] else { return }
-        request.setValue(cookieString, forHTTPHeaderField: "Cookie")
-    }
-    
-    public static func addDefaultCookiesTo(wkWebView: inout WKWebView) {
-        guard let cookies = HTTPCookieStorage.shared.cookies else { return }
-        for cookie in cookies {
-            wkWebView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
-        }
-    }
-    
-    private static func getCSRFToken(key: String) -> String? {
+    public static func getCSRFToken(key: String) -> String? {
         let CSRFTokenCookie = HTTPCookieStorage.shared.cookies?.first(where: { $0.name == key })
         return CSRFTokenCookie?.value
+    }
+    
+    public static func changeLanguageCookie() {
+        guard let oldLangCookie = HTTPCookieStorage.shared.cookies?.first(where: { (cookie: HTTPCookie) -> Bool in cookie.name.contains("vwlanguage") }) else { return }
+        guard var newCookieProperties = oldLangCookie.properties else { return }
+        
+        newCookieProperties[HTTPCookiePropertyKey.value] = Localization.default.preferredLanguage
+        if let newLangCookie = HTTPCookie(properties: newCookieProperties) {
+            HTTPCookieStorage.shared.deleteCookie(oldLangCookie)
+            HTTPCookieStorage.shared.setCookie(newLangCookie)
+        }
     }
 }
 
