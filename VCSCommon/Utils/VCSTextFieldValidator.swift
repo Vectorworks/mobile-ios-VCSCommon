@@ -43,8 +43,7 @@ import SwiftUI
             result = false
         }
         
-        let invalidCharacters = CharacterSet(charactersIn: VCSCommonConstants.invalidCharacterList)
-        if newString.rangeOfCharacter(from: invalidCharacters) != nil {
+        if newString.rangeOfCharacter(from: VCSCommonConstants.invalidCharacterSet) != nil {
             alert.message = String(format: "%@ %@\n", "The following characters are invalid:".vcsLocalized, String(format: VCSCommonConstants.invalidCharacterListStringFormat, "and".vcsLocalized))
             
             result = false
@@ -68,32 +67,19 @@ import SwiftUI
         return result
     }
     
-    public func isNameValid(_ name: String, alertMessage: inout String) -> Bool {
-        var result = true
+    public func isNameValid(_ name: String) -> (res: Bool, message: String) {
+        var result = (true, self.originalMessage ?? "")
         
         if name.count > 255 {
-            alertMessage = "The maximum length is 255 characters.".vcsLocalized
-            result = false
+            result = (false, "The maximum length is 255 characters.".vcsLocalized)
         }
         
-        let invalidCharacters = CharacterSet(charactersIn: VCSCommonConstants.invalidCharacterList)
-        if name.rangeOfCharacter(from: invalidCharacters) != nil {
-            alertMessage = String(format: "%@ %@\n", "The following characters are invalid:".vcsLocalized, String(format: VCSCommonConstants.invalidCharacterListStringFormat, "and".vcsLocalized))
-            result = false
+        if name.rangeOfCharacter(from: VCSCommonConstants.invalidCharacterSet) != nil {
+            result = (false, String(format: "%@ %@\n", "The following characters are invalid:".vcsLocalized, String(format: VCSCommonConstants.invalidCharacterListStringFormat, "and".vcsLocalized)))
         }
         
         if name.containsEmoji {
-            alertMessage = "Emojis are not allowed.".vcsLocalized
-            result = false
-        }
-        
-        if name.isEmpty {
-            alertMessage = self.originalMessage ?? ""
-            result = false
-        }
-        
-        if result {
-            alertMessage = self.originalMessage ?? ""
+            result = (false, "Emojis are not allowed.".vcsLocalized)
         }
         
         return result

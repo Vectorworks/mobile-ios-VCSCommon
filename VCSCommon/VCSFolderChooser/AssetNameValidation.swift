@@ -73,8 +73,7 @@ public class FilenameValidator {
 
 public struct FolderNameValidator {
     public static func doesAssetNameContainsIllegalSymbols(_ name: String) -> Bool {
-        let invalidCharactersSet = CharacterSet(charactersIn: VCSCommonConstants.invalidCharacterList)
-        return name.rangeOfCharacter(from: invalidCharactersSet) != nil
+        return name.rangeOfCharacter(from: VCSCommonConstants.invalidCharacterSet) != nil
     }
     
     public static func validate(_ name: String) -> AssetNameValidationResult<FolderNameValidationError> {
