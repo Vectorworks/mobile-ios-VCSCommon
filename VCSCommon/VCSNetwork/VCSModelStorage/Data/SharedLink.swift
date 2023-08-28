@@ -27,6 +27,8 @@ public class SharedLink {
     }
     
     public var visitLinkURLSuffixForRequest: String? {
+        guard !self.isSampleFiles else { return nil }
+        
         let linkString = self.link.replacingOccurrences(of: VCSServer.default.serverURLString, with: "")
         guard linkString.hasPrefix("links/") else { return nil }
         guard var url = URL(string: VCSAPIVersion.v2.rawValue) else { return nil }
