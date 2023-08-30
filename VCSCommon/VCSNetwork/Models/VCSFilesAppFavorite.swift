@@ -2,7 +2,7 @@ import Foundation
 
 public class VCSFilesAppFavoriteRank: NSObject {
     public let favoriteRank: NSNumber
-    public var realmID: String = UUID().uuidString
+    public var realmID: String = VCSUUID().systemUUID.uuidString
     
     public init(favoriteRank: NSNumber, realmID: String) {
         self.realmID = realmID

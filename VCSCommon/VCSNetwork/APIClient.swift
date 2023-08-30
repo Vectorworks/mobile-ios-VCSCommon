@@ -349,7 +349,7 @@ public class APIClient: NSObject {
             }
             download.files.forEach { (downloadFile) in
                 let destination: DownloadRequest.Destination = { _, _ in
-                    let fileUUID = UUID().uuidString
+                    let fileUUID = VCSUUID().systemUUID.uuidString
                     let fileURL = FileManager.downloadPath(uuidString: fileUUID, pathExtension: downloadFile.name.pathExtension)
                     return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
                 }

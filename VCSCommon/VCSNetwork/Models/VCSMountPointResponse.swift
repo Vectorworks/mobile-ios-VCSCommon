@@ -1,7 +1,7 @@
 import Foundation
 
 @objc public class VCSMountPointResponse: NSObject, Codable {
-    public var realmID: String = UUID().uuidString
+    public var realmID: String = VCSUUID().systemUUID.uuidString
     
     public let storageType: StorageType
     public let prefix, path, mountPath: String

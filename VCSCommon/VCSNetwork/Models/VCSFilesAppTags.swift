@@ -2,7 +2,7 @@ import Foundation
 
 public class VCSFilesAppTags: NSObject {
     public let tagData: Data?
-    public var realmID: String = UUID().uuidString
+    public var realmID: String = VCSUUID().systemUUID.uuidString
     
     public init(tagData: Data?, realmID: String) {
         self.realmID = realmID

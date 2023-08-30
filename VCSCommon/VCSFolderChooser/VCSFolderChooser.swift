@@ -135,7 +135,7 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
                     textField.selectAll(nil)
                 }
                 let ok = UIAlertAction(title: "OK".vcsLocalized, style: .default) { (_) in
-                    var newName = FileNameUtils.appendingTimeStampToName(name: "Measurement").appendingPathExtension("vwx")
+                    var newName = FileNameUtils.appendingShortUUIDName(name: "Measurement").appendingPathExtension("vwx")
                     if var newAlertName = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespaces) {
                         if newAlertName.pathExtension != "vwx" {
                             newAlertName = newAlertName.deletingPathExtension.appendingPathExtension("vwx")

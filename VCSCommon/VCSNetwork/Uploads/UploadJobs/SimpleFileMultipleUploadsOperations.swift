@@ -23,7 +23,7 @@ public class SimpleFileMultipleUploadsOperations: OperationsGenerator {
             self.operations.append(contentsOf: operations)
         })
         
-        OperationsUtils.appendFinalOperation(operations: &self.operations, lastUploadOperations: lastUpdateLocalFileOperations, operationID: localFiles.last?.rID ?? UUID().uuidString, completion: completion)
+        OperationsUtils.appendFinalOperation(operations: &self.operations, lastUploadOperations: lastUpdateLocalFileOperations, operationID: localFiles.last?.rID ?? VCSUUID().systemUUID.uuidString, completion: completion)
         
         return self.operations
     }

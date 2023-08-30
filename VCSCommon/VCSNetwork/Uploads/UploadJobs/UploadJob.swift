@@ -17,7 +17,7 @@ import CocoaLumberjackSwift
     public let parentFolder: VCSFolderResponse?
     public let owner: String
     
-    public init(jobID: String = UUID().uuidString, jobOperation: JobType = .MultipleFileUpload, localFiles: [UploadJobLocalFile], owner: String, parentFolder: VCSFolderResponse?) {
+    public init(jobID: String = VCSUUID().systemUUID.uuidString, jobOperation: JobType = .MultipleFileUpload, localFiles: [UploadJobLocalFile], owner: String, parentFolder: VCSFolderResponse?) {
         self.jobID = jobID
         self.jobOperation = jobOperation
         self.localFiles = localFiles
@@ -29,7 +29,7 @@ import CocoaLumberjackSwift
         }
     }
     
-    public convenience init(jobID: String = UUID().uuidString, jobOperation: JobType = .SingleFileUpload, localFile: UploadJobLocalFile, owner: String, parentFolder: VCSFolderResponse?) {
+    public convenience init(jobID: String = VCSUUID().systemUUID.uuidString, jobOperation: JobType = .SingleFileUpload, localFile: UploadJobLocalFile, owner: String, parentFolder: VCSFolderResponse?) {
         self.init(jobID: jobID, jobOperation: jobOperation, localFiles: [localFile], owner: owner, parentFolder: parentFolder)
     }
     

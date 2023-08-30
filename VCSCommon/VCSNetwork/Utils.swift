@@ -226,7 +226,7 @@ public extension FileManager {
         return result
     }
     
-    class func uploadPath(uuidString: String = UUID().uuidString, pathExtension: String) -> URL {
+    class func uploadPath(uuidString: String = VCSUUID().shortenString(), pathExtension: String) -> URL {
         let fileName = uuidString.appendingPathExtension(pathExtension)
         let result = FileManager.uploadPath(fileName: fileName)
         return result
@@ -244,7 +244,7 @@ public extension FileManager {
         return result
     }
     
-    class func importPath(uuidString: String = UUID().uuidString, pathExtension: String) -> URL {
+    class func importPath(uuidString: String = VCSUUID().shortenString(), pathExtension: String) -> URL {
         let fileName = uuidString.appendingPathExtension(pathExtension)
         let result = FileManager.importPath(fileName: fileName)
         return result

@@ -31,7 +31,7 @@ import CocoaLumberjackSwift
 
         
     public init?(ownerLogin: String, storageType: StorageType, prefix: String, tempFileURL: URL, copyFile: Bool = false, related: [UploadJobLocalFile]) {
-        let UUIDString = UUID().uuidString
+        let UUIDString = VCSUUID().systemUUID.uuidString
         self.VCSID = UUIDString
         
         self.ownerLogin = ownerLogin

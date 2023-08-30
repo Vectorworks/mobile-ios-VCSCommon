@@ -273,10 +273,10 @@ public class VCSRealmConfig {
             }
             if (oldSchemaVersion < 11) {
                 migration.enumerateObjects(ofType: RealmFile.className()) { (oldObject: MigrationObject?, newObject: MigrationObject?) in
-                    newObject?["resourceID"] = UUID().uuidString
+                    newObject?["resourceID"] = VCSUUID().systemUUID.uuidString
                 }
                 migration.enumerateObjects(ofType: RealmFolder.className()) { (oldObject: MigrationObject?, newObject: MigrationObject?) in
-                    newObject?["resourceID"] = UUID().uuidString
+                    newObject?["resourceID"] = VCSUUID().systemUUID.uuidString
                 }
             }
             if (oldSchemaVersion < 12) {

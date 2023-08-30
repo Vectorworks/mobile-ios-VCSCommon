@@ -1,7 +1,7 @@
 import Foundation
 
 @objc public class VCSMountFolderResponse: NSObject, Codable {
-    public var realmID: String = UUID().uuidString
+    public var realmID: String = VCSUUID().systemUUID.uuidString
     
     public let isMounted: Bool
     public let mountPoint: VCSMountPointResponse?

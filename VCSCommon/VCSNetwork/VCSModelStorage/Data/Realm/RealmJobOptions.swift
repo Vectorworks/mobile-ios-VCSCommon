@@ -18,7 +18,7 @@ public class RealmJobOptions: Object, VCSRealmObject {
     public required convenience init(model: Model) {
         self.init()
         
-        self.RealmID = UUID().uuidString
+        self.RealmID = VCSUUID().systemUUID.uuidString
         self.srcStorageType = model.srcStorageType
         self.options = model.options
         self.jobName = model.jobName

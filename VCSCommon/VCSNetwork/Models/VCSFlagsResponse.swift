@@ -2,7 +2,7 @@ import Foundation
 
 @objc public class VCSFlagsResponse: NSObject, Codable {
     public let isNameValid, isFileTypeSupported, isNameDuplicate, isSupported, isMounted, isMountPoint: Bool
-    public var realmID: String = UUID().uuidString
+    public var realmID: String = VCSUUID().systemUUID.uuidString
     
     public var hasWarning:Bool { return !self.isNameValid || !self.isFileTypeSupported || self.isNameDuplicate }
     

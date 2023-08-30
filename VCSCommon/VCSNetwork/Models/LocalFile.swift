@@ -2,7 +2,7 @@ import Foundation
 import CocoaLumberjackSwift
 
 @objc public class LocalFile: NSObject {
-    private(set) public var uuid: String = UUID().uuidString
+    private(set) public var uuid: String = VCSUUID().systemUUID.uuidString
     private(set) public var name: String
     private(set) public var parent: String
     //computed
