@@ -10,6 +10,13 @@ public class LocalFileNameAndPath: ObservableObject {
     @Published public private(set) var itemURL: URL
     @Published public private(set) var thumbnailURL: URL?
     
+    public init(fileAsset: FileAsset, thumbnailURL: URL? = nil) {
+        self.itemName = fileAsset.name
+        self.itemPathExtension = fileAsset.name.pathExtension
+        self.itemURL = URL(filePath: fileAsset.localPathString ?? "")
+        self.thumbnailURL = thumbnailURL
+    }
+    
     public init(itemName: String,
                 itemPathExtension: String,
                 itemURL: URL,
