@@ -31,7 +31,7 @@ fileprivate struct MetadataForVCSFileResponse {
             storage.delete(item: oldFile)
         }
         
-        let uploadJob = UploadJob(jobOperation: .PDFFileUpload, localFile: unuploadedPDF, owner: owner, parentFolder: nil)
+        let uploadJob = UploadJob(localFile: unuploadedPDF, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations(singleFileCompletion: { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
@@ -63,8 +63,7 @@ fileprivate struct MetadataForVCSFileResponse {
             return
         }
         
-        let jobOperation: UploadJob.JobType = (thumbnail == nil) ? .SingleFileUpload : .PDFFileUpload
-        let uploadJob = UploadJob(jobOperation: jobOperation, localFile: unuploadedFile, owner: owner, parentFolder: nil)
+        let uploadJob = UploadJob(localFile: unuploadedFile, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations() { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
@@ -83,7 +82,7 @@ fileprivate struct MetadataForVCSFileResponse {
             return
         }
         
-        let uploadJob = UploadJob(jobOperation: .SingleFileUpload, localFile: unuploadedFile, owner: owner, parentFolder: nil)
+        let uploadJob = UploadJob(localFile: unuploadedFile, owner: owner, parentFolder: nil)
         VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations() { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)

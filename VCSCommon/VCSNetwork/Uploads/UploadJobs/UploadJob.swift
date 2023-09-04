@@ -5,7 +5,6 @@ import CocoaLumberjackSwift
     public enum JobType: String {
         case SingleFileUpload
         case MultipleFileUpload
-        case PDFFileUpload
     }
     
     public static private(set) var uploadJobs: [UploadJob] = []
@@ -52,8 +51,6 @@ public extension UploadJob {
             operations = getSimpleFileUpload(completion: singleFileCompletion)
         case .MultipleFileUpload:
             operations = getMultipleFileUpload(completion: multiFileCompletion)
-        case .PDFFileUpload:
-            operations = getPDFFileUpload(completion: singleFileCompletion)
         }
         
         VCSBackgroundSession.default.operationQueue.addOperations(operations, waitUntilFinished: false)
@@ -68,11 +65,6 @@ public extension UploadJob {
     private func getMultipleFileUpload(completion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil) -> [Operation] {
         let localFiles = self.localFiles.filter { $0.uploadingState != .Done }
         return SimpleFileMultipleUploadsOperations().getOperations(localFiles: localFiles, completion: completion)
-    }
-    
-    private func getPDFFileUpload(completion: ((Result<VCSFileResponse, Error>) -> Void)? = nil) -> [Operation] {
-        guard let pdfFile = self.localFiles.first, (pdfFile.uploadingState != .Done || pdfFile.related.contains(where: { $0.uploadingState != .Done })) else { return [] }
-        return PDFFileUploadOperations().getOperations(localFile: pdfFile, completion: completion)
     }
 }
 

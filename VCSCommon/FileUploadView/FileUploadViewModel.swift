@@ -25,7 +25,6 @@ public class FileUploadViewModel: ObservableObject, Identifiable {
     }
     
     public func uploadAction() {
-        //TODO: PDF upload
         defer { self.clearView() }
         
         var jobFiles: [UploadJobLocalFile] = []
@@ -35,7 +34,7 @@ public class FileUploadViewModel: ObservableObject, Identifiable {
             if let thumbnailURL = item.thumbnailURL,
                let thumbnailForUpload = UploadJobLocalFile(ownerLogin: parentFolder.ownerLogin,
                                                            storageType: .INTERNAL,
-                                                           prefix: parentFolder.prefix.appendingPathComponent(item.itemName.appendingPathExtension(VCSFileType.PNG.rawValue)),
+                                                           prefix: parentFolder.storageTypeString.appendingPathComponent(parentFolder.prefix.appendingPathComponent(item.itemName.appendingPathExtension(VCSFileType.PNG.rawValue))),
                                                            tempFileURL: thumbnailURL,
                                                            related: [])
             {
