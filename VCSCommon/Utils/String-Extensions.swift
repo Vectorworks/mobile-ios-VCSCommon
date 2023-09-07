@@ -30,4 +30,8 @@ public extension String {
         components.query = nil
         return components.url?.absoluteString ?? self
     }
+    
+    var firstCapitalized: String {
+        return self.first?.uppercased() ?? "" + self.dropFirst()
+    }
 }
