@@ -18,12 +18,12 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/robbiehanson/KissXML.git", exact: "5.3.3"),
-        .package(url: "https://github.com/CocoaLumberjack/CocoaLumberjack.git", exact: "3.8.0"),
-        .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.6.4"),
+        .package(url: "https://github.com/CocoaLumberjack/CocoaLumberjack.git", exact: "3.8.1"),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.8.0"),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", exact: "0.9.16"),
-        .package(url: "https://github.com/realm/realm-cocoa.git", exact: "10.36.0"),
+        .package(url: "https://github.com/realm/realm-cocoa.git", exact: "10.42.1"),
         .package(url: "https://github.com/scalessec/Toast-Swift.git", exact: "5.0.1"),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "10.5.0"),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "10.14.0"),
         
         .package(url: "https://github.com/Vectorworks/OAuth2.git", exact: "5.2.1"),
     ],
