@@ -30,6 +30,12 @@ let kVCSMetricsNotification_params     = "kVCSMetricsNotification_params"
     }
     
     @objc public func logEvent(_ event: String, parameters: [String : Any]? = nil) {
+        var paramString = ""
+        if let params = parameters {
+            paramString = ": \(params)"
+        }
+        let logString = event + paramString
+        DDLogInfo(event + paramString)
         Analytics.logEvent(event, parameters: parameters)
     }
 }
