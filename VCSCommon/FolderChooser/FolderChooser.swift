@@ -41,7 +41,7 @@ public struct FolderChooser: View {
                     let prefix = String($0)
                     let pathComponent = isFirst ? "p:" + prefix : prefix
                     isFirst = false
-                    resourceURIBase = resourceURIBase.appendingPathComponent(pathComponent)
+                    resourceURIBase = resourceURIBase.appendingPathComponent(pathComponent).VCSNormalizedURLString()
                     let pathRoute = FCRouteData(resourceURI: resourceURIBase, breadcrumbsName: prefix)
                     
                     path.append(pathRoute)
