@@ -12,7 +12,15 @@ extension URLRequest {
         
         if let httpHeaders = self.allHTTPHeaderFields, httpHeaders.keys.count > 0 {
             for (key,value) in httpHeaders {
+#if TEST_ENV || DEBUG_ENV || DEBUG
                 header += (pretty ? "--header " : "-H ") + "\'\(key): \(value)\' \(newLine)"
+#else
+                if key == "Authorization" {
+                    header += (pretty ? "--header " : "-H ") + "\'\(key): XXX-HIDDEN-XXX\' \(newLine)"
+                } else {
+                    header += (pretty ? "--header " : "-H ") + "\'\(key): \(value)\' \(newLine)"
+                }
+#endif
             }
         }
         

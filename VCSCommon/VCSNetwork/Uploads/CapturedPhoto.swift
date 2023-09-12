@@ -1,4 +1,5 @@
 import Foundation
+import CocoaLumberjackSwift
 import UIKit
 
 public class CapturedPhoto: NSObject {
@@ -13,7 +14,7 @@ public class CapturedPhoto: NSObject {
     
     public func saveToDisk(image: UIImage) {
         let pathToSaveURL = self.pathURL
-        NetworkLogger.log("Saving photo to path \(pathToSaveURL.path)")
+        DDLogInfo("Saving photo to path \(pathToSaveURL.path)")
         let imageData = image.fixedOrientation().jpegData(compressionQuality: 0.95)
         try? imageData?.write(to: pathToSaveURL)
     }

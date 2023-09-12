@@ -278,21 +278,6 @@ public extension URL {
     }
 }
 
-class NetworkLogger {
-    static func log(_ message: String) {
-        guard APIClient.loggingEnabled else { return }
-        
-        NetworkLogger.log(message as Any)
-    }
-    
-    static func log(_ item: Any) {
-        guard APIClient.loggingEnabled else { return }
-        
-        DDLogVerbose(item)
-    }
-}
-
-
 public extension UIImage
 {
     // MARK: Correct UIImage Orientation

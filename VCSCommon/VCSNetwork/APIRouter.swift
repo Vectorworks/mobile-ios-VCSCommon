@@ -1,6 +1,7 @@
 import Foundation
 import Alamofire
 import WebKit
+import CocoaLumberjackSwift
 
 public enum APIRouter: URLRequestConvertible {
     
@@ -731,9 +732,9 @@ public enum APIRouter: URLRequestConvertible {
     func addDefaultHeaders(_ urlRequest: inout URLRequest) {
         switch self {
         case .uploadData:
-            NetworkLogger.log("Skip Default Headers")
+            DDLogInfo("Skip Default Headers")
         case .uploadFileURL:
-            NetworkLogger.log("Skip Default Headers")
+            DDLogInfo("Skip Default Headers")
         default:
             APIRouter.addDefaultHeaderTo(request: &urlRequest)
         }
@@ -769,15 +770,6 @@ public enum APIRouter: URLRequestConvertible {
         } else if let bodyData = self.bodyData {
             urlRequest.httpBody = bodyData
         }
-        
-        NetworkLogger.log("\t###")
-        NetworkLogger.log(self)
-        NetworkLogger.log("\tcURL:")
-        NetworkLogger.log(urlRequest.cURL(pretty: false))
-        NetworkLogger.log(self.bodyParameters ?? "-no body-")
-        NetworkLogger.log("\t###")
-        
-        //DEBUG: put a breakpoint here to debug url -GKK
         
         return urlRequest
     }

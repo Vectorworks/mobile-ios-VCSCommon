@@ -132,11 +132,11 @@ public class APIClient: NSObject {
                     }
                     
                     APIClient.lastErrorData = dataResponse.data
-                    NetworkLogger.log("##### VCSNetwork error:\t\(dataResponse)")
-                    NetworkLogger.log("##### VCSNetwork error code:\t\(dataResponse.response?.statusCode ?? 0)")
-                    NetworkLogger.log("##### VCSNetwork error URL:\t\(dataResponse.request?.url?.absoluteString ?? "")")
+                    DDLogError("##### VCSNetwork error:\t\(dataResponse)")
+                    DDLogError("##### VCSNetwork error code:\t\(dataResponse.response?.statusCode ?? 0)")
+                    DDLogError("##### VCSNetwork error URL:\t\(dataResponse.request?.url?.absoluteString ?? "")")
                     if let errorData = dataResponse.data {
-                        NetworkLogger.log("##### VCSNetwork data:\t\(String(data: errorData, encoding: .utf8) ?? "nil")")
+                        DDLogError("##### VCSNetwork data:\t\(String(data: errorData, encoding: .utf8) ?? "nil")")
                     }
                     
                     completion(.failure(error as! E))
@@ -403,9 +403,9 @@ public class APIClient: NSObject {
                         }
                     case .failure(let error):
                         DDLogDebug("APIClient.download - failure")
-                        NetworkLogger.log("##### VCSNetwork error:\t\(dataResponse)")
-                        NetworkLogger.log("##### VCSNetwork error code:\t\(dataResponse.response?.statusCode ?? 0)")
-                        NetworkLogger.log("##### VCSNetwork error URL:\t\(dataResponse.request?.url?.absoluteString ?? "")")
+                        DDLogError("##### VCSNetwork error:\t\(dataResponse)")
+                        DDLogError("##### VCSNetwork error code:\t\(dataResponse.response?.statusCode ?? 0)")
+                        DDLogError("##### VCSNetwork error URL:\t\(dataResponse.request?.url?.absoluteString ?? "")")
                         
                         NotificationCenter.postDownloadNotification(model: file, progress: ProgressValues.Finished.rawValue)
                         completion(.failure(error))
