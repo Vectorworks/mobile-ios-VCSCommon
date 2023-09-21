@@ -135,6 +135,7 @@ public class APIClient: NSObject {
                     DDLogError("##### VCSNetwork error:\t\(dataResponse)")
                     DDLogError("##### VCSNetwork error code:\t\(dataResponse.response?.statusCode ?? 0)")
                     DDLogError("##### VCSNetwork error URL:\t\(dataResponse.request?.url?.absoluteString ?? "")")
+                    DDLogError("##### VCSNetwork error HEADERS:\t\(dataResponse.request?.allHTTPHeaderFields ?? "")")
                     if let errorData = dataResponse.data {
                         DDLogError("##### VCSNetwork data:\t\(String(data: errorData, encoding: .utf8) ?? "nil")")
                     }
@@ -330,6 +331,10 @@ public class APIClient: NSObject {
     
     public static func getCurrentUserBranding() -> Future<VCSSharedAssetBrandingResponseWrapper, Error> {
         return performRequest(route: APIRouter.branding)
+    }
+    
+    public static func getCurrentUserSocketPreSignedURI() -> Future<UserSocketPreSignedURI, Error> {
+        return performRequest(route: APIRouter.socketPreSignedUri)
     }
     
     //MARK: - DOWNLOAD

@@ -106,7 +106,8 @@ public struct FileEventNotificationResponse: Decodable {
     public var content: Result<FileEventResponseContentType, DecodingFileEventError>
     
     enum CodingKeys: String, CodingKey {
-        case channel, payload
+        case channel = "topic_id"
+        case payload = "data"
     }
     
     public init(from decoder: Decoder) throws {

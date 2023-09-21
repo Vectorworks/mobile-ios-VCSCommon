@@ -1,5 +1,7 @@
 import Foundation
 import CryptoKit
+import UniformTypeIdentifiers
+import CocoaLumberjackSwift
 
 public extension String {
     var lastPathComponent: String { return (self as NSString).lastPathComponent }
@@ -33,5 +35,82 @@ public extension String {
     
     var firstCapitalized: String {
         return self.first?.uppercased() ?? "" + self.dropFirst()
+    }
+    
+    var VCSDateFromISO8061: Date? {
+        return DateFormatter.ISO8061.date(from: self)
+    }
+    
+    var dateFromISO8601: Date? {
+        return ISO8601DateFormatter().date(from: self)
+    }
+    
+    var dateFromRFC1123: Date? {
+        return DateFormatter.RFC1123.date(from: self)   // "Mar 22, 2017, 10:22 AM"
+    }
+    
+    func stringByReplacingPathExtension(_ newExtension: String) -> String? {
+        if let type = UTType(filenameExtension: self.pathExtension), type.isDeclared {
+            return self.deletingPathExtension.appendingPathExtension(newExtension)
+        } else {
+            return self.appendingPathExtension(newExtension)
+        }
+    }
+    
+    func stringByAppendingPath(path: String) -> String {
+        var result = self
+        guard path.count > 0 else { return result }
+        
+        if let serverURL = URL(string: result),
+            let processedPath = path.removingPercentEncoding {
+            let requestURL = serverURL.appendingPathComponent(processedPath)
+            result = self.replaceDoubleSlash(input: requestURL.absoluteString)
+        } else if result.count != 0 {
+            if let serverURL = URL(string: path) {
+                result.append(self.replaceDoubleSlash(input: serverURL.absoluteString))
+            } else {
+                result.append(path)
+            }
+        } else {
+            if let serverURL = URL(string: path) {
+                result = self.replaceDoubleSlash(input: serverURL.absoluteString)
+            } else {
+                result = path
+            }
+        }
+        
+        return result
+    }
+    
+    func VCSNormalizedURLString() -> String {
+        let result = self.hasSuffix("/") ? self : (self + "/")
+        
+        return result
+    }
+    
+    private func replaceDoubleSlash(input: String) -> String {
+        var result = input
+        let groups = result.components(separatedBy: "//")
+        if result.contains("https://") {
+            if groups.count > 2 {
+                result = groups.first! + "//" + groups.dropFirst().joined(separator: "/")
+            }
+        } else {
+            result = groups.joined(separator: "/")
+        }
+        
+        return result
+    }
+    
+    var toDictionary: [String: Any]? {
+        let data = Data(self.utf8)
+        do {
+            if let dictionary = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as? [String: Any] {
+                return dictionary
+            }
+        } catch let error as NSError {
+            DDLogError("Failed to load: \(error.localizedDescription)")
+        }
+        return nil
     }
 }

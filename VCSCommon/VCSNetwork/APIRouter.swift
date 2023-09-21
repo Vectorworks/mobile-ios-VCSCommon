@@ -49,13 +49,14 @@ public enum APIRouter: URLRequestConvertible {
     case unshare(assetURI: String)
     case mountFolder(storageType: String, ownerLogin: String, prefix: String, mountValue: Bool)
     case branding
+    case socketPreSignedUri
     
     
     // MARK: - requestURL
     private var requestURL: VCSRequestURL {
         switch self {
         case .loginSettings:
-            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v07)
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v08)
         case .vcsUser:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v02)
         case .awsKeys:
@@ -136,6 +137,8 @@ public enum APIRouter: URLRequestConvertible {
         case .mountFolder:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         case .branding:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .socketPreSignedUri:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         }
     }
@@ -306,6 +309,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/\(storageType)/shared_with_me/folder/:mount/o:\(ownerLogin)/p:\(prefix)/"
         case .branding:
             return "/branding/"
+        case .socketPreSignedUri:
+            return "/messenger/presigned-uri/"
         }
     }
     
@@ -660,6 +665,11 @@ public enum APIRouter: URLRequestConvertible {
             var result:[URLQueryItem] = []
             let queryItemRelated = URLQueryItem(name: "system", value: "iOSNomad")
             result.append(queryItemRelated)
+            return result
+        case .socketPreSignedUri:
+            var result:[URLQueryItem] = []
+            let queryItemAppName = URLQueryItem(name: "app_name", value: "nomad")
+            result.append(queryItemAppName)
             return result
         default:
             return nil

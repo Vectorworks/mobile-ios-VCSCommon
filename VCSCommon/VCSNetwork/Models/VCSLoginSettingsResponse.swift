@@ -4,7 +4,7 @@ import Foundation
     @objc public let loginServerSessionName, forgotPassword, loginURL, registerURL: String
     @objc public let notifyChannels: VCSNotifyChannelsResponse
     @objc public let loginWithTokenURL, logoutURL, loginWithServerAuthCode, loginServerCSRFName: String
-    @objc public let loginServer, notifyServer: String
+    @objc public let loginServer: String
     @objc public let nomadClientID, oAuthAuthorizeURL, oAuthTokenURL: String
     @objc public let nomadRedirectURLs: [String]
     @objc public let dropboxIntegrateURL, driveIntegrateURL, oneDriveIntegrateURL: String
@@ -19,8 +19,7 @@ import Foundation
         case loginServer = "login_server"
         case loginServerSessionName = "login_server_session_name"
         case loginServerCSRFName = "login_server_csrf_name"
-        case notifyServer = "notify_server"
-        case notifyChannels = "notify_channels"
+        case notifyChannels = "messenger_topics"
         case nomadClientID = "nomad_ios_client_id"
         case oAuthAuthorizeURL = "oauth2_authorize_uri"
         case oAuthTokenURL = "oauth2_token_uri"

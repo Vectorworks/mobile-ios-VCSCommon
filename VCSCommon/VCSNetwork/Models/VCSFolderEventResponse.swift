@@ -24,7 +24,8 @@ public struct FolderEventNotificationResponse: Decodable {
     public var folder: VCSFolderResponse
     
     enum CodingKeys: String, CodingKey {
-        case channel, payload
+        case channel = "topic_id"
+        case payload = "data"
     }
     
     public init(from decoder: Decoder) throws {

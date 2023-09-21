@@ -2,7 +2,6 @@ import Foundation
 import Alamofire
 import UIKit
 import CocoaLumberjackSwift
-import UniformTypeIdentifiers
 
 public extension Date {
     var VCSISO8061String: String {
@@ -11,73 +10,6 @@ public extension Date {
     
     var ISO8601String: String {
         return ISO8601DateFormatter().string(from: self)
-    }
-}
-
-public extension String {
-    var VCSDateFromISO8061: Date? {
-        return DateFormatter.ISO8061.date(from: self)
-    }
-    
-    var dateFromISO8601: Date? {
-        return ISO8601DateFormatter().date(from: self)
-    }
-    
-    var dateFromRFC1123: Date? {
-        return DateFormatter.RFC1123.date(from: self)   // "Mar 22, 2017, 10:22 AM"
-    }
-    
-    func stringByReplacingPathExtension(_ newExtension: String) -> String? {
-        if let type = UTType(filenameExtension: self.pathExtension), type.isDeclared {
-            return self.deletingPathExtension.appendingPathExtension(newExtension)
-        } else {
-            return self.appendingPathExtension(newExtension)
-        }
-    }
-    
-    func stringByAppendingPath(path: String) -> String {
-        var result = self
-        guard path.count > 0 else { return result }
-        
-        if let serverURL = URL(string: result),
-            let processedPath = path.removingPercentEncoding {
-            let requestURL = serverURL.appendingPathComponent(processedPath)
-            result = self.replaceDoubleSlash(input: requestURL.absoluteString)
-        } else if result.count != 0 {
-            if let serverURL = URL(string: path) {
-                result.append(self.replaceDoubleSlash(input: serverURL.absoluteString))
-            } else {
-                result.append(path)
-            }
-        } else {
-            if let serverURL = URL(string: path) {
-                result = self.replaceDoubleSlash(input: serverURL.absoluteString)
-            } else {
-                result = path
-            }
-        }
-        
-        return result
-    }
-    
-    func VCSNormalizedURLString() -> String {
-        let result = self.hasSuffix("/") ? self : (self + "/")
-        
-        return result
-    }
-    
-    private func replaceDoubleSlash(input: String) -> String {
-        var result = input
-        let groups = result.components(separatedBy: "//")
-        if result.contains("https://") {
-            if groups.count > 2 {
-                result = groups.first! + "//" + groups.dropFirst().joined(separator: "/")
-            }
-        } else {
-            result = groups.joined(separator: "/")
-        }
-        
-        return result
     }
 }
 
@@ -350,3 +282,12 @@ public extension Data {
     }
 }
 
+public extension Dictionary {
+    var jsonData: Data? { return try? JSONSerialization.data(withJSONObject: self, options: [.prettyPrinted]) }
+    
+    func toJSONString() -> String? {
+        guard let jsonData = jsonData else { return nil }
+        
+        return String(data: jsonData, encoding: .utf8)
+    }
+}
