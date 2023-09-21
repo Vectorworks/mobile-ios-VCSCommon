@@ -17,7 +17,7 @@ public struct FolderChooser: View {
         self._isPresented = isPresented
         
         if routeData.resourceURI.contains("/p:"), let resourceURI = routeData.resourceURI.split(separator: "/p:").first {
-            self.rootRouteData = FCRouteData(resourceURI: String(resourceURI), breadcrumbsName: routeData.folderResponse?.storageType.displayName ?? "")
+            self.rootRouteData = FCRouteData(resourceURI: String(resourceURI).VCSNormalizedURLString(), breadcrumbsName: routeData.folderResponse?.storageType.displayName ?? "")
         } else {
             self.rootRouteData = routeData
         }
