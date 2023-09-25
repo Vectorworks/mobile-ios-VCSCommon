@@ -38,7 +38,7 @@ public struct NewFolderAlert: ViewModifier {
                         
                     })
                 Button(FolderChooserSettings.createButtonTitle.vcsLocalized, action: {
-                    guard let currentFolder = currentFolder ?? FolderChooser.currentFolderRouteData?.folderResponse else { return }
+                    guard let currentFolder = currentFolder ?? FolderChooser.currentSharedWithMeFolderRouteData?.folderResponse ?? FolderChooser.currentFolderRouteData?.folderResponse else { return }
                     folderName = folderName.trimmingCharacters(in: .whitespacesAndNewlines)
                     if folderName.isEmpty {
                         newFolderMessage = FolderChooserSettings.invalidNameMessage.vcsLocalized
