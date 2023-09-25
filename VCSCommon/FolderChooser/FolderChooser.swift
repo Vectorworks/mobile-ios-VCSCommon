@@ -2,7 +2,10 @@ import SwiftUI
 import CocoaLumberjackSwift
 
 public struct FolderChooser: View {
-    public static var currentFolderRouteData: FCRouteData?
+    public static var currentFolderRouteData: FCRouteData? {
+        didSet { FolderChooser.currentSharedWithMeFolderRouteData = nil }
+    }
+    public static var currentSharedWithMeFolderRouteData: FCRouteData?
     
     @State var isPathSetup: Bool = false
     @State var path: [FCRouteData] = []
