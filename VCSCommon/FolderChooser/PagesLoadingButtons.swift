@@ -15,7 +15,7 @@ public struct PagesLoadingButtons: View {
                 rootRouteData = FCRouteData(resourceURI: storagePage.folderURI, breadcrumbsName: storagePage.displayName)
                 resultFolder = nil
             } label: {
-                Label(selectedStorage?.storageType.displayName ?? "", image: selectedStorage?.storageType.storageImageName ?? "")
+                Label(storagePage.displayName, image: selectedStorage?.storageType.storageImageName ?? "")
             }
         }
         Button(FolderChooserSettings.cancelButtonTitle.vcsLocalized, role: .cancel) {}

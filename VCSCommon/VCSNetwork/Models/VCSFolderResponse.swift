@@ -261,6 +261,31 @@ extension VCSFolderResponse: VCSCachable {
 }
 
 public extension VCSFolderResponse {
+    var isGoogleOrOneDriveFolder: Bool {
+        return VCSFolderResponse.isGoogleOrOneDriveFolder(self.storageTypeString)
+    }
+    
+    static func isGoogleOrOneDriveFolder(_ storageType: String) -> Bool {
+        return storageType == StorageType.GOOGLE_DRIVE.rawValue || storageType == StorageType.ONE_DRIVE.rawValue
+    }
+    
+//    var isSharedWithMeGoogleOrOneDriveFolder: Bool {
+//        return VCSFolderResponse.isPrefixSharedWithMeGoogleOrOneDriveFolder(self.prefix, storageType: self.storageTypeString)
+//    }
+//    
+//    static func isPrefixSharedWithMeGoogleOrOneDriveFolder(_ prefix: String, storageType: String) -> Bool {
+//        let isGoogleDriveSharedWithMe = prefix.range(of: StoragePage.driveIDSharedRegXPattern, options:.regularExpression) != nil
+//        
+//        var isOneDriveSharedWithMe = false
+//        if storageType == StorageType.ONE_DRIVE.rawValue, let oneDriveRootPrefix = AuthCenter.shared.user?.availableStorages.first(where: { $0.storageType == StorageType.ONE_DRIVE })?.pages.first(where: { $0.name == "My Files" })?.id {
+//            isOneDriveSharedWithMe = prefix.range(of: oneDriveRootPrefix , options:.regularExpression) == nil
+//        }
+//        
+//        return isGoogleDriveSharedWithMe || isOneDriveSharedWithMe
+//    }
+}
+
+public extension VCSFolderResponse {
     static var nilFolder = VCSFolderResponse(files: [], parent: nil, subfolders: [], autoprocessParent: nil, resourceURI: "", resourceID: "", exists: false, isNameValid: false, name: "", prefix: "", storageType: .S3, ownerLogin: "", VCSID: "")
     static var testVCSFolder: VCSFolderResponse? = { return try? JSONDecoder().decode(VCSFolderResponse.self, from: VCSFolderResponse.testFolderJSONString.data(using: .utf8)!) }()
     
