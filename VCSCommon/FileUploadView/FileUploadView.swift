@@ -23,22 +23,31 @@ public struct FileUploadView: View {
             
             List {
                 ForEach(model.itemsLocalNameAndPath.indices, id: \.self) { idx in
-                    HStack {
-                        Image(uiImage: FileUploadView.placeholder(fileExtension: model.itemsLocalNameAndPath[idx].itemPathExtension))
-                        TextField("Please enter a filename.".vcsLocalized, text: $model.itemsLocalNameAndPath[idx].itemName)
-                            .onSubmit {
-                                guard $model.itemsLocalNameAndPath[idx].itemName.wrappedValue.count > 0 else { return }
-                                print($model.itemsLocalNameAndPath[idx].itemName)
+                    VStack{
+                        HStack {
+                            Image(uiImage: FileUploadView.placeholder(fileExtension: model.itemsLocalNameAndPath[idx].itemPathExtension))
+                            TextField("Please enter a filename.".vcsLocalized, text: $model.itemsLocalNameAndPath[idx].itemName)
+                                .onSubmit {
+                                    guard $model.itemsLocalNameAndPath[idx].itemName.wrappedValue.count > 0 else { return }
+                                    print($model.itemsLocalNameAndPath[idx].itemName)
+                                }
+                                .textInputAutocapitalization(.never)
+                                .disableAutocorrection(true)
+                                .submitLabel(.done)
+                                .truncationMode(.middle)
+                            if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix.appendingPathComponent(model.itemsLocalNameAndPath[idx].itemName)) == false {
+                                Image(systemName: "exclamationmark.triangle")
                             }
-                            .textInputAutocapitalization(.never)
-                            .disableAutocorrection(true)
-                            .submitLabel(.done)
-                            .truncationMode(.middle)
+                        }
                         if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix.appendingPathComponent(model.itemsLocalNameAndPath[idx].itemName)) == false {
-                            Image(systemName: "exclamationmark.triangle")
+                            Text("Unsupported characters".vcsLocalized)
+                                .font(.footnote)
+                                .foregroundStyle(.gray)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    
                 }
             }
             .listStyle(.plain)
