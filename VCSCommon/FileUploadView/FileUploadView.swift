@@ -3,7 +3,7 @@ import SwiftUI
 public struct FileUploadView: View {
     @ObservedObject var model: FileUploadViewModel
     var areNamesValid: Bool {
-        model.itemsLocalNameAndPath.allSatisfy { FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix.appendingPathComponent($0.itemName)) }
+        model.itemsLocalNameAndPath.allSatisfy { FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix, name: $0.itemName) }
     }
     
     
@@ -35,11 +35,11 @@ public struct FileUploadView: View {
                                 .disableAutocorrection(true)
                                 .submitLabel(.done)
                                 .truncationMode(.middle)
-                            if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix.appendingPathComponent(model.itemsLocalNameAndPath[idx].itemName)) == false {
+                            if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix, name: model.itemsLocalNameAndPath[idx].itemName) == false {
                                 Image(systemName: "exclamationmark.triangle")
                             }
                         }
-                        if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix.appendingPathComponent(model.itemsLocalNameAndPath[idx].itemName)) == false {
+                        if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix, name: model.itemsLocalNameAndPath[idx].itemName) == false {
                             Text("Unsupported characters".vcsLocalized)
                                 .font(.footnote.weight(.bold))
                                 .foregroundStyle(.gray)

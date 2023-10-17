@@ -23,8 +23,7 @@ public enum FolderNameValidationError: Error {
 }
 
 public class FilenameValidator {
-    public static func isNameValid(ownerLogin: String, storage: String, prefix: String) -> Bool {
-        let name = prefix.lastPathComponent
+    public static func isNameValid(ownerLogin: String, storage: String, prefix: String, name: String) -> Bool {
         if name.isEmpty {
             return false
         } else if FolderNameValidator.doesAssetNameContainsIllegalSymbols(name) {
