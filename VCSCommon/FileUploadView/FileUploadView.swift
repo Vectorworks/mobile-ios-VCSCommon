@@ -41,7 +41,7 @@ public struct FileUploadView: View {
                         }
                         if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix.appendingPathComponent(model.itemsLocalNameAndPath[idx].itemName)) == false {
                             Text("Unsupported characters".vcsLocalized)
-                                .font(.footnote)
+                                .font(.footnote.weight(.bold))
                                 .foregroundStyle(.gray)
                                 .lineLimit(1)
                                 .truncationMode(.tail)
