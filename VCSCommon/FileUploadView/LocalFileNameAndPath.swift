@@ -5,43 +5,52 @@ public typealias FilesSavedResult = Result<[LocalFileNameAndPath], Error>
 public typealias FilesSavedActionResult = (FilesSavedResult) -> Void
 
 public class LocalFileNameAndPath: ObservableObject {
+    public enum Types: String {
+        case none
+        case thumbnail
+        case arwm
+    }
     @Published public var itemName: String
     @Published public var itemPathExtension: String
     @Published public private(set) var itemURL: URL
-    @Published public private(set) var thumbnailURL: URL?
+    @Published public private(set) var type: Types = .none
+    @Published public private(set) var related: [LocalFileNameAndPath]
     
-    public init(fileAsset: FileAsset, thumbnailURL: URL? = nil) {
+    public init(fileAsset: FileAsset, 
+                related: [LocalFileNameAndPath] = []) {
         self.itemName = fileAsset.name
         self.itemPathExtension = fileAsset.name.pathExtension
         self.itemURL = URL(filePath: fileAsset.localPathString ?? "")
-        self.thumbnailURL = thumbnailURL
+        self.related = related
     }
     
     public init(itemName: String,
                 itemPathExtension: String,
                 itemURL: URL,
-                thumbnailURL: URL? = nil) {
+                related: [LocalFileNameAndPath] = []) {
         self.itemName = itemName.deletingPathExtension
         self.itemPathExtension = itemPathExtension
         self.itemURL = itemURL
-        self.thumbnailURL = thumbnailURL
+        self.related = related
     }
     
     public init(itemName: String,
                 itemURL: URL,
-                thumbnailURL: URL? = nil) {
+                related: [LocalFileNameAndPath] = []) {
         self.itemName = itemName.deletingPathExtension
         self.itemPathExtension = itemURL.pathExtension
         self.itemURL = itemURL
-        self.thumbnailURL = thumbnailURL
+        self.related = related
     }
     
     public init(itemURL: URL,
-                thumbnailURL: URL? = nil) {
+                related: [LocalFileNameAndPath] = [],
+                type: Types = .none) {
         self.itemName = itemURL.lastPathComponent.deletingPathExtension
         self.itemPathExtension = itemURL.pathExtension
         self.itemURL = itemURL
-        self.thumbnailURL = thumbnailURL
+        self.related = related
+        self.type = type
     }
     
     public static func copyFile(itemURL: URL) -> LocalFileNameAndPath? {

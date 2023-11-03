@@ -31,14 +31,16 @@ public class FileUploadViewModel: ObservableObject, Identifiable {
         
         itemsLocalNameAndPath.forEach { item in
             var relatedFiles: [UploadJobLocalFile] = []
-            if let thumbnailURL = item.thumbnailURL,
-               let thumbnailForUpload = UploadJobLocalFile(ownerLogin: parentFolder.ownerLogin,
-                                                           storageType: .INTERNAL,
-                                                           prefix: parentFolder.storageTypeString.appendingPathComponent(parentFolder.prefix.appendingPathComponent(item.itemName.appendingPathExtension(VCSFileType.PNG.rawValue))),
-                                                           tempFileURL: thumbnailURL,
-                                                           related: [])
-            {
-                relatedFiles.append(thumbnailForUpload)
+            
+            item.related.forEach {
+                if let relatedForUpload = UploadJobLocalFile(ownerLogin: parentFolder.ownerLogin,
+                                                            storageType: .INTERNAL,
+                                                             prefix: parentFolder.storageTypeString.appendingPathComponent(parentFolder.prefix.appendingPathComponent($0.itemName.appendingPathExtension($0.itemPathExtension))),
+                                                             tempFileURL: $0.itemURL,
+                                                            related: [])
+                {
+                    relatedFiles.append(relatedForUpload)
+                }
             }
             
             if let fileForUpload = UploadJobLocalFile(ownerLogin: parentFolder.ownerLogin,

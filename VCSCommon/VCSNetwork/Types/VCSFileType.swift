@@ -37,6 +37,8 @@ public enum VCSFileType: String
     case TIF
     case JSON
     case VMSR
+    case USDZ
+    case ARWM
     
     case VWX_EXTENDED
     
