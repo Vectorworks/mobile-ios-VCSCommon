@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import AVFoundation
 import UIKit
 
@@ -84,4 +85,57 @@ public class VCSDevicePermissions {
         if (!completionDelayed) { completion(cameraPermission) }
     }
     
+}
+
+public struct VCSDevicePermissionsSUI: ViewModifier {
+    @Environment(\.dismiss) var dismiss
+    @State var showNotAllowedAlert = false
+    
+    @State var media: MediaType
+    @Binding var permissionGranted: EnumAccessPermission
+    
+    
+    
+    var alertMessage: String {
+        switch media {
+        case .photos:
+            return permissionGranted == .denied ? "This feature requires access to Camera.\r\n\r\nYou can enable access in Privacy Settings." : "This feature requires access to Photos. You can enable access in Restrictions Settings."
+        case .camera:
+            return permissionGranted == .denied ? "This feature requires access to Camera.\r\n\r\nYou can enable access in Privacy Settings." : "This feature requires access to Camera. You can enable access in Restrictions Settings."
+        }
+    }
+    
+    var alertCancelButtonTitle: String {
+        return permissionGranted == .denied ? "Cancel" : "OK"
+    }
+    
+    public func body(content: Content) -> some View {
+        content
+            .alert(alertMessage.vcsLocalized, isPresented: $showNotAllowedAlert, actions: {
+                Button(alertCancelButtonTitle.vcsLocalized, role: .destructive) {
+                    dismiss()
+                }
+                if (permissionGranted == .denied) {
+                    Button("Settings".vcsLocalized) {
+                        VCSDevicePermissions.openSettings()
+                    }
+                }
+                
+            })
+            .onAppear() {
+                VCSDevicePermissions.checkForCameraAccessPermission { (permission) in
+                    if permission != .allowed {
+                        permissionGranted = permission
+                        self.showNotAllowedAlert = true
+                    }
+                }
+            }
+        
+    }
+}
+
+public extension View {
+    func checkForCameraAccessPermission(forMediaType media: MediaType, permissionGranted: Binding<EnumAccessPermission>) -> some View {
+        modifier(VCSDevicePermissionsSUI(media: media, permissionGranted: permissionGranted))
+    }
 }

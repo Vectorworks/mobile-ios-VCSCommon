@@ -18,3 +18,20 @@ public extension View {
     var isPhone: Bool { UIIdiom == .phone }
     var isPad: Bool { UIIdiom == .pad }
 }
+
+public struct IsHiddenSUI: ViewModifier {
+    @Binding var isHidden: Bool
+
+    public func body(content: Content) -> some View {
+        content
+            .if(isHidden, transform: {
+                $0.hidden()
+            })
+    }
+}
+
+public extension View {
+    func isHidden(_ value: Binding<Bool>) -> some View {
+        modifier(IsHiddenSUI(isHidden: value))
+    }
+}
