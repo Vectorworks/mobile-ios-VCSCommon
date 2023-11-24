@@ -19,16 +19,22 @@ import simd
     }
     
     func parse() {
-        guard let fileData = FileManager.default.contents(atPath: self.filePath), let theDocument = try? DDXMLDocument(data: fileData, options: 0) else {
-            DDLogError("Failed to initialize DDXMLDocument object!")
+        guard let fileData = FileManager.default.contents(atPath: self.filePath) else {
+            DDLogError("XML files does not exists: \(self.filePath)")
             return
         }
         
-        self.parseDesignLayers(theDocument)
-        self.parseClasses(theDocument)
-        self.parseSavedViews(theDocument)
-        self.parseRenderworksCameras(theDocument)
-        self.parsePages(theDocument)
+        do {
+            let theDocument = try DDXMLDocument(data: fileData, options: 0)
+            self.parseDesignLayers(theDocument)
+            self.parseClasses(theDocument)
+            self.parseSavedViews(theDocument)
+            self.parseRenderworksCameras(theDocument)
+            self.parsePages(theDocument)
+        } catch {
+            DDLogError("Failed to initialize DDXMLDocument object! Error: \(error)")
+            return
+        }
     }
     
     func parseDesignLayers(_ fromDocument: DDXMLDocument) {

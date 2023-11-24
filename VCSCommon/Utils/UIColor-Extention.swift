@@ -40,4 +40,6 @@ public extension Color {
     static var systemBackground: Color { return Color(uiColor: .systemBackground) }
     static var secondarySystemBackground: Color { return Color(uiColor: .secondarySystemBackground) }
     static var tertiarySystemBackground: Color { return Color(uiColor: .tertiarySystemBackground) }
+    
+    static var VCSTeal: Color { return Color(uiColor: VCSColors.teal) }
 }
