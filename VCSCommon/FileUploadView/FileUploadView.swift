@@ -1,7 +1,10 @@
 import SwiftUI
+import SceneKit
 
-public struct FileUploadView: View {
+public struct FileUploadView: View, KeyboardReadable {
     @ObservedObject var model: FileUploadViewModel
+    @State private var isKeyboardVisible = false
+    
     var areNamesValid: Bool {
         model.itemsLocalNameAndPath.allSatisfy { FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix, name: $0.itemName) }
     }
@@ -16,81 +19,91 @@ public struct FileUploadView: View {
     }
     
     public var body: some View {
-        VStack(spacing: 0) {
-            Text(self.generatedMessage)
-                .font(.title2)
-                .padding(.bottom)
-            
-            List {
-                ForEach(model.itemsLocalNameAndPath.indices, id: \.self) { idx in
-                    VStack{
-                        HStack {
-                            Image(uiImage: FileUploadView.placeholder(fileExtension: model.itemsLocalNameAndPath[idx].itemPathExtension))
-                            TextField("Please enter a filename.".vcsLocalized, text: $model.itemsLocalNameAndPath[idx].itemName)
-                                .onSubmit {
-                                    guard $model.itemsLocalNameAndPath[idx].itemName.wrappedValue.count > 0 else { return }
-                                    print($model.itemsLocalNameAndPath[idx].itemName)
+        GeometryReader { g in
+            VStack(spacing: 0) {
+                Text(self.generatedMessage)
+                    .font(.title2)
+                    .padding(.bottom)
+                
+                List {
+                    ForEach(model.itemsLocalNameAndPath.indices, id: \.self) { idx in
+                        VStack{
+                            HStack {
+                                Image(uiImage: FileUploadView.placeholder(fileExtension: model.itemsLocalNameAndPath[idx].itemPathExtension))
+                                TextField("Please enter a filename.".vcsLocalized, text: $model.itemsLocalNameAndPath[idx].itemName)
+                                    .onSubmit {
+                                        guard $model.itemsLocalNameAndPath[idx].itemName.wrappedValue.count > 0 else { return }
+                                        print($model.itemsLocalNameAndPath[idx].itemName)
+                                    }
+                                    .textInputAutocapitalization(.never)
+                                    .disableAutocorrection(true)
+                                    .submitLabel(.done)
+                                    .truncationMode(.middle)
+                                if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix, name: model.itemsLocalNameAndPath[idx].itemName) == false {
+                                    Image(systemName: "exclamationmark.triangle")
                                 }
-                                .textInputAutocapitalization(.never)
-                                .disableAutocorrection(true)
-                                .submitLabel(.done)
-                                .truncationMode(.middle)
-                            if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix, name: model.itemsLocalNameAndPath[idx].itemName) == false {
-                                Image(systemName: "exclamationmark.triangle")
                             }
-                        }
-                        if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix, name: model.itemsLocalNameAndPath[idx].itemName) == false {
-                            Text("Unsupported characters".vcsLocalized)
-                                .font(.footnote.weight(.bold))
-                                .foregroundStyle(.gray)
-                                .lineLimit(1)
-                                .truncationMode(.tail)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                            if FilenameValidator.isNameValid(ownerLogin: model.parentFolder.ownerLogin, storage: model.parentFolder.storageTypeString, prefix: model.parentFolder.prefix, name: model.itemsLocalNameAndPath[idx].itemName) == false {
+                                Text("Unsupported characters".vcsLocalized)
+                                    .font(.footnote.weight(.bold))
+                                    .foregroundStyle(.gray)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
                         }
                     }
                 }
-            }
-            .listStyle(.plain)
-            .onTapGesture {
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-            }
-            
-            Divider()
-            
-            HStack {
-                Button {
-                    model.isFolderChooserPresented = true
-                } label: {
-                    Label(model.parentFolder.prefix, image: model.parentFolder.storageType.storageImageName)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            }
-            .tint(.label)
-            .padding()
-            .padding(.bottom)
-            
-            HStack {
-                Button {
+                .listStyle(.plain)
+                .onTapGesture {
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    model.cancelAction()
-                } label: {
-                    Text("Discard".vcsLocalized)
                 }
-                Spacer()
-                Button {
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    model.uploadAction()
-                } label: {
-                    Text("Upload".vcsLocalized)
+                
+                if let singleFile = model.itemsLocalNameAndPath.first, VCSFileType.USDZ.pathExt == singleFile.itemPathExtension, let scene = try? SCNScene(url: singleFile.itemURL, options: [.checkConsistency: true]), isKeyboardVisible == false {
+                    SceneView(scene: { scene.background.contents = UIColor.systemBackground; return scene }(), options: [.autoenablesDefaultLighting, .allowsCameraControl])
+                        .frame(height: g.size.height*0.66)
                 }
-                .buttonStyle(.borderedProminent)
-                .disabled(self.areNamesValid == false)
+                
+                Divider()
+                
+                HStack {
+                    Button {
+                        model.isFolderChooserPresented = true
+                    } label: {
+                        Label(model.parentFolder.prefix, image: model.parentFolder.storageType.storageImageName)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .tint(.label)
+                .padding()
+                .padding(.bottom)
+                
+                HStack {
+                    Button {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        model.cancelAction()
+                    } label: {
+                        Text("Discard".vcsLocalized)
+                    }
+                    Spacer()
+                    Button {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        model.uploadAction()
+                    } label: {
+                        Text("Upload".vcsLocalized)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(self.areNamesValid == false)
+                }
+                .padding()
             }
-            .padding()
         }
         .sheet(isPresented: $model.isFolderChooserPresented, content: {
             FolderChooser(routeData: FCRouteData(folder: model.parentFolder), folderResult: $model.parentFolder, isPresented: $model.isFolderChooserPresented)
         })
+        .onReceive(keyboardPublisher) { newIsKeyboardVisible in
+            isKeyboardVisible = newIsKeyboardVisible
+        }
     }
     
     private static func placeholder(fileExtension: String) -> UIImage {
