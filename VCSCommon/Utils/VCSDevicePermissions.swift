@@ -124,8 +124,8 @@ public struct VCSDevicePermissionsSUI: ViewModifier {
             })
             .onAppear() {
                 VCSDevicePermissions.checkForCameraAccessPermission { (permission) in
+                    permissionGranted = permission
                     if permission != .allowed {
-                        permissionGranted = permission
                         self.showNotAllowedAlert = true
                     }
                 }
