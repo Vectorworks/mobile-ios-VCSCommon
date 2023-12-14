@@ -17,6 +17,7 @@ import FirebaseAnalytics
     
     @objc public static let LIST_ACTION__ITEM_OPEN__PDF_VIEWER                  = "list_action__item_open__pdf_viewer"
     @objc public static let LIST_ACTION__ITEM_OPEN__OLD_PDF_VIEWER              = "list_action__item_open__old_pdf_viewer"
+    @objc public static let LIST_ACTION__ITEM_OPEN_QUICK_LOOK_PDF_VIEWER        = "quick_look_pdf_viewer__opened"
     @objc public static let LIST_ACTION__ITEM_OPEN__SYSTEM_PREVIEWER            = "list_action__item_open__system_previewer"
     @objc public static let LIST_ACTION__ITEM_OPEN__VGM                         = "list_action__item_open__vgm"
     @objc public static let LIST_ACTION__ITEM_OPEN__AR_Viewer                   = "list_action__item_open__ar_viewer"
@@ -80,6 +81,8 @@ import FirebaseAnalytics
     @objc public static let PDF_VIEWER_ACTIONS__PAGE_CHANGED_FROM_SWIPE         = "pdf_viewer_actions__page_changed_from_swipe"
     @objc public static let PDF_VIEWER_ACTIONS__DOUBLE_TAP_ZOOM_IN              = "pdf_viewer_actions__double_tap_zoom_in"
     @objc public static let PDF_VIEWER_ACTIONS__DOUBLE_TAP_ZOOM_OUT             = "pdf_viewer_actions__double_tap_zoom_out"
+    @objc public static let PDF_VIEWER_ACTIONS__SNAP_POINTS_SETTINGS_POP_UP_OPENED =
+    "pdf_viewer_actions__snap_points_settings_pop_up_opened"
     
     
     
