@@ -83,6 +83,8 @@ import FirebaseAnalytics
     @objc public static let PDF_VIEWER_ACTIONS__DOUBLE_TAP_ZOOM_OUT             = "pdf_viewer_actions__double_tap_zoom_out"
     @objc public static let PDF_VIEWER_ACTIONS__SNAP_POINTS_SETTINGS_POP_UP_OPENED =
     "pdf_viewer_actions__snap_points_settings_pop_up_opened"
+    @objc public static let PDF_VIEWER_ACTIONS__SNAP_POINTS_SETTING_TURNED_ON   = "pdf_viewer_actions__snap_points_setting_turned_on"
+    @objc public static let PDF_VIEWER_ACTIONS__SNAP_POINTS_SETTING_TURNED_OFF  = "pdf_viewer_actions__snap_points_setting_turned_off"
     
     
     
