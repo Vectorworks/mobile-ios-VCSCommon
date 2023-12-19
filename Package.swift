@@ -21,7 +21,7 @@ let package = Package(
         .package(url: "https://github.com/CocoaLumberjack/CocoaLumberjack.git", exact: "3.8.2"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.8.1"),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", exact: "0.9.17"),
-        .package(url: "https://github.com/realm/realm-cocoa.git", exact: "10.44.0"),
+        .package(url: "https://github.com/realm/realm-cocoa.git", exact: "10.45.1"),
         .package(url: "https://github.com/scalessec/Toast-Swift.git", exact: "5.0.1"),
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "10.19.0"),
         
