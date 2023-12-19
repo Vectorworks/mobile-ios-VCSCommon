@@ -29,6 +29,7 @@ public extension Notification.Name {
         }
     }
 }
+
 open class VCSToggleSwiftUITabBarQLVC : QLPreviewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
