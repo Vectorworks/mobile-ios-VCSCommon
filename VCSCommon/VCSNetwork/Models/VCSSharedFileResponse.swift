@@ -1,11 +1,3 @@
-//
-//  VCSSharedFileResponse.swift
-//  VCSCommon
-//
-//  Created by gkarapetrov on 27.09.22.
-//  Copyright © 2022 Georgi Karapetrov. All rights reserved.
-//
-
 import Foundation
 
 public class VCSSharedFileResponse: Codable {
