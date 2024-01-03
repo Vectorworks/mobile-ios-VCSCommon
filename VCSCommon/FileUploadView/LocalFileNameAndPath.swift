@@ -18,7 +18,7 @@ public class LocalFileNameAndPath: ObservableObject {
     
     public init(fileAsset: FileAsset, 
                 related: [LocalFileNameAndPath] = []) {
-        self.itemName = fileAsset.name
+        self.itemName = fileAsset.name.deletingPathExtension
         self.itemPathExtension = fileAsset.name.pathExtension
         self.itemURL = URL(filePath: fileAsset.localPathString ?? "")
         self.related = related

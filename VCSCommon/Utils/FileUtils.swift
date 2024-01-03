@@ -78,7 +78,7 @@ import ZIPFoundation
     }
     
     @objc public static func unzipFile(_ path: String, to destination: String = FileUtils.tempZipCacheDirectory) throws -> [String] {
-        try FileUtils.createPath(destination)
+        try FileUtils.clearAndCreatePath(destination)
         try FileManager().unzipItem(at: URL(fileURLWithPath: path), to: URL(fileURLWithPath: destination))
         
         if let dirContents = try? FileManager.default.contentsOfDirectory(atPath: destination) {
