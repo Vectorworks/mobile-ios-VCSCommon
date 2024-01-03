@@ -56,6 +56,18 @@ import ZIPFoundation
         }
     }
     
+    @objc public static func copyFile(at srcURL: URL, to dstURL: URL) throws {
+        try FileUtils.createURL(dstURL.deletingLastPathComponent())
+        try FileUtils.deleteItem(dstURL.path)
+        try FileManager.default.copyItem(at: srcURL, to: dstURL)
+    }
+    
+    @objc public static func copyFile(atPath srcPath: String, toPath dstPath: String) throws {
+        try FileUtils.createPath(dstPath.deletingLastPathComponent)
+        try FileUtils.deleteItem(dstPath)
+        try FileManager.default.copyItem(atPath: srcPath, toPath: dstPath)
+    }
+    
     /**
         Creates the directory and overwrites the file at the destination path.
      */

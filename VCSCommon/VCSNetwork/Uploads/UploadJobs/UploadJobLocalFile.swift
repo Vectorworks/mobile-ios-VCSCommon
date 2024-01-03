@@ -46,7 +46,7 @@ import CocoaLumberjackSwift
         if self.uploadPathURL.exists == false {
             do {
                 if copyFile {
-                    try FileManager.default.copyItem(at: tempFileURL, to: self.uploadPathURL)
+                    try FileUtils.copyFile(at: tempFileURL, to: self.uploadPathURL)
                 } else {
                     try FileManager.default.moveItem(at: tempFileURL, to: self.uploadPathURL)
                 }

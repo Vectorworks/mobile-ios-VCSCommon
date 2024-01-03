@@ -96,7 +96,7 @@ public struct GenericFile {
         
         
         let relatedFileLocalURL = FileManager.uploadPath(pathExtension: withExtension.rawValue)
-        guard let _ = try? FileManager.default.copyItem(at: URL(fileURLWithPath: relatedFileLocalPath), to: relatedFileLocalURL) else { return nil }
+        guard let _ = try? FileUtils.copyFile(at: URL(fileURLWithPath: relatedFileLocalPath), to: relatedFileLocalURL) else { return nil }
         
         let localFileForUpload = UploadJobLocalFile(ownerLogin: file.ownerLogin,
                                                     storageType: .INTERNAL,

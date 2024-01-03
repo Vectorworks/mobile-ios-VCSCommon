@@ -51,7 +51,7 @@ public class DeviceShareUtils {
         tempFileNameURL.forEach {
             let shareFileURL = FileManager.AppShareExtDirectory.appendingPathComponent($0.0)
             do {
-                try FileManager.default.copyItem(at: $0.1, to: shareFileURL)
+                try FileUtils.copyFile(at: $0.1, to: shareFileURL)
                 shareFilesURLs.append(shareFileURL)
             } catch {
                 DDLogError("Error while coping file: \(error)")

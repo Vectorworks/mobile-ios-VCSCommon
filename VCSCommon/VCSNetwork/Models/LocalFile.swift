@@ -31,10 +31,7 @@ import CocoaLumberjackSwift
         if let fileURL = tempFileURL {
             let localFileURL = URL(fileURLWithPath: self.localPath)
             do {
-                try FileUtils.createURL(localFileURL.deletingLastPathComponent())
-                try FileUtils.deleteItem(localFileURL.path)
-//                try FileUtils.moveItem(at: fileURL, to: localFileURL)
-                try FileManager.default.copyItem(at: fileURL, to: localFileURL)
+                try FileUtils.copyFile(at: fileURL, to: localFileURL)
             } catch {
                 DDLogError("LocalFile init(name: " + error.localizedDescription)
             }

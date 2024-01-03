@@ -61,7 +61,7 @@ public class LocalFileNameAndPath: ObservableObject {
         let newFileURL = FileManager.uploadPath(pathExtension: itemURL.pathExtension)
         
         do {
-            try FileManager.default.copyItem(at: itemURL, to: newFileURL)
+            try FileUtils.copyFile(at: itemURL, to: newFileURL)
             return LocalFileNameAndPath(itemName: itemName, itemURL: newFileURL)
         } catch {
             DDLogError("LocalFileNameAndPath - copyFile - error: \(error)")
