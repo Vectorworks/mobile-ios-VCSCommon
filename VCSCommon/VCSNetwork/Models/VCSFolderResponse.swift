@@ -241,7 +241,7 @@ extension VCSFolderResponse: VCSCellDataHolder {
 
 extension VCSFolderResponse: VCSCachable {
     public typealias RealmModel = RealmFolder
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
+    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
     
     public func addToCache() {
         VCSFolderResponse.realmStorage.addOrUpdate(item: self)
