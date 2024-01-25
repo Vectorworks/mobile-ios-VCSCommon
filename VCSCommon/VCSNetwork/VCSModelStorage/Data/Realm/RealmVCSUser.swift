@@ -19,7 +19,7 @@ public class RealmVCSUser: Object, VCSRealmObject {
     @objc dynamic var quotas: RealmQuotas?
     @objc dynamic var resourceURI: String = ""
     @objc dynamic var username: String = ""
-    @objc dynamic var isLoggedIn: Bool = false
+    @objc dynamic public var isLoggedIn: Bool = false
     dynamic var storages: List<VCSRealmStorage> = List<VCSRealmStorage>()
     
     public required convenience init(model: Model) {
