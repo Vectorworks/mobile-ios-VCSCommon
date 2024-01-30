@@ -104,7 +104,7 @@ extension VCSShareableLinkResponse: VCSCellDataHolder {
 
 extension VCSShareableLinkResponse: VCSCachable {
     public typealias RealmModel = RealmShareableLinkResponse
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
+    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
     
     public func addToCache() {
         VCSShareableLinkResponse.realmStorage.addOrUpdate(item: self)

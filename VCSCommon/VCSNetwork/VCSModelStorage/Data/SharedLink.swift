@@ -122,7 +122,7 @@ extension SharedLink: VCSCellDataHolder {
 
 extension SharedLink: VCSCachable {
     public typealias RealmModel = RealmSharedLink
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
+    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
     
     public func addToCache() {
         SharedLink.realmStorage.addOrUpdate(item: self)
