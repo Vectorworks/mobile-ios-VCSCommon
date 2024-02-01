@@ -36,6 +36,7 @@ public class VCSRealmDB {
                                                                                     ,RealmJobEventData.self
                                                                                     ,VCSJobFileVersionResponse.RealmModel.self
                                                                                     ,VCSJobOptionsResponse.RealmModel.self
+                                                                                    ,VCSJobFileInfoResponse.RealmModel.self
                                                                                     ,RealmOtherLogin.self
                                                                                     ,VCSShareableLinkOwner.RealmModel.self
                                                                                     ,VCSShareableLinkResponse.RealmModel.self
@@ -187,7 +188,7 @@ public class VCSRealmConfig {
         )
     }
     
-    private static var getRealmSchemaVersion: UInt64 { return 23 }
+    private static var getRealmSchemaVersion: UInt64 { return 24 }
     private static var getRealmMigrations: RealmSwift.MigrationBlock {
         return { migration, oldSchemaVersion in
             if (oldSchemaVersion < 2) {
@@ -338,6 +339,9 @@ public class VCSRealmConfig {
             }
             if (oldSchemaVersion < 22) {
                 //Removed RealmJobOptions.refFileVersions
+            }
+            if (oldSchemaVersion < 23) {
+                //Changed syntax for realm classes
             }
         }
     }

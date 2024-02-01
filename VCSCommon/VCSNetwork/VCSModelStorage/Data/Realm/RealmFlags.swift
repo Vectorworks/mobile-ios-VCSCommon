@@ -3,15 +3,14 @@ import RealmSwift
 
 public class RealmFlags: Object, VCSRealmObject {
     public typealias Model = VCSFlagsResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var isNameValid: Bool = false
-    @objc dynamic var isFileTypeSupported: Bool = false
-    @objc dynamic var isNameDuplicate: Bool = true
-    @objc dynamic var isSupported: Bool = false
-    @objc dynamic var isMounted: Bool = false
-    @objc dynamic var isMountPoint: Bool = false
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var isNameValid: Bool = false
+    @Persisted var isFileTypeSupported: Bool = false
+    @Persisted var isNameDuplicate: Bool = true
+    @Persisted var isSupported: Bool = false
+    @Persisted var isMounted: Bool = false
+    @Persisted var isMountPoint: Bool = false
     
     
     public required convenience init(model: Model) {

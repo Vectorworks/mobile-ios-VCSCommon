@@ -1,6 +1,7 @@
 import Foundation
 
 public enum VCSError: Error, Equatable {
+    case noInitialData
     case IllegalArgumentException(String)
     case GenericException(String)
     case UserCancelled
@@ -12,6 +13,8 @@ public enum VCSError: Error, Equatable {
 extension VCSError: LocalizedError {
     public var errorDescription: String? {
         switch self {
+        case .noInitialData:
+            return "no Initial Data"
         case .IllegalArgumentException(let value):
             return "IllegalArgumentException - \(value)"
         case .GenericException(let value):

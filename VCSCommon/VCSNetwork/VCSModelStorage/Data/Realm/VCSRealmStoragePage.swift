@@ -3,13 +3,12 @@ import RealmSwift
 
 public class VCSRealmStoragPages: Object, VCSRealmObject {
     public typealias Model = StoragePage
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic public var id: String = ""
-    @objc dynamic var name: String = ""
-    @objc dynamic var folderURI: String = ""
-    dynamic var sharedPaths: List<String> = List()
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted public var id: String = ""
+    @Persisted var name: String = ""
+    @Persisted var folderURI: String = ""
+    @Persisted var sharedPaths: List<String> = List()
     
     public required convenience init(model: StoragePage) {
         self.init()

@@ -3,29 +3,28 @@ import RealmSwift
 
 public class RealmJobData: Object, VCSRealmObject {
     public typealias Model = VCSJobResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic public var id: Int = 0
-    @objc dynamic var user: String = ""
-    @objc dynamic var fileVersion: RealmJobFileVersion?
-    @objc dynamic var vw: Int = 0
-    @objc dynamic var jobType: String = ""
-    @objc dynamic var status: String = ""
-    @objc dynamic var statusData: String = ""
-    @objc dynamic var lastUpdate: String = ""
-    @objc dynamic var userData: String = ""
-    @objc dynamic var timeRemaining: Int = 0
-    @objc dynamic var submissionTimestamp: String = ""
-    @objc dynamic var startTimestamp: String = ""
-    @objc dynamic var endTimestamp: String = ""
-    @objc dynamic var outputfile: String = ""
-    @objc dynamic var usedPUs: Double = 0
-    @objc dynamic var usedFUs: Double = 0
-    @objc dynamic var options: RealmJobOptions?
-    @objc dynamic var origin: String = ""
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted public var id: Int = 0
+    @Persisted var user: String = ""
+    @Persisted var fileVersion: RealmJobFileVersion?
+    @Persisted var vw: Int = 0
+    @Persisted var jobType: String = ""
+    @Persisted var status: String = ""
+    @Persisted var statusData: String = ""
+    @Persisted var lastUpdate: String = ""
+    @Persisted var userData: String = ""
+    @Persisted var timeRemaining: Int = 0
+    @Persisted var submissionTimestamp: String = ""
+    @Persisted var startTimestamp: String = ""
+    @Persisted var endTimestamp: String = ""
+    @Persisted var outputfile: String = ""
+    @Persisted var usedPUs: Double = 0
+    @Persisted var usedFUs: Double = 0
+    @Persisted var options: RealmJobOptions?
+    @Persisted var origin: String = ""
     
-    @objc dynamic var lastEvent: RealmJobEventData?
+    @Persisted var lastEvent: RealmJobEventData?
     
     
     public required convenience init(model: Model) {

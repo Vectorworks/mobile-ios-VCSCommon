@@ -4,17 +4,16 @@ import RealmSwift
 
 public class RealmShareableLinkResponse: Object, VCSRealmObject {
     public typealias Model = VCSShareableLinkResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var dateCreated: String = ""
-    @objc dynamic var link: String = ""
-    @objc dynamic var resourceURI: String = ""
-    @objc dynamic var expires: String = ""
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var dateCreated: String = ""
+    @Persisted var link: String = ""
+    @Persisted var resourceURI: String = ""
+    @Persisted var expires: String = ""
     
-    @objc dynamic var asset: RealmSharedFileFolderAssetWrapper?
-    @objc dynamic var assetType: String = AssetType.file.rawValue
-    @objc dynamic var owner: RealmShareableLinkOwner?
+    @Persisted var asset: RealmSharedFileFolderAssetWrapper?
+    @Persisted var assetType: String = AssetType.file.rawValue
+    @Persisted var owner: RealmShareableLinkOwner?
     
     required convenience public init(model: Model) {
         self.init()

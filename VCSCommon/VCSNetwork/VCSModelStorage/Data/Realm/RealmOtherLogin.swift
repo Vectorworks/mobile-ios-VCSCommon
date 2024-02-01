@@ -3,21 +3,21 @@ import RealmSwift
 
 class RealmOtherLogin: Object, VCSRealmObject {
     typealias Model = OtherLogin
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic var RealmID: String = "nil"
-    @objc dynamic var id: Int = 0
-    @objc dynamic var firstName: String = ""
-    @objc dynamic var lastName: String = ""
-    @objc dynamic var email: String = ""
-    @objc dynamic var isActive: Bool = false
-    @objc dynamic var login: String = ""
-    @objc dynamic var nvwuid: String = ""
-    @objc dynamic var gender: String = ""
-    @objc dynamic var industry, phone: String?
-    @objc dynamic var honorific: String = ""
-    @objc dynamic var language: String = ""
-    @objc dynamic var sourceSystem: String = ""
+    @Persisted(primaryKey: true) var RealmID: String = "nil"
+    @Persisted var id: Int = 0
+    @Persisted var firstName: String = ""
+    @Persisted var lastName: String = ""
+    @Persisted var email: String = ""
+    @Persisted var isActive: Bool = false
+    @Persisted var login: String = ""
+    @Persisted var nvwuid: String = ""
+    @Persisted var gender: String = ""
+    @Persisted var industry: String?
+    @Persisted var phone: String?
+    @Persisted var honorific: String = ""
+    @Persisted var language: String = ""
+    @Persisted var sourceSystem: String = ""
         
     required convenience init(model: Model) {
         self.init()

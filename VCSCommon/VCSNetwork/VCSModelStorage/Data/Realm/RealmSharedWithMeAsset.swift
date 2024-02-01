@@ -5,19 +5,18 @@ import RealmSwift
 
 public class RealmSharedWithMeAsset: Object, VCSRealmObject {
     public typealias Model = VCSSharedWithMeAsset
-    override public class func primaryKey() -> String? { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var asset: RealmSharedWithMeAssetWrapper?
-    @objc dynamic var assetType: String = AssetType.file.rawValue
-    @objc dynamic var owner: String = ""
-    @objc dynamic var ownerEmail: String = ""
-    @objc dynamic var ownerName: String = ""
-    @objc dynamic var dateCreated: String = ""
-    dynamic var permission: List<String> = List()
-    @objc dynamic var sharedParentFolder: String = ""
-    @objc dynamic var sharedWithLogin: String?
-    @objc dynamic var branding: RealmSharedAssetBranding?
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var asset: RealmSharedWithMeAssetWrapper?
+    @Persisted var assetType: String = AssetType.file.rawValue
+    @Persisted var owner: String = ""
+    @Persisted var ownerEmail: String = ""
+    @Persisted var ownerName: String = ""
+    @Persisted var dateCreated: String = ""
+    @Persisted var permission: List<String> = List()
+    @Persisted var sharedParentFolder: String = ""
+    @Persisted var sharedWithLogin: String?
+    @Persisted var branding: RealmSharedAssetBranding?
     
     public required convenience init(model: Model) {
         self.init()

@@ -4,13 +4,12 @@ import RealmSwift
 
 public class RealmShareableLinkOwner: Object, VCSRealmObject {
     public typealias Model = VCSShareableLinkOwner
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var ownerEmail: String = ""
-    @objc dynamic var ownerName: String = ""
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var ownerEmail: String = ""
+    @Persisted var ownerName: String = ""
     
-    @objc dynamic var branding: RealmSharedAssetBranding?
+    @Persisted var branding: RealmSharedAssetBranding?
     
     required convenience public init(model: Model) {
         self.init()

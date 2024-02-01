@@ -3,16 +3,18 @@ import RealmSwift
 
 public class RealmJobOptions: Object, VCSRealmObject {
     public typealias Model = VCSJobOptionsResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var srcStorageType: String = ""
-    @objc dynamic var outputStorageType: String = ""
-    @objc dynamic var options, jobName, operation: String?
-    dynamic var srcFileInfo: RealmJobFileInfo? = nil
-    dynamic var srcFileVersions: List<RealmJobFileVersion> = List()
-    @objc dynamic var outputLocation: String?
-    @objc dynamic var currentFile, logFile: String?
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var srcStorageType: String = ""
+    @Persisted var outputStorageType: String = ""
+    @Persisted var options: String?
+    @Persisted var jobName: String?
+    @Persisted var operation: String?
+    @Persisted var srcFileInfo: RealmJobFileInfo? = nil
+    @Persisted var srcFileVersions: List<RealmJobFileVersion> = List()
+    @Persisted var outputLocation: String?
+    @Persisted var currentFile: String?
+    @Persisted var logFile: String?
     
     
     public required convenience init(model: Model) {

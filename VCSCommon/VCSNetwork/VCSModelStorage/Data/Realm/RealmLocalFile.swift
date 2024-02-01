@@ -3,11 +3,10 @@ import RealmSwift
 
 public class RealmLocalFile: Object, VCSRealmObject {
     public typealias Model = LocalFile
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var name: String = ""
-    @objc dynamic var parent: String = ""
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var name: String = ""
+    @Persisted var parent: String = ""
     
     public required convenience init(model: Model) {
         self.init()

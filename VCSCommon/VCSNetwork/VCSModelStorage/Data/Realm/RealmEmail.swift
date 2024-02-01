@@ -3,11 +3,10 @@ import RealmSwift
 
 class RealmEmail: Object, VCSRealmObject {
     typealias Model = Email
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic var RealmID: String = "nil"
-    @objc dynamic var email: String = ""
-    @objc dynamic var isVerified: Bool = false
+    @Persisted(primaryKey: true) var RealmID: String = "nil"
+    @Persisted var email: String = ""
+    @Persisted var isVerified: Bool = false
     
     required convenience init(model: Model) {
         self.init()

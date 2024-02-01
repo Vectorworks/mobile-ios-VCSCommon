@@ -3,13 +3,12 @@ import RealmSwift
 
 class RealmJobFileVersionRequest: Object, VCSRealmObject {
     typealias Model = JobFileVersionRequest
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic var RealmID: String = ""
-    @objc dynamic var path: String = ""
-    @objc dynamic var provider: String = ""
-    @objc dynamic var owner: String = ""
-    @objc dynamic var isFolder: Bool = true
+    @Persisted(primaryKey: true) var RealmID: String = ""
+    @Persisted var path: String = ""
+    @Persisted var provider: String = ""
+    @Persisted var owner: String = ""
+    @Persisted var isFolder: Bool = true
     
     required convenience init(model: JobFileVersionRequest) {
         self.init()
@@ -37,10 +36,10 @@ class RealmJobFileVersionRequest: Object, VCSRealmObject {
 
 class RealmPhotogramOptionsRequest: Object, VCSRealmObject {
     typealias Model = PhotogramOptionsRequest
-    @objc dynamic var RealmID: String = ""
-    @objc dynamic var srcStorageType: String = ""
-    @objc dynamic var outputStorageType: String = ""
-    @objc dynamic var outputLocation: String = ""
+    @Persisted var RealmID: String = ""
+    @Persisted var srcStorageType: String = ""
+    @Persisted var outputStorageType: String = ""
+    @Persisted var outputLocation: String = ""
     dynamic var srcFileVersions: List<RealmJobFileVersionRequest> = List()
     
     required convenience init(model: PhotogramOptionsRequest) {
@@ -73,15 +72,14 @@ class RealmPhotogramOptionsRequest: Object, VCSRealmObject {
 
 public class RealmPhotogramJobRequest: Object, VCSRealmObject {
     public typealias Model = PhotogramJobRequest
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = ""
-    @objc dynamic var fileName: String = ""
-    @objc dynamic var jobType: String = ""
-    @objc dynamic var fileVersion: RealmJobFileVersionRequest!
-    @objc dynamic var options: RealmPhotogramOptionsRequest!
-    @objc dynamic var owner: String = ""
-    @objc dynamic var isQueued: Bool = false
+    @Persisted(primaryKey: true) public var RealmID: String = ""
+    @Persisted var fileName: String = ""
+    @Persisted var jobType: String = ""
+    @Persisted var fileVersion: RealmJobFileVersionRequest!
+    @Persisted var options: RealmPhotogramOptionsRequest!
+    @Persisted var owner: String = ""
+    @Persisted var isQueued: Bool = false
     
     public required convenience init(model: PhotogramJobRequest) {
         self.init()

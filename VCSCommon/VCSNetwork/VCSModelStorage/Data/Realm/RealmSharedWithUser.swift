@@ -3,12 +3,11 @@ import RealmSwift
 
 public class RealmSharedWithUser: Object, VCSRealmObject {
     public typealias Model = VCSSharedWithUser
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic public var login: String?
-    @objc dynamic public var username: String?
-    @objc dynamic public var hasJoined: Bool = false
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted public var login: String?
+    @Persisted public var username: String?
+    @Persisted public var hasJoined: Bool = false
     
     dynamic public var permissions: List<String> = List()
     

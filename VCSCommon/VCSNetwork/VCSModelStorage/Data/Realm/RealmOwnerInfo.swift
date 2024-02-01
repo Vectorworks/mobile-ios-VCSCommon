@@ -3,18 +3,17 @@ import RealmSwift
 
 public class RealmOwnerInfo: Object, VCSRealmObject {
     public typealias Model = VCSOwnerInfoResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var owner: String = ""
-    @objc dynamic var ownerEmail: String = ""
-    @objc dynamic var ownerName: String = ""
-    @objc dynamic var uploadPrefix: String = ""
-    @objc dynamic public var hasJoined: Bool = false
-    dynamic var permission: List<String> = List()
-    @objc dynamic var dateCreated: String = ""
-    @objc dynamic var sharedParentFolder: String = ""
-    @objc dynamic var mountPoint: RealmMountPoint?
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var owner: String = ""
+    @Persisted var ownerEmail: String = ""
+    @Persisted var ownerName: String = ""
+    @Persisted var uploadPrefix: String = ""
+    @Persisted public var hasJoined: Bool = false
+    @Persisted var permission: List<String> = List()
+    @Persisted var dateCreated: String = ""
+    @Persisted var sharedParentFolder: String = ""
+    @Persisted var mountPoint: RealmMountPoint?
     
     
     public required convenience init(model: Model) {

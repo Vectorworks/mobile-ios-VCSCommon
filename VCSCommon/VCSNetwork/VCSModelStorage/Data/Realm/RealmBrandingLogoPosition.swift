@@ -3,13 +3,12 @@ import RealmSwift
 
 public class RealmBrandingLogoPosition: Object, VCSRealmObject {
     public typealias Model = BrandingLogoPosition
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
     
-    @objc dynamic var top: Double = 0
-    @objc dynamic var left: Double = 0
-    @objc dynamic var logoAR: Double = 0
+    @Persisted var top: Double = 0
+    @Persisted var left: Double = 0
+    @Persisted var logoAR: Double = 0
     
     
     public required convenience init(model: Model) {

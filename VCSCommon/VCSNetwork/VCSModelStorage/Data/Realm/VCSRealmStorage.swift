@@ -3,18 +3,17 @@ import RealmSwift
 
 public class VCSRealmStorage: Object, VCSRealmObject {
     public typealias Model = VCSStorageResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var name: String = ""
-    @objc dynamic var fileURI: String = ""
-    @objc dynamic var folderURI: String = ""
-    @objc dynamic var resourceURI: String = ""
-    @objc dynamic var storageType: String = ""
-    @objc dynamic var autoprocessParent: String?
-    @objc dynamic var accessType: String?
-    @objc dynamic var pagesURL: String?
-    dynamic var pages: List<VCSRealmStoragPages> = List()
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var name: String = ""
+    @Persisted var fileURI: String = ""
+    @Persisted var folderURI: String = ""
+    @Persisted var resourceURI: String = ""
+    @Persisted var storageType: String = ""
+    @Persisted var autoprocessParent: String?
+    @Persisted var accessType: String?
+    @Persisted var pagesURL: String?
+    @Persisted var pages: List<VCSRealmStoragPages> = List()
     
     public required convenience init(model: VCSStorageResponse) {
         self.init()

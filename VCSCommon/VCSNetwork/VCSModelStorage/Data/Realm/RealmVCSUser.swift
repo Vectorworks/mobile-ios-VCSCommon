@@ -3,24 +3,23 @@ import RealmSwift
 
 public class RealmVCSUser: Object, VCSRealmObject {
     public typealias Model = VCSUser
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var allowedLanguages: String = ""
-    @objc dynamic var awskeys: RealmVCSAWSkeys?
-    @objc dynamic var email: String = ""
-    @objc dynamic var firstName: String = ""
-    dynamic var groups: List<String> = List()
-    @objc dynamic var isVSS: Bool = false
-    @objc dynamic var language: String = ""
-    @objc dynamic var lastName: String = ""
-    @objc dynamic var nvwuid: String = ""
-    @objc dynamic var preferences: String?
-    @objc dynamic var quotas: RealmQuotas?
-    @objc dynamic var resourceURI: String = ""
-    @objc dynamic var username: String = ""
-    @objc dynamic public var isLoggedIn: Bool = false
-    dynamic var storages: List<VCSRealmStorage> = List<VCSRealmStorage>()
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var allowedLanguages: String = ""
+    @Persisted var awskeys: RealmVCSAWSkeys?
+    @Persisted var email: String = ""
+    @Persisted var firstName: String = ""
+    @Persisted var groups: List<String> = List()
+    @Persisted var isVSS: Bool = false
+    @Persisted var language: String = ""
+    @Persisted var lastName: String = ""
+    @Persisted var nvwuid: String = ""
+    @Persisted var preferences: String?
+    @Persisted var quotas: RealmQuotas?
+    @Persisted var resourceURI: String = ""
+    @Persisted var username: String = ""
+    @Persisted public var isLoggedIn: Bool = false
+    @Persisted var storages: List<VCSRealmStorage> = List<VCSRealmStorage>()
     
     public required convenience init(model: Model) {
         self.init()

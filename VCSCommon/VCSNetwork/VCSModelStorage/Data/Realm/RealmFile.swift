@@ -3,31 +3,30 @@ import RealmSwift
 
 public class RealmFile: Object, VCSRealmObject {
     public typealias Model = VCSFileResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var resourceURI: String = ""
-    @objc dynamic var resourceID: String = ""
-    @objc dynamic var exists: Bool = false
-    @objc dynamic var isNameValid: Bool = false
-    @objc dynamic var name: String = ""
-    @objc dynamic var sharingInfo: RealmSharingInfo?
-    @objc dynamic var prefix: String = ""
-    @objc dynamic var storageType: String = StorageType.S3.rawValue
-    @objc dynamic var flags: RealmFlags?
-    @objc dynamic var ownerInfo: RealmOwnerInfo?
-    @objc dynamic var versionID: String = ""
-    @objc dynamic var thumbnail: String = ""
-    @objc dynamic var size: String = ""
-    @objc dynamic var downloadURL: String = ""
-    @objc dynamic var lastModified: String = ""
-    @objc dynamic var thumbnail3D: String?
-    dynamic var previousVersions: List<RealmFile> = List()
-    @objc dynamic var fileType: String?
-    @objc dynamic var localFile: RealmLocalFile?
-    @objc dynamic var localFilesAppFile: RealmLocalFilesAppFile?
-    dynamic var related: List<RealmFile> = List()
-    @objc dynamic var ownerLogin: String = ""
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var resourceURI: String = ""
+    @Persisted var resourceID: String = ""
+    @Persisted var exists: Bool = false
+    @Persisted var isNameValid: Bool = false
+    @Persisted var name: String = ""
+    @Persisted var sharingInfo: RealmSharingInfo?
+    @Persisted var prefix: String = ""
+    @Persisted var storageType: String = StorageType.S3.rawValue
+    @Persisted var flags: RealmFlags?
+    @Persisted var ownerInfo: RealmOwnerInfo?
+    @Persisted var versionID: String = ""
+    @Persisted var thumbnail: String = ""
+    @Persisted var size: String = ""
+    @Persisted var downloadURL: String = ""
+    @Persisted var lastModified: String = ""
+    @Persisted var thumbnail3D: String?
+    @Persisted var previousVersions: List<RealmFile> = List()
+    @Persisted var fileType: String?
+    @Persisted var localFile: RealmLocalFile?
+    @Persisted var localFilesAppFile: RealmLocalFilesAppFile?
+    @Persisted var related: List<RealmFile> = List()
+    @Persisted var ownerLogin: String = ""
     
     
     public required convenience init(model: Model) {

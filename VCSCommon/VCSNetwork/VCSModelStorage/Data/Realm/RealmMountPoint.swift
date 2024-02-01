@@ -3,13 +3,12 @@ import RealmSwift
 
 public class RealmMountPoint: Object, VCSRealmObject {
     public typealias Model = VCSMountPointResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var storageType: String = StorageType.S3.rawValue
-    @objc dynamic var prefix: String = ""
-    @objc dynamic var path: String = ""
-    @objc dynamic var mountPath: String = ""
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var storageType: String = StorageType.S3.rawValue
+    @Persisted var prefix: String = ""
+    @Persisted var path: String = ""
+    @Persisted var mountPath: String = ""
     
     public required convenience init(model: Model) {
         self.init()

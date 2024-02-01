@@ -3,25 +3,24 @@ import RealmSwift
 
 public class RealmFolder: Object, VCSRealmObject {
     public typealias Model = VCSFolderResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var resourceURI: String = ""
-    @objc dynamic var resourceID: String = ""
-    @objc dynamic var exists: Bool = false
-    @objc dynamic var isNameValid: Bool = false
-    @objc public dynamic var name: String = ""
-    @objc dynamic var sharingInfo: RealmSharingInfo?
-    @objc dynamic var prefix: String = ""
-    @objc dynamic var storageType: String = StorageType.S3.rawValue
-    @objc dynamic var flags: RealmFlags?
-    @objc dynamic var ownerInfo: RealmOwnerInfo?
-    @objc dynamic var parent: String?
-    @objc dynamic var autoprocessParent: String?
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted public var resourceURI: String = ""
+    @Persisted var resourceID: String = ""
+    @Persisted var exists: Bool = false
+    @Persisted var isNameValid: Bool = false
+    @Persisted public var name: String = ""
+    @Persisted var sharingInfo: RealmSharingInfo?
+    @Persisted var prefix: String = ""
+    @Persisted public var storageType: String = StorageType.S3.rawValue
+    @Persisted var flags: RealmFlags?
+    @Persisted var ownerInfo: RealmOwnerInfo?
+    @Persisted var parent: String?
+    @Persisted var autoprocessParent: String?
     
-    public var files: List<RealmFile> = List()
-    public var subfolders: List<RealmFolder> = List()
-    @objc dynamic var ownerLogin: String = ""
+    @Persisted public var files: List<RealmFile> = List()
+    @Persisted public var subfolders: List<RealmFolder> = List()
+    @Persisted var ownerLogin: String = ""
     
     public required convenience init(model: Model) {
         self.init()

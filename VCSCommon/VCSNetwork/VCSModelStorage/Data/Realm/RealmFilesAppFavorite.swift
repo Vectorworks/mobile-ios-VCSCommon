@@ -3,10 +3,9 @@ import RealmSwift
 
 public class RealmFilesAppFavoriteRank: Object, VCSRealmObject {
     public typealias Model = VCSFilesAppFavoriteRank
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var favoriteRank: Int = 0
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var favoriteRank: Int = 0
     
     
     public required convenience init(model: Model) {

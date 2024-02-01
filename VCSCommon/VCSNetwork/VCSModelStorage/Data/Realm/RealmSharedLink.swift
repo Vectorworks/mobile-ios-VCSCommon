@@ -3,16 +3,15 @@ import RealmSwift
 
 public class RealmSharedLink: Object, VCSRealmObject {
     public typealias Model = SharedLink
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var isSampleFiles:Bool = false
-    @objc dynamic var link: String = ""
-    @objc dynamic var linkName:String?
-    @objc dynamic var linkThumbnailURL:String?
-    @objc dynamic var dateCreated: Date = Date()
-    @objc dynamic var sharedAsset: RealmShareableLinkResponse?
-    @objc dynamic var owner: RealmVCSUser?
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var isSampleFiles:Bool = false
+    @Persisted var link: String = ""
+    @Persisted var linkName:String?
+    @Persisted var linkThumbnailURL:String?
+    @Persisted var dateCreated: Date = Date()
+    @Persisted var sharedAsset: RealmShareableLinkResponse?
+    @Persisted var owner: RealmVCSUser?
     
     public required convenience init(model: Model) {
         self.init()

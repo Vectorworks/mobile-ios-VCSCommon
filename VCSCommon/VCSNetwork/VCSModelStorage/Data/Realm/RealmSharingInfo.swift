@@ -3,19 +3,18 @@ import RealmSwift
 
 public class RealmSharingInfo: Object, VCSRealmObject {
     public typealias Model = VCSSharingInfoResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var isShared: Bool = false
-    @objc dynamic var link: String = ""
-    @objc dynamic var linkUUID: String = ""
-    @objc dynamic var linkExpires: String = ""
-    @objc dynamic var linkVisitsCount: Int = 0
-    @objc dynamic var allowComments: Bool = false
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var isShared: Bool = false
+    @Persisted var link: String = ""
+    @Persisted var linkUUID: String = ""
+    @Persisted var linkExpires: String = ""
+    @Persisted var linkVisitsCount: Int = 0
+    @Persisted var allowComments: Bool = false
     
-    dynamic var sharedWith: List<RealmSharedWithUser> = List()
-    @objc dynamic var resourceURI: String = ""
-    @objc dynamic var lastShareDate: String?
+    @Persisted var sharedWith: List<RealmSharedWithUser> = List()
+    @Persisted var resourceURI: String = ""
+    @Persisted var lastShareDate: String?
     
     public required convenience init(model: Model) {
         self.init()

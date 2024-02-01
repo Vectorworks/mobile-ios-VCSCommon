@@ -3,14 +3,12 @@ import RealmSwift
 
 public class RealmSharedAssetBranding: Object, VCSRealmObject {
     public typealias Model = VCSSharedAssetBrandingResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-
-    @objc dynamic var position: RealmBrandingLogoPosition?
-    @objc dynamic var image: String?
-    dynamic var opacity: RealmProperty<Float?> = RealmProperty<Float?>()
-    dynamic var size: RealmProperty<Float?> = RealmProperty<Float?>()
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var position: RealmBrandingLogoPosition?
+    @Persisted var image: String?
+    @Persisted var opacity: Float?
+    @Persisted var size: Float?
     
     
     public required convenience init(model: Model) {
@@ -22,12 +20,12 @@ public class RealmSharedAssetBranding: Object, VCSRealmObject {
             self.position = RealmBrandingLogoPosition(model: position)
         }
         self.image = model.image
-        self.opacity.value = model.opacity
-        self.size.value = model.size
+        self.opacity = model.opacity
+        self.size = model.size
     }
     
     public var entity: Model {
-        return VCSSharedAssetBrandingResponse(position: self.position?.entity, image: self.image, opacity: self.opacity.value, size: self.size.value, realmID: self.RealmID)
+        return VCSSharedAssetBrandingResponse(position: self.position?.entity, image: self.image, opacity: self.opacity, size: self.size, realmID: self.RealmID)
     }
     
     public var partialUpdateModel: [String : Any] {
@@ -43,11 +41,11 @@ public class RealmSharedAssetBranding: Object, VCSRealmObject {
             result["image"] = image
         }
         
-        if let opacity = self.opacity.value {
+        if let opacity = self.opacity {
             result["opacity"] = opacity
         }
         
-        if let size = self.size.value {
+        if let size = self.size {
             result["size"] = size
         }
         

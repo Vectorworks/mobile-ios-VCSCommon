@@ -4,12 +4,11 @@ import RealmSwift
 
 public class RealmSharedAsset: Object, VCSRealmObject {
     public typealias Model = VCSSharedAssetWrapper
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var asset: RealmSharedFileFolderAssetWrapper?
-    @objc dynamic var assetType: String = AssetType.file.rawValue
-    @objc dynamic var resourceURI: String = ""
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var asset: RealmSharedFileFolderAssetWrapper?
+    @Persisted var assetType: String = AssetType.file.rawValue
+    @Persisted var resourceURI: String = ""
     
     required convenience public init(model: Model) {
         self.init()

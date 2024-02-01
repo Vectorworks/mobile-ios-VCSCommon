@@ -3,19 +3,18 @@ import RealmSwift
 
 public class RealmUploadJobLocalFile: Object, VCSRealmObject {
     public typealias Model = UploadJobLocalFile
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
     
-    @objc dynamic var ownerLogin: String = ""
-    @objc dynamic var storageType: String = ""
-    @objc dynamic public var prefix: String = ""
-    @objc dynamic var uploadPathSuffix: String = ""
-    @objc dynamic public var uploadingState: String = ""
-    dynamic var related: List<RealmUploadJobLocalFile> = List()
+    @Persisted var ownerLogin: String = ""
+    @Persisted var storageType: String = ""
+    @Persisted public var prefix: String = ""
+    @Persisted var uploadPathSuffix: String = ""
+    @Persisted public var uploadingState: String = ""
+    @Persisted var related: List<RealmUploadJobLocalFile> = List()
     
     //for filtering
-    @objc dynamic var parentFolderPrefix: String = ""
+    @Persisted var parentFolderPrefix: String = ""
     
     public required convenience init(model: Model) {
         self.init()

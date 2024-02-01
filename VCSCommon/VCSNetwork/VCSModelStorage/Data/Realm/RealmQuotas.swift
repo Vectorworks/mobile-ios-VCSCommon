@@ -3,13 +3,12 @@ import RealmSwift
 
 public class RealmQuotas: Object, VCSRealmObject {
     public typealias Model = Quotas
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic var processingQuota: Int = 0
-    @objc dynamic var processingUsed: Double = 0
-    @objc dynamic var storageQuota: Int = 0
-    @objc dynamic var storageUsed: Int = 0
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted var processingQuota: Int = 0
+    @Persisted var processingUsed: Double = 0
+    @Persisted var storageQuota: Int = 0
+    @Persisted var storageUsed: Int = 0
     
     public required convenience init(model: Model) {
         self.init()

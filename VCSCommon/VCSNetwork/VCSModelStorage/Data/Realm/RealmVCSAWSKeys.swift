@@ -3,20 +3,19 @@ import RealmSwift
 
 public class RealmVCSAWSkeys: Object, VCSRealmObject {
     public typealias Model = VCSAWSkeys
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic public var id: Int = 0
-    @objc dynamic var awsSynced: Bool = false
-    @objc dynamic var linksExpireAfter: Int = 0
-    @objc dynamic var awskeysPrefix: String = ""
-    @objc dynamic var s3Bucket: String = ""
-    @objc dynamic var s3Key: String = ""
-    @objc dynamic var s3Secret: String = ""
-    @objc dynamic var sampleFilesCopied: Int = 0
-    @objc dynamic var userData: String = ""
-    @objc dynamic var initializedOn: String = ""
-    @objc dynamic var resourceURI: String = ""
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted public var id: Int = 0
+    @Persisted var awsSynced: Bool = false
+    @Persisted var linksExpireAfter: Int = 0
+    @Persisted var awskeysPrefix: String = ""
+    @Persisted var s3Bucket: String = ""
+    @Persisted var s3Key: String = ""
+    @Persisted var s3Secret: String = ""
+    @Persisted var sampleFilesCopied: Int = 0
+    @Persisted var userData: String = ""
+    @Persisted var initializedOn: String = ""
+    @Persisted var resourceURI: String = ""
     
     public required convenience init(model: Model) {
         self.init()

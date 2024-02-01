@@ -3,12 +3,11 @@ import RealmSwift
 
 public class RealmJobFileInfo: Object, VCSRealmObject {
     public typealias Model = VCSJobFileInfoResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic public var fileCount: Int = 0
-    @objc dynamic var path: String = ""
-    @objc dynamic var provider: String = ""
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted public var fileCount: Int = 0
+    @Persisted var path: String = ""
+    @Persisted var provider: String = ""
     
     
     public required convenience init(model: Model) {

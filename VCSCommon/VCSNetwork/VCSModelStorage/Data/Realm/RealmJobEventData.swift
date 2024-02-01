@@ -3,19 +3,18 @@ import RealmSwift
 
 public class RealmJobEventData: Object, VCSRealmObject {
     public typealias Model = VCSJobEventResponse
-    override public class func primaryKey() -> String { return "RealmID" }
     
-    @objc dynamic public var RealmID: String = "nil"
-    @objc dynamic public var id: Int = 0
-    @objc dynamic var jobType: String = ""
-    @objc dynamic var lastUpdate: String = ""
-    @objc dynamic var sequenceNumber: Int = 0
-    @objc dynamic var status: String = ""
-    @objc dynamic var statusData: String = ""
-    @objc dynamic var storageType: String = ""
-    @objc dynamic var timeRemaining: Int = 0
-    @objc dynamic var timestamp: String = ""
-    @objc dynamic var usedPUs: Double = 0
+    @Persisted(primaryKey: true) public var RealmID: String = "nil"
+    @Persisted public var id: Int = 0
+    @Persisted var jobType: String = ""
+    @Persisted var lastUpdate: String = ""
+    @Persisted var sequenceNumber: Int = 0
+    @Persisted var status: String = ""
+    @Persisted var statusData: String = ""
+    @Persisted var storageType: String = ""
+    @Persisted var timeRemaining: Int = 0
+    @Persisted var timestamp: String = ""
+    @Persisted var usedPUs: Double = 0
     
     
     public required convenience init(model: Model) {
