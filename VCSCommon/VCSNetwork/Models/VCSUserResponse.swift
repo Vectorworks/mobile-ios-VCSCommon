@@ -2,12 +2,12 @@ import Foundation
 
 public typealias StorageList = [VCSStorageResponse]
 
-@objc public class VCSUserResponse: NSObject, Codable {
+public class VCSUserResponse: NSObject, Codable {
     public let meta: Meta
     public let objects: [VCSUser]
 }
 
-@objc public class Meta: NSObject, Codable {
+public class Meta: NSObject, Codable {
     public let limit: Int
     public let next: String?
     public let offset: Int
@@ -39,7 +39,7 @@ public typealias StorageList = [VCSStorageResponse]
     @objc public let language, lastName, login, nvwuid: String
     public let preferences: String?
     public let quotas: Quotas
-    @objc public let resourceURI, username: String
+    public let resourceURI, username: String
     public var availableStorages: StorageList { return self.storages }
     internal var storages: StorageList = []
     private(set) public var isLoggedIn: Bool = false
@@ -158,7 +158,7 @@ extension VCSUser {
     }
 }
 
-@objc public class VCSAWSkeys: NSObject, Codable {
+public class VCSAWSkeys: NSObject, Codable {
     public let awsSynced: Bool
     public let linksExpireAfter: Int
     public let awskeysPrefix, s3Bucket, s3Key, s3Secret: String
@@ -196,7 +196,7 @@ extension VCSUser {
     }
 }
 
-@objc public class Quotas: NSObject, Codable {
+public class Quotas: NSObject, Codable {
     public let processingQuota: Int
     public let processingUsed: Double
     public let storageQuota, storageUsed: Int

@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-@objc public enum FileTypeForAlert: Int {
+public enum FileTypeForAlert: Int {
     case folder
     case photo
     case measurement
@@ -15,7 +15,7 @@ public enum SelectedAssetsForPhotogrammetry {
     case folder(name: String)
 }
 
-@objc public protocol FileNameValidationAlert: AnyObject {
+public protocol FileNameValidationAlert: AnyObject {
     var fileType: FileTypeForAlert { get }
     var title: String { get }
     var message: String { get }
@@ -173,7 +173,7 @@ public class AssetsToPhotogramLocalizedAlert: FileNameValidationAlert {
     }
 }
 
-@objc public class CreatePdfLocalizedAlert: NSObject, FileNameValidationAlert {
+public class CreatePdfLocalizedAlert: NSObject, FileNameValidationAlert {
     public let fileType: FileTypeForAlert = .pdf
     
     public var title: String = "Name of Saved File".vcsLocalized
@@ -200,7 +200,7 @@ public class AssetsToPhotogramLocalizedAlert: FileNameValidationAlert {
         return { (_) in }
     }
     
-    @objc public init(defaultActionHandler: @escaping (UIAlertAction, String) -> Void, textFieldConfigurationHandler: ((UITextField) -> Void)?) {
+    public init(defaultActionHandler: @escaping (UIAlertAction, String) -> Void, textFieldConfigurationHandler: ((UITextField) -> Void)?) {
         self.defaultActionHandler = defaultActionHandler
         self.textFieldConfigurationHandler = textFieldConfigurationHandler
     }

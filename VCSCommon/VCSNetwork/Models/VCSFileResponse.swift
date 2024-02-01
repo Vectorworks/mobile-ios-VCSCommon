@@ -1,38 +1,38 @@
 import Foundation
 
-@objc public class VCSFileResponse: NSObject, Codable {
+public class VCSFileResponse: NSObject, Codable {
     private(set) public var isFolder = false
     private(set) public var isFile = true
     
-    @objc public var resourceURI: String = ""
-    @objc public var resourceID: String = ""
-    @objc public var exists: Bool = false
+    public var resourceURI: String = ""
+    public var resourceID: String = ""
+    public var exists: Bool = false
     public var isNameValid: Bool = false
     public var name: String = ""
-    @objc public var prefix: String
+    public var prefix: String
     
     public var sharingInfo: VCSSharingInfoResponse?
     public var flags: VCSFlagsResponse?
     public var ownerInfo: VCSOwnerInfoResponse?
     public var storageType: StorageType = .S3
-    @objc public var storageTypeString: String { return self.storageType.rawValue }
-    @objc public var storageTypeDisplayString: String { return self.storageType.displayName }
+    public var storageTypeString: String { return self.storageType.rawValue }
+    public var storageTypeDisplayString: String { return self.storageType.displayName }
     
-    @objc private(set) public var ownerLogin: String
+    private(set) public var ownerLogin: String
     public func updateSharedOwnerLogin(_ login: String) {
         self.related.forEach { $0.updateSharedOwnerLogin(login) }
         self.ownerLogin = login
     }
     
     public var VCSID: String
-    @objc public let downloadURL: String
+    public let downloadURL: String
     public let versionID, size, lastModified: String
     public var thumbnail: String
     public let thumbnail3D: String?
     public let previousVersions: [VCSFileResponse]
     public let fileType: String?
-    @objc private(set) public var localFile: LocalFile?
-    @objc private(set) public var localFilesAppFile: LocalFilesAppFile?
+    private(set) public var localFile: LocalFile?
+    private(set) public var localFilesAppFile: LocalFilesAppFile?
     
     private var isOnDisk: Bool {
         
@@ -115,7 +115,7 @@ import Foundation
         VCSCache.addToCache(item: self, forceNilValuesUpdate: true)
     }
     
-    @objc public var related: [VCSFileResponse]
+    public var related: [VCSFileResponse]
     public lazy var sortingDate: Date = { return self.lastModified.VCSDateFromISO8061 ?? Date() }()
     
     private enum CodingKeys: String, CodingKey {
@@ -262,8 +262,8 @@ extension VCSFileResponse : FileAsset {
     public var downloadURLString: String { return self.downloadURL }
     public var relatedFileAssets: [FileAsset] { return self.related }
     public var localPathString: String? { return self.localFile?.localPath }
-    @objc public var realStorage: String { return self.ownerInfo?.mountPoint?.storageType.rawValue ?? self.storageType.rawValue }
-    @objc public var realPrefix: String {
+    public var realStorage: String { return self.ownerInfo?.mountPoint?.storageType.rawValue ?? self.storageType.rawValue }
+    public var realPrefix: String {
         let isMountPoint = self.flags?.isMountPoint ?? false
         let mountPointPath = self.ownerInfo?.mountPoint?.path.VCSNormalizedURLString() ?? self.prefix
         let prefix = self.prefix

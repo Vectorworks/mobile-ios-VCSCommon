@@ -26,7 +26,7 @@ public final class SelectFilenameDialogCreator: NSObject {
         }
     }
     
-    @objc public static func createAndPresentFileCreationAlert(folderInfo: ContainingFolderMetadata, presenter: UIViewController, alertInfo: FileNameValidationAlert) {
+    public static func createAndPresentFileCreationAlert(folderInfo: ContainingFolderMetadata, presenter: UIViewController, alertInfo: FileNameValidationAlert) {
         let createFileAlert = createCreationAlert(alertInfo: alertInfo)
         let handler: ((UIAlertAction) -> Void)? = { [unowned presenter] (action) in
             guard let fileName = createFileAlert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
@@ -50,7 +50,7 @@ public final class SelectFilenameDialogCreator: NSObject {
         presentCreationAlert(createFileAlert: createFileAlert, presenter: presenter, alertInfo: alertInfo, handler: handler)
     }
     
-//    @objc public static func createAndPresentMeasureProjectCreationAlert(path: String, presenter: UIViewController, alertInfo: FileNameValidationAlert) {
+//    public static func createAndPresentMeasureProjectCreationAlert(path: String, presenter: UIViewController, alertInfo: FileNameValidationAlert) {
 //        let createFileAlert = createCreationAlert(alertInfo: alertInfo)
 //        let handler: ((UIAlertAction) -> Void)? = { [unowned presenter] (action) in
 //            guard let fileName = createFileAlert.textFields?.first?.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }

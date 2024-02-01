@@ -2,7 +2,7 @@ import Foundation
 import Network
 import CocoaLumberjackSwift
 
-@objc public class VCSReachability: NSObject {
+public class VCSReachability: NSObject {
     public static var `default`: VCSReachability = VCSReachability(startMonitoring: false)
     
     @Published public private(set) var isConnected = true

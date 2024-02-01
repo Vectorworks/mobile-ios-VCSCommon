@@ -1,7 +1,7 @@
 import Foundation
 import simd
 
-@objc public class CameraData: NSObject {
+public class CameraData: NSObject {
     public var eyeVector = SIMD3<Float>()
     public var upVector = SIMD3<Float>()
     public var centerVector = SIMD3<Float>()

@@ -27,8 +27,8 @@ public class APIClient: NSObject {
     private static var SFDelegateOnFail: ((Error) -> Void)?
     private static weak var SFDelegatePresenter: UIViewController?
     
-    @objc public static let LogoutClearFieldsNotificationName: String = "VCSLogoutClearFields"
-    @objc public static let ssoCustomRedirectURI: String = "vcsnomad://oauth-callback/ssologin"
+    public static let LogoutClearFieldsNotificationName: String = "VCSLogoutClearFields"
+    public static let ssoCustomRedirectURI: String = "vcsnomad://oauth-callback/ssologin"
     
     public static var LogoutClearFieldsNotification: Notification.Name { return Notification.Name(rawValue: APIClient.LogoutClearFieldsNotificationName) }
     public static var hasNetworkConnectivity: Bool { return VCSReachability.default.isConnected }

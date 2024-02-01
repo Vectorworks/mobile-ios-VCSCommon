@@ -1,13 +1,13 @@
 import Foundation
 
-@objc public class VCSShareableLinkResponse: NSObject, SharedAsset, Codable {
+public class VCSShareableLinkResponse: NSObject, SharedAsset, Codable {
     public let link, uuid, expires: String
     public let dateCreated: String
     public let resourceURI: String
     
     public let owner: VCSShareableLinkOwner
-    @objc public let asset: Asset
-    @objc public let assetType: AssetType
+    public let asset: Asset
+    public let assetType: AssetType
     
     
     private enum CodingKeys: String, CodingKey {

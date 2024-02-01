@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class VCSSharingInfoResponse: NSObject, Codable {
+public class VCSSharingInfoResponse: NSObject, Codable {
     private(set) public var realmID: String = VCSUUID().systemUUID.uuidString
     public let isShared: Bool
     public let link: String

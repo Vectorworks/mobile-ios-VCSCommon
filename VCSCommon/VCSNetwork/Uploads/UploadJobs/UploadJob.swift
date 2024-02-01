@@ -1,7 +1,7 @@
 import Foundation
 import CocoaLumberjackSwift
 
-@objc public class UploadJob: NSObject {
+public class UploadJob: NSObject {
     public enum JobType: String {
         case SingleFileUpload
         case MultipleFileUpload

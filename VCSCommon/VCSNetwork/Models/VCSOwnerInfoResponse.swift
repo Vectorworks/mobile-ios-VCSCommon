@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class VCSOwnerInfoResponse: NSObject, Codable {
+public class VCSOwnerInfoResponse: NSObject, Codable {
     public var realmID: String = VCSUUID().systemUUID.uuidString
     
     public let owner, ownerEmail, ownerName, uploadPrefix: String

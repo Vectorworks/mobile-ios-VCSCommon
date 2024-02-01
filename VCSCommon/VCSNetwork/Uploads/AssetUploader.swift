@@ -11,19 +11,19 @@ fileprivate struct MetadataForVCSFileResponse {
     let filePrefix: String
 }
 
-@objc public class AssetUploader: NSObject {
-    @objc public static var shared: AssetUploader = AssetUploader()
+public class AssetUploader: NSObject {
+    public static var shared: AssetUploader = AssetUploader()
     
-    @objc public class func removeUploadedFileIDFromAPIClient(_ rID: String) {
+    public class func removeUploadedFileIDFromAPIClient(_ rID: String) {
         APIClient.uploads[rID] = nil
     }
     
-    @objc public class func removeUploadedFileFromAPIClient(_ asset: Asset) {
+    public class func removeUploadedFileFromAPIClient(_ asset: Asset) {
         AssetUploader.removeUploadedFileIDFromAPIClient(asset.rID)
         (asset as? FileAsset)?.relatedFileAssets.forEach { AssetUploader.removeUploadedFileFromAPIClient($0) }
     }
     
-    @objc public func upload(_ PDFTempFile: URL, pdfMetadata: FileAsset, newName name: String, thumbnail: UploadJobLocalFile?, owner: String) {
+    public func upload(_ PDFTempFile: URL, pdfMetadata: FileAsset, newName name: String, thumbnail: UploadJobLocalFile?, owner: String) {
         guard let unuploadedPDF = PDF.construct(relatedTo: pdfMetadata, withName: name, PDFTempFile: PDFTempFile, thumbnail: thumbnail) else { return }
         
         let storage = VCSGenericRealmModelStorage<VCSFileResponse.RealmModel>()

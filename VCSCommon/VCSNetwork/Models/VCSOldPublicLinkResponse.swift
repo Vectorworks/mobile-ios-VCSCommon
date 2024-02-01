@@ -1,11 +1,11 @@
 import Foundation
 
-@objc public class VCSOldPublicLinkResponse: NSObject, Codable {
+public class VCSOldPublicLinkResponse: NSObject, Codable {
     public let dateCreated: String
     public let expired: Bool
     public let expires: String
     public let oldPublicLinkPublic: Bool
-    @objc public let resourceURI, s3File, storageType, url: String
+    public let resourceURI, s3File, storageType, url: String
     
     enum CodingKeys: String, CodingKey {
         case dateCreated = "date_created"

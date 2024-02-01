@@ -12,7 +12,7 @@ public enum JobStatus: String {
     case canceled = "canceled"
 }
 
-@objc public class VCSJobEventResponse: NSObject, Codable {
+public class VCSJobEventResponse: NSObject, Codable {
     public let id: Int
     public let jobType: String
     public let lastUpdate: String

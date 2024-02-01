@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class VCSFolderResponse: NSObject, Asset, Codable {
+public class VCSFolderResponse: NSObject, Asset, Codable {
     
     public static var addToCacheRootFolderID: String?
     
@@ -10,12 +10,12 @@ import Foundation
     
     public var VCSID: String
     
-    @objc public var resourceURI: String = ""
-    @objc public var resourceID: String = ""
-    @objc public var exists: Bool = false
+    public var resourceURI: String = ""
+    public var resourceID: String = ""
+    public var exists: Bool = false
     public var isNameValid: Bool = false
     public var name: String = ""
-    @objc public var prefix: String = ""
+    public var prefix: String = ""
     
     public var displayedPrefix: String {
         var result = self.storageTypeDisplayString
@@ -30,10 +30,10 @@ import Foundation
     public var flags: VCSFlagsResponse?
     public var ownerInfo: VCSOwnerInfoResponse?
     public var storageType: StorageType = .S3
-    @objc public var storageTypeString: String { return self.storageType.rawValue }
-    @objc public var storageTypeDisplayString: String { return self.storageType.displayName }
+    public var storageTypeString: String { return self.storageType.rawValue }
+    public var storageTypeDisplayString: String { return self.storageType.displayName }
     
-    @objc private(set) public var ownerLogin: String
+    private(set) public var ownerLogin: String
     public func updateSharedOwnerLogin(_ login: String) {
         self.subfolders?.forEach { $0.updateSharedOwnerLogin(login) }
         self.files?.forEach { $0.updateSharedOwnerLogin(login) }
@@ -43,8 +43,8 @@ import Foundation
     public let parent: String?
     public let autoprocessParent: String?
     
-    @objc private(set) public var files: [VCSFileResponse]?
-    @objc private(set) public var subfolders: [VCSFolderResponse]?
+    private(set) public var files: [VCSFileResponse]?
+    private(set) public var subfolders: [VCSFolderResponse]?
     
     public func appendFile(_ file: VCSFileResponse) {
         self.files?.append(file)
@@ -89,8 +89,8 @@ import Foundation
 
     public lazy var sortingDate: Date = { return Date() }()
     
-    @objc public var realStorage: String { return self.ownerInfo?.mountPoint?.storageType.rawValue ?? self.storageType.rawValue }
-    @objc public var realPrefix: String {
+    public var realStorage: String { return self.ownerInfo?.mountPoint?.storageType.rawValue ?? self.storageType.rawValue }
+    public var realPrefix: String {
         let isMountPoint = self.flags?.isMountPoint ?? false
         let mountPointPath = self.ownerInfo?.mountPoint?.path.VCSNormalizedURLString() ?? self.prefix
         let prefix = self.prefix

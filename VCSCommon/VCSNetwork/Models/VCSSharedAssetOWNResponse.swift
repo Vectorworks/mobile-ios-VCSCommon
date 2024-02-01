@@ -1,8 +1,8 @@
 import Foundation
 
-@objc public class VCSSharedAssetOWNResponse: NSObject, SharedAsset, Codable {
-    @objc public let asset: Asset
-    @objc public let assetType: AssetType
+public class VCSSharedAssetOWNResponse: NSObject, SharedAsset, Codable {
+    public let asset: Asset
+    public let assetType: AssetType
     public let resourceURI: String
     public let owner, ownerEmail, ownerName, dateCreated: String
     

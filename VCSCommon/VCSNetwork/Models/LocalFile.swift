@@ -1,7 +1,7 @@
 import Foundation
 import CocoaLumberjackSwift
 
-@objc public class LocalFile: NSObject {
+public class LocalFile: NSObject {
     private(set) public var uuid: String = VCSUUID().systemUUID.uuidString
     private(set) public var name: String
     private(set) public var parent: String
@@ -12,7 +12,7 @@ import CocoaLumberjackSwift
         return FileManager.default.fileExists(atPath: self.localPath)
     }
     
-    @objc public var localPath: String {
+    public var localPath: String {
         let localFileName = self.uuid.appendingPathExtension(self.name.pathExtension)
         let fileURL = FileManager.downloadPath(fileName: localFileName)
         return fileURL.path

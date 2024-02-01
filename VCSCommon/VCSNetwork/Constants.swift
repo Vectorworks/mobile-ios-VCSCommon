@@ -59,7 +59,7 @@ public enum ClientType: String {
     case iOS = "iOS"
 }
 
-@objc public class ClientVersion: NSObject {
+public class ClientVersion: NSObject {
     var verValue: String = "0.0"
     public static var privateDefaultInstance: ClientVersion!
     public static var `default`: ClientVersion { return ClientVersion.privateDefaultInstance }
@@ -78,7 +78,7 @@ public enum ClientType: String {
         self.verValue = version
     }
     
-    @objc public var userAgent:String {
+    public var userAgent:String {
         return "VCS-iOS/" + self.verValue
     }
 }

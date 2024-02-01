@@ -1,10 +1,10 @@
 import Foundation
 import UIKit
 
-@objc class VCSFCIconsStr: NSObject {
-    @objc public static let badge_view = "badge-view"
-    @objc public static let badge_download = "badge-download"
-    @objc public static let badge_edit = "badge-edit"
+class VCSFCIconsStr: NSObject {
+    public static let badge_view = "badge-view"
+    public static let badge_download = "badge-download"
+    public static let badge_edit = "badge-edit"
 }
 
 extension String {

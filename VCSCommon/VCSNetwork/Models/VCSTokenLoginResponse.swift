@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class VCSTokenLoginResponse: NSObject, Codable {
+public class VCSTokenLoginResponse: NSObject, Codable {
     public let sessionKey, expireDate: String
     public let isExpired: Bool
     public let start, login: String

@@ -108,7 +108,7 @@ public class RealmPhotogramJobRequest: Object, VCSRealmObject {
     }
 }
 
-@objc public class PhotogramJobRequest: NSObject, Codable, VCSCachable {
+public class PhotogramJobRequest: NSObject, Codable, VCSCachable {
     public typealias RealmModel = RealmPhotogramJobRequest
     public static let realmStorage = VCSGenericRealmModelStorage<RealmPhotogramJobRequest>()
     
@@ -142,7 +142,7 @@ public class RealmPhotogramJobRequest: Object, VCSRealmObject {
         case isQueued
     }
     
-    @objc public init(fileName:String, jobType:String, fileVersion: JobFileVersionRequest, options:PhotogramOptionsRequest, isQueued: Bool) {
+    public init(fileName:String, jobType:String, fileVersion: JobFileVersionRequest, options:PhotogramOptionsRequest, isQueued: Bool) {
         self.fileName = fileName
         self.jobType = jobType
         self.fileVersion = fileVersion
@@ -151,7 +151,7 @@ public class RealmPhotogramJobRequest: Object, VCSRealmObject {
     }
 }
 
-@objc public class JobFileVersionRequest: NSObject, Codable {
+public class JobFileVersionRequest: NSObject, Codable {
     public let path:String
     public let provider:String
     public let owner:String
@@ -164,7 +164,7 @@ public class RealmPhotogramJobRequest: Object, VCSRealmObject {
         case isFolder = "is_folder"
     }
     
-    @objc public init(path:String, provider:String, owner:String, isFolder:Bool = false) {
+    public init(path:String, provider:String, owner:String, isFolder:Bool = false) {
         self.path = path
         self.provider = provider
         self.owner = owner
@@ -172,7 +172,7 @@ public class RealmPhotogramJobRequest: Object, VCSRealmObject {
     }
 }
 
-@objc public class PhotogramOptionsRequest: NSObject, Codable {
+public class PhotogramOptionsRequest: NSObject, Codable {
     public let srcStorageType:String
     public let srcFileVersions:[JobFileVersionRequest]
     public let outputStorageType:String
@@ -185,7 +185,7 @@ public class RealmPhotogramJobRequest: Object, VCSRealmObject {
         case outputLocation = "output_location"
     }
     
-    @objc public init(srcStorageType:String, outputStorageType:String, outputLocation:String, srcFileVersions:[JobFileVersionRequest]) {
+    public init(srcStorageType:String, outputStorageType:String, outputLocation:String, srcFileVersions:[JobFileVersionRequest]) {
         self.srcStorageType = srcStorageType
         self.outputStorageType = outputStorageType
         self.outputLocation = outputLocation

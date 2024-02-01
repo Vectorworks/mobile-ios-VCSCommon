@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class RenderworksCameraData: NSObject {
-    @objc public var name: String = ""
-    @objc public var camera: CameraData?
+public class RenderworksCameraData: NSObject {
+    public var name: String = ""
+    public var camera: CameraData?
 }

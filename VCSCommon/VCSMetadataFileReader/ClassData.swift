@@ -1,4 +1,4 @@
 import Foundation
 
-@objc public class ClassData: DesignLayerData {
+public class ClassData: DesignLayerData {
 }

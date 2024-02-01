@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public protocol VCSCellPresentable {
+public protocol VCSCellPresentable {
     var rID: String { get }
     var name: String { get }
     var hasWarning: Bool { get }

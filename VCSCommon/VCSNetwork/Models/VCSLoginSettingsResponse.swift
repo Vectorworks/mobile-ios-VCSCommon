@@ -1,13 +1,13 @@
 import Foundation
 
-@objc public class VCSLoginSettingsResponse: NSObject, Codable {
-    @objc public let loginServerSessionName, forgotPassword, loginURL, registerURL: String
-    @objc public let notifyChannels: VCSNotifyChannelsResponse
-    @objc public let loginWithTokenURL, logoutURL, loginWithServerAuthCode, loginServerCSRFName: String
-    @objc public let loginServer: String
-    @objc public let nomadClientID, oAuthAuthorizeURL, oAuthTokenURL: String
-    @objc public let nomadRedirectURLs: [String]
-    @objc public let dropboxIntegrateURL, driveIntegrateURL, oneDriveIntegrateURL: String
+public class VCSLoginSettingsResponse: NSObject, Codable {
+    public let loginServerSessionName, forgotPassword, loginURL, registerURL: String
+    public let notifyChannels: VCSNotifyChannelsResponse
+    public let loginWithTokenURL, logoutURL, loginWithServerAuthCode, loginServerCSRFName: String
+    public let loginServer: String
+    public let nomadClientID, oAuthAuthorizeURL, oAuthTokenURL: String
+    public let nomadRedirectURLs: [String]
+    public let dropboxIntegrateURL, driveIntegrateURL, oneDriveIntegrateURL: String
     
     enum CodingKeys: String, CodingKey {
         case loginURL = "login_url"
@@ -30,12 +30,12 @@ import Foundation
     }
 }
 
-@objc public class VCSNotifyChannelsResponse: NSObject, Codable {
-    @objc public let jobs: String
-    @objc public let file: String
-    @objc public let folder: String
-    @objc public let notification: String
-    @objc public let featureNotification: String
+public class VCSNotifyChannelsResponse: NSObject, Codable {
+    public let jobs: String
+    public let file: String
+    public let folder: String
+    public let notification: String
+    public let featureNotification: String
     
     enum CodingKeys: String, CodingKey {
         case jobs = "jobs"

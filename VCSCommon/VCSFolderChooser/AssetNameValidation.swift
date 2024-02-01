@@ -98,8 +98,8 @@ public struct FolderNameValidator {
     }
 }
 
-@objc public class FilenameValidatorWrapper: NSObject {
-    @objc public static func checkFileExists(ownerLogin: String, storage: String, prefix: String) -> Bool {
+public class FilenameValidatorWrapper: NSObject {
+    public static func checkFileExists(ownerLogin: String, storage: String, prefix: String) -> Bool {
         return FilenameValidator.doesExist(ownerLogin: ownerLogin, storage: storage, prefix: prefix)
     }
 }

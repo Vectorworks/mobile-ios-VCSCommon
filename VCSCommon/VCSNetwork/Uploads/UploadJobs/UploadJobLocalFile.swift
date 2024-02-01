@@ -2,7 +2,7 @@ import Foundation
 import RealmSwift
 import CocoaLumberjackSwift
 
-@objc public class UploadJobLocalFile: NSObject, Identifiable {
+public class UploadJobLocalFile: NSObject, Identifiable {
     public enum UploadingState: String {
         case Ready
         case Waiting
@@ -157,8 +157,8 @@ extension UploadJobLocalFile: FileAsset {
     public func updateSharedOwnerLogin(_ login: String) {}
     public func loadLocalFiles() {}
     
-    @objc public var realStorage: String { return self.storageType.rawValue }
-    @objc public var realPrefix: String { return self.prefix.VCSNormalizedURLString() }
+    public var realStorage: String { return self.storageType.rawValue }
+    public var realPrefix: String { return self.prefix.VCSNormalizedURLString() }
 }
 
 extension UploadJobLocalFile: VCSCachable {

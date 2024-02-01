@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public enum SharedWithMePermission: Int, Codable {
+public enum SharedWithMePermission: Int, Codable {
     case view
     case download
     case modify

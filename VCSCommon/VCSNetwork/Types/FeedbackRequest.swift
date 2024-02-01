@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class FeedbackRequest: NSObject, Codable {
+public class FeedbackRequest: NSObject, Codable {
     public let csrftoken:String
     public let feedback:String
     public let category:String
@@ -11,7 +11,7 @@ import Foundation
         case category = "category_type"
     }
     
-    @objc public init(csrftoken:String, feedback:String, category:String) {
+    public init(csrftoken:String, feedback:String, category:String) {
         self.csrftoken = csrftoken
         self.feedback = feedback
         self.category = category

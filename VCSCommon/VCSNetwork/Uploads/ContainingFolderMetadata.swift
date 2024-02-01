@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class ContainingFolderMetadata: NSObject {
+public class ContainingFolderMetadata: NSObject {
     public let ownerLogin: String
     public let storageType: StorageType
     public let prefix: String
@@ -18,7 +18,7 @@ import Foundation
         self.prefix = folder.prefix == "/" ? "" : folder.prefix
     }
     
-    @objc public convenience init(ownerLogin: String, storageTypeString: String, prefix: String) {
+    public convenience init(ownerLogin: String, storageTypeString: String, prefix: String) {
         let storageType = StorageType.typeFromString(type: storageTypeString)
         self.init(ownerLogin: ownerLogin, storageType: storageType, prefix: prefix)
     }

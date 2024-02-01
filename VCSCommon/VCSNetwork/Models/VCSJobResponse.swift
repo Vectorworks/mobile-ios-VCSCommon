@@ -1,29 +1,29 @@
 import Foundation
 
-@objc public class JobsResponse: NSObject, Codable {
+public class JobsResponse: NSObject, Codable {
     public let count: Int
     public let next: String?
     public let previous: String?
-    @objc public let results: [VCSJobResponse]
+    public let results: [VCSJobResponse]
 }
 
-@objc public class VCSJobResponse: NSObject, Codable {
-    @objc public let id: Int
-    @objc public let user: String
-    @objc public let fileVersion: VCSJobFileVersionResponse?
+public class VCSJobResponse: NSObject, Codable {
+    public let id: Int
+    public let user: String
+    public let fileVersion: VCSJobFileVersionResponse?
     public let vw: Int?
-    @objc public var jobType, status, statusData, lastUpdate: String
-    @objc public let userData: String
-    @objc public var timeRemaining: Int
-    @objc public let submissionTimestamp, startTimestamp, endTimestamp, outputfile: String
-    @objc public var usedPUs, usedFUs: Double
-    @objc public let options: VCSJobOptionsResponse?
-    @objc public let origin: String
+    public var jobType, status, statusData, lastUpdate: String
+    public let userData: String
+    public var timeRemaining: Int
+    public let submissionTimestamp, startTimestamp, endTimestamp, outputfile: String
+    public var usedPUs, usedFUs: Double
+    public let options: VCSJobOptionsResponse?
+    public let origin: String
     public var sequenceNumber: Int?
     
-    @objc public var lastEvent: VCSJobEventResponse?
+    public var lastEvent: VCSJobEventResponse?
     
-    @objc public var computedVW: Int { return self.vw ?? 0 }
+    public var computedVW: Int { return self.vw ?? 0 }
     
     enum CodingKeys: String, CodingKey {
         case id = "id"

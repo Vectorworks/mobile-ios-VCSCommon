@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class FolderChooserResult: NSObject, Codable {
+public class FolderChooserResult: NSObject, Codable {
     public let ownerLogin: String
     public let storageType: StorageType
     public let prefix: String

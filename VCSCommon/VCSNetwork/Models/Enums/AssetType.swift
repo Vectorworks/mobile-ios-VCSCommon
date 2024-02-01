@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public enum AssetType: Int, Codable {
+public enum AssetType: Int, Codable {
     case file
     case folder
     

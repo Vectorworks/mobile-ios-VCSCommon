@@ -6,7 +6,7 @@ let kVCSMetricsNotification            = "kVCSMetricsNotification"
 let kVCSMetricsNotification_event      = "kVCSMetricsNotification_event"
 let kVCSMetricsNotification_params     = "kVCSMetricsNotification_params"
 
-@objc public class Metrics: NSObject {
+public class Metrics: NSObject {
     public static let `default` = Metrics()
     
     public override init() {
@@ -29,7 +29,7 @@ let kVCSMetricsNotification_params     = "kVCSMetricsNotification_params"
         self.logEvent(event, parameters: params)
     }
     
-    @objc public func logEvent(_ event: String, parameters: [String : Any]? = nil) {
+    public func logEvent(_ event: String, parameters: [String : Any]? = nil) {
         var paramString = ""
         if let params = parameters {
             paramString = ": \(params)"

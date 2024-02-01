@@ -1,13 +1,13 @@
 import Foundation
 
-@objc public class VCSJobFileVersionResponse: NSObject, Codable {
+public class VCSJobFileVersionResponse: NSObject, Codable {
     //TODO: test changes
-    @objc public let owner, container, provider, fileType: String
-    @objc public let path: String
-    @objc public let id: Int
-    @objc public let versionID: String
-    @objc public let resourceID: String
-    @objc public let VCSID: String
+    public let owner, container, provider, fileType: String
+    public let path: String
+    public let id: Int
+    public let versionID: String
+    public let resourceID: String
+    public let VCSID: String
     
     enum CodingKeys: String, CodingKey {
         case owner, container, provider

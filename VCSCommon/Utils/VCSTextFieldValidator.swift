@@ -1,13 +1,13 @@
 import Foundation
 import SwiftUI
 
-@objc public class VCSAlertTextFieldValidator: NSObject, UITextFieldDelegate {
+public class VCSAlertTextFieldValidator: NSObject, UITextFieldDelegate {
     public static var privateDefaultInstance: VCSAlertTextFieldValidator = VCSAlertTextFieldValidator()
     public static var `default`: VCSAlertTextFieldValidator { return VCSAlertTextFieldValidator.privateDefaultInstance }
     
     private override init() { }
     
-    @objc public static func defaultWithPresenter(_ presenter: UIViewController) -> VCSAlertTextFieldValidator {
+    public static func defaultWithPresenter(_ presenter: UIViewController) -> VCSAlertTextFieldValidator {
         VCSAlertTextFieldValidator.default.presenter = presenter
         VCSAlertTextFieldValidator.default.originalMessage = nil
         return VCSAlertTextFieldValidator.default

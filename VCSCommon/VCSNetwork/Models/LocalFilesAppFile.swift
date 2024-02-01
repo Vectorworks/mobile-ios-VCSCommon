@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class LocalFilesAppFile: NSObject {
+public class LocalFilesAppFile: NSObject {
     
     public static var rootFilesAppURL: URL?
     

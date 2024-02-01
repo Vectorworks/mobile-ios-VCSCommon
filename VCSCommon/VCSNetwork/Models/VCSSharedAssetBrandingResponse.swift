@@ -4,7 +4,7 @@ public class VCSSharedAssetBrandingResponseWrapper: NSObject, Codable {
     public let branding: VCSSharedAssetBrandingResponse
 }
 
-@objc public class VCSSharedAssetBrandingResponse: NSObject, Codable {
+public class VCSSharedAssetBrandingResponse: NSObject, Codable {
     public let position: BrandingLogoPosition?
     public let image: String?
     public let opacity, size: Float?
@@ -55,7 +55,7 @@ extension VCSSharedAssetBrandingResponse {
     }
 }
 
-@objc public class BrandingLogoPosition: NSObject, Codable {
+public class BrandingLogoPosition: NSObject, Codable {
     public let top, left, logoAR: Double
     public var realmID: String?
     

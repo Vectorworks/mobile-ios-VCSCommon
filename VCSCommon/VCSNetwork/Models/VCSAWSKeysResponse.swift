@@ -1,11 +1,11 @@
 import Foundation
 
-@objc public class AWSKeysResponse: NSObject, Codable {
+public class AWSKeysResponse: NSObject, Codable {
     let meta: Meta
     public let objects: [VCSAWSKeysResponse]
 }
 
-@objc public class VCSAWSKeysResponse: NSObject, Codable {
+public class VCSAWSKeysResponse: NSObject, Codable {
     public let s3ExpirationDate, s3Key, s3Secret, s3SecurityToken: String
     let expired: Bool
     let resourceURI, user: String

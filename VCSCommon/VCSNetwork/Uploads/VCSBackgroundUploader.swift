@@ -21,7 +21,7 @@ public class VCSBackgroundSession: NSObject {
     public static var uploadsResponse = [String : VCSUploadDataResponse]()
     public static var uploadsResponseData = [String : Data]()
     
-    @objc public lazy var backgroundSession: URLSession = {
+    public lazy var backgroundSession: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionIdentifierBackground)
         configuration.sharedContainerIdentifier = appGroupSetting
         configuration.isDiscretionary = false

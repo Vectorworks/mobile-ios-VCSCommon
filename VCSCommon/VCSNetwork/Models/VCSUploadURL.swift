@@ -1,7 +1,7 @@
 import Foundation
 
-@objc public class VCSUploadURL: NSObject, Decodable {
-    @objc public let url: String
+public class VCSUploadURL: NSObject, Decodable {
+    public let url: String
     public let contentLength: Int
     public var uploadMethod: String?
     public let contentType: String

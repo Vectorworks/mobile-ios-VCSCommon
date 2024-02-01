@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-@objc public class ScreenshotCaptureData:NSObject {
+public class ScreenshotCaptureData:NSObject {
     public let captureView:UIView
     public let filePath:String
     public let saveToGallery:Bool
@@ -19,6 +19,6 @@ import UIKit
     }    
 }
 
-@objc public protocol ScreenCaptureHandler {
+public protocol ScreenCaptureHandler {
     func captureScreen(screenCaptureData:ScreenshotCaptureData)
 }

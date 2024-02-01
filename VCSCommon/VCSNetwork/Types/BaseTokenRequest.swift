@@ -17,7 +17,7 @@ public class BaseTokenRequest: NSObject, Codable {
         case codeVerifier = "code_verifier"
     }
     
-    @objc public init(clientID: String, grantType: String, redirectURI: String? = nil, codeVerifier: String? = nil) {
+    public init(clientID: String, grantType: String, redirectURI: String? = nil, codeVerifier: String? = nil) {
         self.clientID = clientID
         
         self.grantType = grantType

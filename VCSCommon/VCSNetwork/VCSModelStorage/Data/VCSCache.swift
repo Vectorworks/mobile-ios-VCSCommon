@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public protocol VCSCachable {
+public protocol VCSCachable {
     func addToCache()
     func addOrPartialUpdateToCache()
     func partialUpdateToCache()

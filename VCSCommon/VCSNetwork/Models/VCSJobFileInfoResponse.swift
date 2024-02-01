@@ -1,9 +1,9 @@
 import Foundation
 
-@objc public class VCSJobFileInfoResponse: NSObject, Codable {
-    @objc public let fileCount: Int
-    @objc public let path: String
-    @objc public let provider: String
+public class VCSJobFileInfoResponse: NSObject, Codable {
+    public let fileCount: Int
+    public let path: String
+    public let provider: String
     
     enum CodingKeys: String, CodingKey {
         case fileCount = "file_count"

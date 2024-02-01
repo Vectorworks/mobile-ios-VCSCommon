@@ -3,16 +3,16 @@ import KissXML
 import CocoaLumberjackSwift
 import simd
 
-@objc public class VWFileMetadata: NSObject {
-    @objc public var filePath: String
-    @objc public var designLayers: [DesignLayerData] = []
-    @objc public var classes: [ClassData] = []
-    @objc public var savedViews: [SavedViewData] = []
-    @objc public var renderworksCameras: [RenderworksCameraData] = []
-    @objc public var pages: [PageData] = []
+public class VWFileMetadata: NSObject {
+    public var filePath: String
+    public var designLayers: [DesignLayerData] = []
+    public var classes: [ClassData] = []
+    public var savedViews: [SavedViewData] = []
+    public var renderworksCameras: [RenderworksCameraData] = []
+    public var pages: [PageData] = []
     
     
-    @objc public init(withFile: String) {
+    public init(withFile: String) {
         self.filePath = withFile
         super.init()
         self.parse()

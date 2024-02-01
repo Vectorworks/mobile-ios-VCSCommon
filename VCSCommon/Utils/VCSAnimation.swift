@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-@objc public class VCSAnimation:NSObject {
+public class VCSAnimation:NSObject {
     static public func animateFlashEffect(on view:UIView) {
         let v = UIView(frame: view.bounds)
         v.backgroundColor = UIColor.white

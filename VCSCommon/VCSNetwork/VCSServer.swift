@@ -15,7 +15,7 @@ public enum VCSAPIVersion: String {
     case v2 = "/restapi/public/v2/"
 }
 
-@objc public class VCSServer: NSObject, Codable {
+public class VCSServer: NSObject, Codable {
     public static var `default`: VCSServer { return VCSUserDefaults.default.getCodableItem(forKey: "VCSNetwork_defaultServer") ?? VCSServer.prod }
     @objc
     public static var defaultOBJC: VCSServer {
@@ -33,7 +33,7 @@ public enum VCSAPIVersion: String {
     static public let test = VCSServer(server: "https://test.vcs.vectorworks.net/")
     static public let polaris = VCSServer(server: "https://polaris.vcs.vectorworks.net/")
     
-    @objc public static func setDefaultServer(server: VCSServer) {
+    public static func setDefaultServer(server: VCSServer) {
         VCSUserDefaults.default.setCodableItem(value: server, forKey: "VCSNetwork_defaultServer")
     }
 }

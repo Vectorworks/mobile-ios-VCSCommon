@@ -1,14 +1,14 @@
 import UIKit
 import Foundation
 
-@objc public class VCSStorageResponse: NSObject, Codable {
-    @objc public let name, folderURI, fileURI: String
+public class VCSStorageResponse: NSObject, Codable {
+    public let name, folderURI, fileURI: String
     public let storageType: StorageType
-    @objc public let resourceURI: String
-    @objc public let autoprocessParent: String?
-    @objc public let accessType: String?
-    @objc public let pagesURL: String?
-    @objc public var pages: StoragePagesList = []
+    public let resourceURI: String
+    public let autoprocessParent: String?
+    public let accessType: String?
+    public let pagesURL: String?
+    public var pages: StoragePagesList = []
     
     enum CodingKeys: String, CodingKey {
         case name

@@ -1,11 +1,11 @@
 import Foundation
 
-@objc public class VCSAnnouncementSettingsResponse: NSObject, Codable {
-    @objc public let message: String
-    @objc public let dismissed: String?
-    @objc public let title: String
-    @objc public let url: String?
-    @objc public let accept: Accept?
+public class VCSAnnouncementSettingsResponse: NSObject, Codable {
+    public let message: String
+    public let dismissed: String?
+    public let title: String
+    public let url: String?
+    public let accept: Accept?
     
     enum CodingKeys: String, CodingKey {
         case message = "description"
@@ -13,6 +13,6 @@ import Foundation
     }
 }
 
-@objc public class Accept: NSObject, Codable {
-    @objc public let title, type, url: String
+public class Accept: NSObject, Codable {
+    public let title, type, url: String
 }

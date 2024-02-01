@@ -1,10 +1,10 @@
 import Foundation
 
-@objc public class VCSSSOUser: NSObject, Codable {
+public class VCSSSOUser: NSObject, Codable {
     public let id: Int
-    @objc public let firstName, lastName, email: String
+    public let firstName, lastName, email: String
     public let isActive: Bool
-    @objc public let login, nvwuid, gender: String
+    public let login, nvwuid, gender: String
     public let industry, phone: String?
     public let honorific, language: String
     public let socialProviders: [String]
@@ -68,7 +68,7 @@ import Foundation
     }
 }
 
-@objc public class OtherLogin: NSObject, Codable {
+public class OtherLogin: NSObject, Codable {
     public let id: Int
     public let firstName, lastName, email: String
     public let isActive: Bool

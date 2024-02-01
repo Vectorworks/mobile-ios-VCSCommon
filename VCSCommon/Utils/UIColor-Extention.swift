@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import SwiftUI
 
-@objc public extension UIColor {
+public extension UIColor {
     convenience init(red: Int, green: Int, blue: Int) {
         let maxColorValue: CGFloat = CGFloat(255)
         let redValue: CGFloat = CGFloat(red)/maxColorValue

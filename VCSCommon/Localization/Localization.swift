@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class Localization: NSObject {
+public class Localization: NSObject {
     public static var privateDefaultInstance: Localization = Localization()
     public static var `default`: Localization { return Localization.privateDefaultInstance }
     
@@ -8,9 +8,9 @@ import Foundation
     public static var defaultOBJC: Localization { return Localization.default }
     
     var currentBundle: Bundle?
-    @objc public var devPseudoTranslations: Bool = false
-    @objc public var devDoubleSize: Bool = false
-    @objc public var devStringInTable: Bool = false
+    public var devPseudoTranslations: Bool = false
+    public var devDoubleSize: Bool = false
+    public var devStringInTable: Bool = false
     
     private static let convertingDictionary: [String:String] = [
         "a" : "á",
@@ -57,7 +57,7 @@ import Foundation
         }
     }
     
-    @objc public func string(key: String) -> String {
+    public func string(key: String) -> String {
         var result = key
         var notFoundValue = ""
         

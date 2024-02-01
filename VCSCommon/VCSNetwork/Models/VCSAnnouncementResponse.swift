@@ -1,10 +1,10 @@
 import Foundation
 
-@objc public class VCSAnnouncementResponse: NSObject, Codable {
+public class VCSAnnouncementResponse: NSObject, Codable {
     public let code: String
     public let id: Int
-    @objc public let resourceURI: String
-    @objc public let settings: VCSAnnouncementSettingsResponse
+    public let resourceURI: String
+    public let settings: VCSAnnouncementSettingsResponse
     public let shouldBeReadHandler, shouldSendHandler: String?
     
     enum CodingKeys: String, CodingKey {

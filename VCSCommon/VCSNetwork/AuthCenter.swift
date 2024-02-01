@@ -5,13 +5,13 @@ import Foundation
     
     private static let loginSettingsKey = "AuthCenter.loginSettingsKey"
     
-    @objc public var loginSettings: VCSLoginSettingsResponse? {
+    public var loginSettings: VCSLoginSettingsResponse? {
         get { return VCSUserDefaults.default.getCodableItem(forKey: AuthCenter.loginSettingsKey) }
         set { VCSUserDefaults.default.setCodableItem(value: newValue, forKey: AuthCenter.loginSettingsKey) }
     }
     
     @objc public var user: VCSUser? { return VCSUser.savedUser }
-    @objc public var awsKeys: VCSAWSKeysResponse?
+    public var awsKeys: VCSAWSKeysResponse?
     
     internal func clearAllFields() {
         self.user?.updateIsLoggedIn(false)

@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class VCSShareableLinkOwner: NSObject, Codable {
+public class VCSShareableLinkOwner: NSObject, Codable {
     public let branding: VCSSharedAssetBrandingResponse
     public let owner, ownerEmail, ownerName: String
     

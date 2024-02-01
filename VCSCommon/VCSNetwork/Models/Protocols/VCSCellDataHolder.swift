@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public protocol VCSCellDataHolder {
+public protocol VCSCellDataHolder {
     var cellData: VCSCellPresentable { get }
     var cellFileData: FileCellPresentable? { get }
     var assetData: Asset? { get }

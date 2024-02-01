@@ -1,8 +1,8 @@
 import Foundation
 
-@objc public class VCSSharedAssetWrapper: NSObject, SharedAsset, Codable {
-    @objc public let asset: Asset
-    @objc public let assetType: AssetType
+public class VCSSharedAssetWrapper: NSObject, SharedAsset, Codable {
+    public let asset: Asset
+    public let assetType: AssetType
     public let resourceURI: String
     
     init(asset: Asset, assetType: AssetType, resourceURI: String) {

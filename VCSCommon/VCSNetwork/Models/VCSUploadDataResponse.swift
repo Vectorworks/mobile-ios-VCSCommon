@@ -1,9 +1,9 @@
 import Foundation
 
-@objc public class VCSUploadDataResponse: NSObject {
-    @objc public let uploadDate: Date
-    @objc public let googleDriveID: String?
-    @objc public let googleDriveVerID: String?
+public class VCSUploadDataResponse: NSObject {
+    public let uploadDate: Date
+    public let googleDriveID: String?
+    public let googleDriveVerID: String?
     
     public init(_ date: Date, googleDriveID: String?, googleDriveVerID: String?) {
         self.uploadDate = date

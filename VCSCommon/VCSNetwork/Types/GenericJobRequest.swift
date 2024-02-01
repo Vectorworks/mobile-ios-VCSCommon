@@ -1,6 +1,6 @@
 import Foundation
 
-@objc public class GenericJobRequest: NSObject, Codable {
+public class GenericJobRequest: NSObject, Codable {
     public let jobType:String
     public let fileVersion: JobFileVersionRequest
     public let options: GenericJobOptionsRequest
@@ -11,7 +11,7 @@ import Foundation
         case options
     }
     
-    @objc public init(jobType:String, fileVersion: JobFileVersionRequest, options: GenericJobOptionsRequest) {
+    public init(jobType:String, fileVersion: JobFileVersionRequest, options: GenericJobOptionsRequest) {
         self.jobType = jobType
         self.fileVersion = fileVersion
         self.options = options
@@ -23,7 +23,7 @@ public enum GenericJobOptionOperations: String {
     case measure
 }
 
-@objc public class GenericJobOptionsRequest: NSObject, Codable {
+public class GenericJobOptionsRequest: NSObject, Codable {
     public let jobName:String
     public let operation: String
     public let outputStorageType: String
@@ -38,7 +38,7 @@ public enum GenericJobOptionOperations: String {
         case outputOwner = "output_location_owner"
     }
     
-    @objc public init(jobName:String, operation:String, outputStorageType:String, outputLocation:String, outputOwner: String) {
+    public init(jobName:String, operation:String, outputStorageType:String, outputLocation:String, outputOwner: String) {
         self.jobName = jobName
         self.operation = operation
         self.outputStorageType = outputStorageType
