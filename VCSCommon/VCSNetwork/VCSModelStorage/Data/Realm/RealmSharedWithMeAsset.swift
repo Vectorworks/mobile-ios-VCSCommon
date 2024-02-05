@@ -3,12 +3,13 @@ import Realm
 import RealmSwift
 
 
-public class RealmSharedWithMeAsset: Object, VCSRealmObject {
+public class RealmSharedWithMeAsset: RealmSharedWithMeAndLinkObject, VCSRealmObject {
     public typealias Model = VCSSharedWithMeAsset
     
     @Persisted(primaryKey: true) public var RealmID: String = "nil"
     @Persisted var asset: RealmSharedWithMeAssetWrapper?
     @Persisted var assetType: String = AssetType.file.rawValue
+    @Persisted var resourceURI: String = ""
     @Persisted var owner: String = ""
     @Persisted var ownerEmail: String = ""
     @Persisted var ownerName: String = ""
@@ -18,6 +19,9 @@ public class RealmSharedWithMeAsset: Object, VCSRealmObject {
     @Persisted var sharedWithLogin: String?
     @Persisted var branding: RealmSharedAssetBranding?
     
+    public override var fakeRealmID: String { return RealmID }
+    public override var fakeSortingDate: Date { return self.dateCreated.VCSDateFromISO8061 ?? Date() }
+    
     public required convenience init(model: Model) {
         self.init()
         
@@ -25,6 +29,7 @@ public class RealmSharedWithMeAsset: Object, VCSRealmObject {
         self.RealmID = model.asset.rID
         
         self.assetType = model.assetType.rawValue
+        self.resourceURI = model.resourceURI
         self.owner = model.owner
         self.ownerName = model.ownerName
         self.ownerEmail = model.ownerEmail
@@ -48,7 +53,7 @@ public class RealmSharedWithMeAsset: Object, VCSRealmObject {
         let permissionArray = self.permission.compactMap({ $0 })
         let arrPermission = Array(permissionArray)
         
-        return VCSSharedWithMeAsset(owner: self.owner, ownerEmail: self.ownerEmail, ownerName: self.ownerName, dateCreated: self.dateCreated, asset: self.asset!.entity, assetType: AssetType(rawValue: self.assetType), resourceURI: self.RealmID, permission: arrPermission, sharedParentFolder: self.sharedParentFolder, sharedWithLogin: self.sharedWithLogin, branding: self.branding?.entity)
+        return VCSSharedWithMeAsset(owner: self.owner, ownerEmail: self.ownerEmail, ownerName: self.ownerName, dateCreated: self.dateCreated, asset: self.asset!.entity, assetType: AssetType(rawValue: self.assetType), resourceURI: self.resourceURI, permission: arrPermission, sharedParentFolder: self.sharedParentFolder, sharedWithLogin: self.sharedWithLogin, branding: self.branding?.entity)
     }
     
     public var partialUpdateModel: [String : Any] {
@@ -57,7 +62,7 @@ public class RealmSharedWithMeAsset: Object, VCSRealmObject {
         result["RealmID"] = self.RealmID
         result["asset"] = self.asset?.partialUpdateModel
         result["assetType"] = self.assetType
-        result["resourceURI"] = self.RealmID
+        result["resourceURI"] = self.resourceURI
         result["owner"] = self.owner
         result["ownerEmail"] = self.ownerEmail
         result["ownerName"] = self.ownerName

@@ -1,7 +1,14 @@
 import Foundation
 import RealmSwift
 
-public class RealmSharedLink: Object, VCSRealmObject {
+//Base class for RealmSharedLink and RealmSharedWithMeAsset
+public class RealmSharedWithMeAndLinkObject: Object {
+    public var fakeRealmID: String { return "nil" }
+    public var fakeSortingDate: Date { return Date() }
+}
+    
+
+public class RealmSharedLink: RealmSharedWithMeAndLinkObject, VCSRealmObject {
     public typealias Model = SharedLink
     
     @Persisted(primaryKey: true) public var RealmID: String = "nil"
@@ -12,6 +19,15 @@ public class RealmSharedLink: Object, VCSRealmObject {
     @Persisted var dateCreated: Date = Date()
     @Persisted var sharedAsset: RealmShareableLinkResponse?
     @Persisted var owner: RealmVCSUser?
+    
+    public override var fakeRealmID: String { return RealmID }
+    public override var fakeSortingDate: Date {
+        var result = self.dateCreated
+        if self.isSampleFiles {
+            result = self.sharedAsset?.dateCreated.VCSDateFromISO8061 ?? self.dateCreated
+        }
+        return result
+    }
     
     public required convenience init(model: Model) {
         self.init()
