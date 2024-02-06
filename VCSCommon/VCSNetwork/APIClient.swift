@@ -200,6 +200,10 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.listSharedFolder)
     }
     
+    public static func listPresentations() -> Future<VCSPresentationsResponse, Error> {
+        return performRequest(route: APIRouter.presentations)
+    }
+    
     public static func fileData(owner: String, storage: String, filePrefix: String, updateFromStorage: Bool = false, googleDriveID: String? = nil, googleDriveVerID: String? = nil) -> Future<VCSFileResponse, Error> {
         return performRequest(route: APIRouter.fileData(owner: owner, storage: storage, filePrefix: filePrefix, updateFromStorage: updateFromStorage, googleDriveID: googleDriveID, googleDriveVerID: googleDriveVerID))
     }

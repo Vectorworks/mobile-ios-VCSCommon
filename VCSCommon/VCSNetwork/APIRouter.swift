@@ -50,6 +50,7 @@ public enum APIRouter: URLRequestConvertible {
     case mountFolder(storageType: String, ownerLogin: String, prefix: String, mountValue: Bool)
     case branding
     case socketPreSignedUri
+    case presentations
     
     
     // MARK: - requestURL
@@ -139,6 +140,8 @@ public enum APIRouter: URLRequestConvertible {
         case .branding:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .socketPreSignedUri:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .presentations:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         }
     }
@@ -311,6 +314,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/branding/"
         case .socketPreSignedUri:
             return "/messenger/presigned-uri/"
+        case .presentations:
+            return "/iboards/"
         }
     }
     
@@ -670,6 +675,11 @@ public enum APIRouter: URLRequestConvertible {
             var result:[URLQueryItem] = []
             let queryItemAppName = URLQueryItem(name: "app_name", value: "nomad")
             result.append(queryItemAppName)
+            return result
+        case .presentations:
+            var result:[URLQueryItem] = []
+            let queryItemJSONFormat = URLQueryItem(name: "format", value: "json")
+            result.append(queryItemJSONFormat)
             return result
         default:
             return nil
