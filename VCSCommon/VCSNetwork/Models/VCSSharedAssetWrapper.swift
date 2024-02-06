@@ -63,7 +63,7 @@ extension VCSSharedAssetWrapper: VCSCellDataHolder {
 
 extension VCSSharedAssetWrapper: VCSCachable {
     public typealias RealmModel = RealmSharedAsset
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
+    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
     
     public func addToCache() {
         VCSSharedAssetWrapper.realmStorage.addOrUpdate(item: self)
