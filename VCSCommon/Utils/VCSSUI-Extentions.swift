@@ -19,8 +19,18 @@ public extension View {
     var isPad: Bool { UIIdiom == .pad }
 }
 
-public struct IsHiddenSUI: ViewModifier {
+public struct IsHiddenBindSUI: ViewModifier {
     @Binding var isHidden: Bool
+
+    public func body(content: Content) -> some View {
+        content
+            .if(isHidden, transform: {
+                $0.hidden()
+            })
+    }
+}
+public struct IsHiddenSUI: ViewModifier {
+    let isHidden: Bool
 
     public func body(content: Content) -> some View {
         content
@@ -32,6 +42,9 @@ public struct IsHiddenSUI: ViewModifier {
 
 public extension View {
     func isHidden(_ value: Binding<Bool>) -> some View {
+        modifier(IsHiddenBindSUI(isHidden: value))
+    }
+    func isHidden(_ value: Bool) -> some View {
         modifier(IsHiddenSUI(isHidden: value))
     }
 }
