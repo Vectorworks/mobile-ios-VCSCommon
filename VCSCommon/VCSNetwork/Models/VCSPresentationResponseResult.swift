@@ -10,7 +10,7 @@ public class VCSPresentationResponseResult: Codable, Hashable {
     }
     
     public let uuid: String
-    public let version: Int
+    public let version: Int?
     public let title: String
     public let resource_uri: String
     public let date_created: String
@@ -36,7 +36,7 @@ public class VCSPresentationResponseResult: Codable, Hashable {
     required public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         uuid = try values.decode(String.self, forKey: .uuid)
-        version = try values.decode(Int.self, forKey: .version)
+        version = try values.decode(Int?.self, forKey: .version)
         title = try values.decode(String.self, forKey: .title)
         resource_uri = try values.decode(String.self, forKey: .resource_uri)
         date_created = try values.decode(String.self, forKey: .date_created)
