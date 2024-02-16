@@ -51,6 +51,7 @@ public enum APIRouter: URLRequestConvertible {
     case branding
     case socketPreSignedUri
     case presentations
+    case presentationDownload(presentationUIID: String)
     
     
     // MARK: - requestURL
@@ -142,6 +143,8 @@ public enum APIRouter: URLRequestConvertible {
         case .socketPreSignedUri:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .presentations:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .presentationDownload:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         }
     }
@@ -316,6 +319,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/messenger/presigned-uri/"
         case .presentations:
             return "/iboards/"
+        case .presentationDownload(let presentationUIID):
+            return "/iboards/\(presentationUIID)/download/"
         }
     }
     
@@ -680,6 +685,11 @@ public enum APIRouter: URLRequestConvertible {
             var result:[URLQueryItem] = []
             let queryItemJSONFormat = URLQueryItem(name: "format", value: "json")
             result.append(queryItemJSONFormat)
+            return result
+        case .presentationDownload(_):
+            var result:[URLQueryItem] = []
+            let queryItemOsMac = URLQueryItem(name: "os", value: "mac")
+            result.append(queryItemOsMac)
             return result
         default:
             return nil
