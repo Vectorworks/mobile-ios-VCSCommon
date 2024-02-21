@@ -88,6 +88,17 @@ public class FileUtils: NSObject {
         return []
     }
     
+    public static func unzipFile(_ path: String, to destination: String = FileUtils.tempZipCacheDirectory, progress: inout Progress) throws -> [String] {
+        try FileUtils.clearAndCreatePath(destination)
+        try FileManager().unzipItem(at: URL(fileURLWithPath: path), to: URL(fileURLWithPath: destination), progress: progress)
+        
+        if let dirContents = try? FileManager.default.contentsOfDirectory(atPath: destination) {
+            return dirContents.map { return destination.appendingPathComponent($0) }
+        }
+        
+        return []
+    }
+    
     public static func unzipFiles(_ paths: [String], to destination: String = FileUtils.tempZipCacheDirectory) throws -> [String] {
         var result: [String] = []
         for path in paths {
