@@ -113,4 +113,6 @@ public extension String {
         }
         return nil
     }
+    
+    var asInt: Int { return Int(self) ?? 0 }
 }
