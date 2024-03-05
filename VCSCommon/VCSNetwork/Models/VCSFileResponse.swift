@@ -35,7 +35,6 @@ public class VCSFileResponse: NSObject, Codable {
     private(set) public var localFilesAppFile: LocalFilesAppFile?
     
     private var isOnDisk: Bool {
-        
         if self.filesForDownload.count == 0 {
             return false
         }
@@ -350,4 +349,29 @@ extension VCSFileResponse {
 
 extension VCSFileResponse {
     static let defaultDateString = "21-12-2012"
+}
+
+public extension VCSFileResponse {
+    static var nilFile = VCSFileResponse(versionID: "", thumbnail: "", size: "", downloadURL: "", lastModified: "", thumbnail3D: nil, previousVersions: [], fileType: nil, related: [], resourceURI: "", resourceID: "", exists: false, isNameValid: false, name: "", prefix: "", storageType: .S3, ownerLogin: "", VCSID: "")
+    static var testVCSFile: VCSFileResponse? = { return try? JSONDecoder().decode(VCSFileResponse.self, from: VCSFileResponse.testFileJSONString.data(using: .utf8)!) }()
+    
+    static var testFileJSONString = """
+{
+      "id": 2966654,
+      "resource_id": "Akg5MGNlZmU1Zi1hZDM4LTQ5YmUtYmI0Yi00YjI4NGQwMDY1ZmQAQDExZWQ2MDFiNzA1M2U1MmY4MzhmMGUxY2I4OGRmMmZk",
+      "version_id": "2b8WeSAZpRTVZTYtbYp0O5soIPkAFC9o",
+      "thumbnail": "",
+      "storage_type": "s3",
+      "size": "52428800",
+      "resource_uri": "/restapi/public/v2/s3/file/o:iiliev/p:00/50MB.zip/id:11ed601b7053e52f838f0e1cb88df2fd/v:2b8WeSAZpRTVZTYtbYp0O5soIPkAFC9o/",
+      "download_url": "/restapi/public/v2/s3/file/:download/o:iiliev/p:00/50MB.zip/id:11ed601b7053e52f838f0e1cb88df2fd/v:2b8WeSAZpRTVZTYtbYp0O5soIPkAFC9o/",
+      "exists": true,
+      "is_name_valid": true,
+      "last_modified": "2022-11-09T10:44:02.000Z",
+      "name": "50MB.zip",
+      "prefix": "00/50MB.zip",
+      "previous_versions": [],
+      "related": []
+    }
+"""
 }
