@@ -8,6 +8,16 @@ public class RealmLocalFile: Object, VCSRealmObject {
     @Persisted var name: String = ""
     @Persisted var parent: String = ""
     
+    public var exists: Bool {
+        return FileManager.default.fileExists(atPath: self.localPath)
+    }
+    
+    public var localPath: String {
+        let localFileName = self.RealmID.appendingPathExtension(self.name.pathExtension)
+        let fileURL = FileManager.downloadPath(fileName: localFileName)
+        return fileURL.path
+    }
+    
     public required convenience init(model: Model) {
         self.init()
         self.RealmID = model.uuid

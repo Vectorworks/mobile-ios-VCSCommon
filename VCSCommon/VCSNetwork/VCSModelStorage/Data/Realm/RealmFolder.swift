@@ -22,6 +22,15 @@ public class RealmFolder: Object, VCSRealmObject {
     @Persisted public var subfolders: List<RealmFolder> = List()
     @Persisted var ownerLogin: String = ""
     
+    public var isAvailableOnDevice: Bool {
+        if (self.files.isEmpty && self.subfolders.isEmpty) {
+            return false
+        }
+        
+        return self.files.contains { return $0.isAvailableOnDevice }
+            || self.subfolders.contains { return $0.isAvailableOnDevice }
+    }
+    
     public required convenience init(model: Model) {
         self.init()
         

@@ -17,6 +17,10 @@ public extension View {
     var UIIdiom: UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
     var isPhone: Bool { UIIdiom == .phone }
     var isPad: Bool { UIIdiom == .pad }
+    
+    func hidden(_ shouldHide: Bool) -> some View {
+        opacity(shouldHide ? 0 : 1)
+    }
 }
 
 public struct IsHiddenBindSUI: ViewModifier {

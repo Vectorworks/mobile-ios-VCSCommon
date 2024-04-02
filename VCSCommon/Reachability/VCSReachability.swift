@@ -2,7 +2,7 @@ import Foundation
 import Network
 import CocoaLumberjackSwift
 
-public class VCSReachability: NSObject {
+public class VCSReachability: ObservableObject {
     public static var `default`: VCSReachability = VCSReachability(startMonitoring: false)
     
     @Published public private(set) var isConnected = true
@@ -33,7 +33,6 @@ public class VCSReachability: NSObject {
     public var isNotifierSetupAndRunning: Bool { return self.isNotifierRunning }
     
     public init(startMonitoring: Bool = true) {
-        super.init()
         if startMonitoring {
             self.start()
         }

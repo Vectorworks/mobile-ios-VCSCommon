@@ -10,6 +10,16 @@ public class RealmSharedWithMeAssetWrapper: Object, VCSRealmObject {
     @Persisted var fileAsset: RealmFile?
     @Persisted var folderAsset: RealmFolder?
     
+    public var isAvailableOnDevice: Bool {
+        var result: Bool = false
+        if let fileAsset = self.fileAsset {
+            result = fileAsset.isAvailableOnDevice
+        }
+        if let folderAsset = self.folderAsset {
+            result = folderAsset.isAvailableOnDevice
+        }
+        return result
+    }
     
     public required convenience init(model: Model) {
         self.init()

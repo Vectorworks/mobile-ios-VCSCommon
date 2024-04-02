@@ -5,6 +5,7 @@ import RealmSwift
 public class RealmSharedWithMeAndLinkObject: Object {
     public var fakeRealmID: String { return "nil" }
     public var fakeSortingDate: Date { return Date() }
+    public var fakeFilterShowingOffline: Bool { return false }
 }
     
 
@@ -27,6 +28,13 @@ public class RealmSharedLink: RealmSharedWithMeAndLinkObject, VCSRealmObject {
             result = self.sharedAsset?.dateCreated.VCSDateFromISO8061 ?? self.dateCreated
         }
         return result
+    }
+    
+    private var isResolved: Bool { return self.sharedAsset != nil }
+    private var isAvailableOnDevice: Bool { return self.sharedAsset?.asset?.isAvailableOnDevice ?? false }
+    
+    public override var fakeFilterShowingOffline: Bool {
+        return self.isResolved ? self.isAvailableOnDevice : true
     }
     
     public required convenience init(model: Model) {

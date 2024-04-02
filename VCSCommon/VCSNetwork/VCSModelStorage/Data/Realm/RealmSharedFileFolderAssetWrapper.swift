@@ -20,6 +20,17 @@ public class RealmSharedFileFolderAssetWrapper: Object, VCSRealmObject {
         return result
     }
     
+    public var isAvailableOnDevice: Bool {
+        var result: Bool = false
+        if let fileAsset = self.fileAsset {
+            result = fileAsset.isAvailableOnDevice
+        }
+        if let folderAsset = self.folderAsset {
+            result = folderAsset.isAvailableOnDevice
+        }
+        return result
+    }
+    
     required convenience public init(model: Model) {
         self.init()
         

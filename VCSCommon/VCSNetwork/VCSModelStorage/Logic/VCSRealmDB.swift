@@ -112,6 +112,10 @@ public class VCSGenericRealmModelStorage<VCSRealmModel: VCSRealmObject>: VCSMode
         return self.getAllRealm(predicate: predicate, sortKeyPath: sortKeyPath, ascending: ascending).map { $0.entity }
     }
     
+    public func getAllModels(predicate: NSPredicate, sortKeyPath: String? = nil, ascending: Bool = true) -> Results<VCSRealmModel> {
+        return self.getAllRealm(predicate: predicate, sortKeyPath: sortKeyPath, ascending: ascending)
+    }
+    
     public func getAll(whereCheck: @escaping ((Query<VCSRealmModel>) -> Query<Bool>), sortKeyPath: String? = nil, ascending: Bool = true) -> [BaseType] {
         return self.getAllRealm(whereCheck: whereCheck, sortKeyPath: sortKeyPath, ascending: ascending).map { $0.entity }
     }

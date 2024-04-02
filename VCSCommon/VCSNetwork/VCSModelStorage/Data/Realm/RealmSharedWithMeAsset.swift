@@ -21,6 +21,8 @@ public class RealmSharedWithMeAsset: RealmSharedWithMeAndLinkObject, VCSRealmObj
     
     public override var fakeRealmID: String { return RealmID }
     public override var fakeSortingDate: Date { return self.dateCreated.VCSDateFromISO8061 ?? Date() }
+    public override var fakeFilterShowingOffline: Bool { return self.isAvailableOnDevice }
+    private var isAvailableOnDevice: Bool { return self.asset?.isAvailableOnDevice ?? false }
     
     public required convenience init(model: Model) {
         self.init()

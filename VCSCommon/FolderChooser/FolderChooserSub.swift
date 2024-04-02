@@ -24,7 +24,7 @@ struct FolderChooserSub: View {
     @State var resultFolder: Result<VCSFolderResponse, Error>?
     
     @Binding var result: VCSFolderResponse
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) var dismiss
     
     func sortedByName(folders: [VCSFolderResponse]?) -> [VCSFolderResponse] {
         var result = folders ?? []
@@ -91,7 +91,7 @@ struct FolderChooserSub: View {
                 if routeData == rootRouteData {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         Button {
-                            self.isPresented = false
+                            dismiss()
                         } label: {
                             Text(FolderChooserSettings.closeButtonTitle.vcsLocalized)
                         }
@@ -109,7 +109,7 @@ struct FolderChooserSub: View {
                     })
                     Button {
                         self.result = currentFolder
-                        self.isPresented = false
+                        dismiss()
                     } label: {
                         Text(FolderChooserSettings.selectButtonTitle.vcsLocalized)
                     }

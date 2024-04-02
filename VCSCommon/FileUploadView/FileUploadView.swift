@@ -99,7 +99,7 @@ public struct FileUploadView: View, KeyboardReadable {
             }
         }
         .sheet(isPresented: $model.isFolderChooserPresented, content: {
-            FolderChooser(routeData: FCRouteData(folder: model.parentFolder), folderResult: $model.parentFolder, isPresented: $model.isFolderChooserPresented)
+            FolderChooser(routeData: FCRouteData(folder: model.parentFolder), folderResult: $model.parentFolder)
         })
         .onReceive(keyboardPublisher) { newIsKeyboardVisible in
             isKeyboardVisible = newIsKeyboardVisible
