@@ -324,7 +324,7 @@ extension VCSFileResponse: VCSCachable {
         VCSFileResponse.realmStorage.partialUpdate(item: self)
     }
     
-    public func removeFromCache() {
+    public func deleteFromCache() {
         VCSFileResponse.realmStorage.delete(item: self)
     }
 }

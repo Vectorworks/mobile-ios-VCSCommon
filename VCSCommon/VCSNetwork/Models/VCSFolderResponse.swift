@@ -258,6 +258,10 @@ extension VCSFolderResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSFolderResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSFolderResponse.realmStorage.delete(item: self)
+    }
 }
 
 public extension VCSFolderResponse {
