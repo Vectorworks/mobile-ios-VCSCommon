@@ -63,11 +63,7 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
                 self.messageView?.isHidden = true
                 return
             }
-            guard let subfolders = currentFolder.subfolders else {
-                self.messageView?.isHidden = true
-                return
-            }
-            guard subfolders.count == 0 else {
+            guard currentFolder.subfolders.count == 0 else {
                 self.messageView?.isHidden = true
                 return
             }
@@ -124,35 +120,33 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
     @objc func doneButtonPressed() {
         guard let resultfolder = self.folder else { return }
         let result = FolderChooserResult(ownerLogin: resultfolder.ownerLogin, storageType: resultfolder.storageType, prefix: resultfolder.prefix, fileName: self.fileName)
-        if let files = resultfolder.files {
-            let fileNames = files.map { $0.name }
-            if fileNames.contains(self.fileName) {
-                let alert = UIAlertController(title: "Error".vcsLocalized, message: "File with the same name already exists.".vcsLocalized, preferredStyle: .alert)
-                alert.addTextField { (textField) in
-                    textField.placeholder = "File name".vcsLocalized
-                    textField.delegate = VCSAlertTextFieldValidator.defaultWithPresenter(self)
-                    textField.text = result.fileName
-                    textField.selectAll(nil)
-                }
-                let ok = UIAlertAction(title: "OK".vcsLocalized, style: .default) { (_) in
-                    var newName = FileNameUtils.appendingShortUUIDName(name: "Measurement").appendingPathExtension("vwx")
-                    if var newAlertName = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespaces) {
-                        if newAlertName.pathExtension != "vwx" {
-                            newAlertName = newAlertName.deletingPathExtension.appendingPathExtension("vwx")
-                        }
-                        newName = newAlertName
-                    }
-                    result.fileName = newName
-                    self.delegate?.didChoose(folderResult: result)
-                }
-                
-                let cancel = UIAlertAction(title: "Cancel".vcsLocalized, style: .cancel, handler: nil)
-                ok.isEnabled = false
-                alert.addAction(ok)
-                alert.addAction(cancel)
-                self.present(alert, animated: true, completion: nil)
-                return
+        let fileNames = resultfolder.files.map { $0.name }
+        if fileNames.contains(self.fileName) {
+            let alert = UIAlertController(title: "Error".vcsLocalized, message: "File with the same name already exists.".vcsLocalized, preferredStyle: .alert)
+            alert.addTextField { (textField) in
+                textField.placeholder = "File name".vcsLocalized
+                textField.delegate = VCSAlertTextFieldValidator.defaultWithPresenter(self)
+                textField.text = result.fileName
+                textField.selectAll(nil)
             }
+            let ok = UIAlertAction(title: "OK".vcsLocalized, style: .default) { (_) in
+                var newName = FileNameUtils.appendingShortUUIDName(name: "Measurement").appendingPathExtension("vwx")
+                if var newAlertName = alert.textFields?.first?.text?.trimmingCharacters(in: .whitespaces) {
+                    if newAlertName.pathExtension != "vwx" {
+                        newAlertName = newAlertName.deletingPathExtension.appendingPathExtension("vwx")
+                    }
+                    newName = newAlertName
+                }
+                result.fileName = newName
+                self.delegate?.didChoose(folderResult: result)
+            }
+            
+            let cancel = UIAlertAction(title: "Cancel".vcsLocalized, style: .cancel, handler: nil)
+            ok.isEnabled = false
+            alert.addAction(ok)
+            alert.addAction(cancel)
+            self.present(alert, animated: true, completion: nil)
+            return
         }
         self.delegate?.didChoose(folderResult: result)
     }
@@ -215,7 +209,7 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
     }
     
     func setDataSource(with folder:VCSFolderResponse) {
-        let data: [VCSFolderResponse] = folder.subfolders?.sorted { $0.name < $1.name } ?? []
+        let data: [VCSFolderResponse] = folder.subfolders.sorted { $0.name < $1.name }
         self.dataSource = VCSTableViewDataSource<VCSFolderResponse, VCSFolderCell>(models: data, reuseIdentifier: VCSFolderCell.cellIdentifier, cellConfigurator: { (folder, cell) in
             cell.foderNameLabel?.text = folder.name
             

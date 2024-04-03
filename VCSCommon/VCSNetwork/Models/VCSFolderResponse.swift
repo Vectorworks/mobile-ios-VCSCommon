@@ -35,48 +35,48 @@ public class VCSFolderResponse: NSObject, Asset, Codable {
     
     private(set) public var ownerLogin: String
     public func updateSharedOwnerLogin(_ login: String) {
-        self.subfolders?.forEach { $0.updateSharedOwnerLogin(login) }
-        self.files?.forEach { $0.updateSharedOwnerLogin(login) }
+        self.subfolders.forEach { $0.updateSharedOwnerLogin(login) }
+        self.files.forEach { $0.updateSharedOwnerLogin(login) }
         self.ownerLogin = login
     }
     
     public let parent: String?
     public let autoprocessParent: String?
     
-    private(set) public var files: [VCSFileResponse]?
-    private(set) public var subfolders: [VCSFolderResponse]?
+    private(set) public var files: [VCSFileResponse]
+    private(set) public var subfolders: [VCSFolderResponse]
     
     public func appendFile(_ file: VCSFileResponse) {
-        self.files?.append(file)
+        self.files.append(file)
         VCSCache.addToCache(item: self)
     }
     
     public func removeFile(_ file: VCSFileResponse) {
-        if let index = self.files?.firstIndex(of: file) {
-            self.files?.remove(at: index)
+        if let index = self.files.firstIndex(of: file) {
+            self.files.remove(at: index)
         }
         VCSCache.addToCache(item: self)
     }
     
     public func appendShallowFolder(_ folder: VCSFolderResponse) {
-        self.subfolders?.append(folder)
+        self.subfolders.append(folder)
         VCSCache.addToCache(item: self)
     }
     
     public func removeFolder(_ folder: VCSFolderResponse) {
-        if let index = self.subfolders?.firstIndex(of: folder) {
-            self.subfolders?.remove(at: index)
+        if let index = self.subfolders.firstIndex(of: folder) {
+            self.subfolders.remove(at: index)
         }
         VCSCache.addToCache(item: self)
     }
     
-    public var cachedFiles: [VCSFileResponse]? { return self.files?.filter { return $0.isAvailableOnDevice } }
+    public var cachedFiles: [VCSFileResponse]? { return self.files.filter { return $0.isAvailableOnDevice } }
     
     public func loadLocalFiles() {
-        self.subfolders?.forEach {
+        self.subfolders.forEach {
             $0.loadLocalFiles()
         }
-        self.files?.forEach {
+        self.files.forEach {
             $0.loadLocalFiles()
         }
     }
@@ -132,9 +132,9 @@ public class VCSFolderResponse: NSObject, Asset, Codable {
         self.flags = try? container.decode(VCSFlagsResponse.self, forKey: CodingKeys.flags)
         self.ownerInfo = try? container.decode(VCSOwnerInfoResponse.self, forKey: CodingKeys.ownerInfo)
         self.sharingInfo = try? container.decode(VCSSharingInfoResponse.self, forKey: CodingKeys.sharingInfo)
-        self.files = try? container.decode([VCSFileResponse].self, forKey: CodingKeys.files)
+        self.files = try container.decode([VCSFileResponse].self, forKey: CodingKeys.files)
         self.parent = try? container.decode(String.self, forKey: CodingKeys.parent)
-        self.subfolders = try? container.decode([VCSFolderResponse].self, forKey: CodingKeys.subfolders)
+        self.subfolders = try container.decode([VCSFolderResponse].self, forKey: CodingKeys.subfolders)
         self.autoprocessParent = try? container.decode(String.self, forKey: CodingKeys.autoprocessParent)
         
         self.ownerLogin = self.ownerInfo?.owner ?? AuthCenter.shared.user?.login ?? ""
@@ -170,9 +170,9 @@ public class VCSFolderResponse: NSObject, Asset, Codable {
         try container.encode(self.isFolder, forKey: CodingKeys.isFolder)
     }
     
-    public init(files: [VCSFileResponse]?,
+    public init(files: [VCSFileResponse],
                 parent: String?,
-                subfolders: [VCSFolderResponse]?,
+                subfolders: [VCSFolderResponse],
                 autoprocessParent: String?,
                 resourceURI: String,
                 resourceID: String,
@@ -214,12 +214,8 @@ extension VCSFolderResponse: VCSCellPresentable {
     public var hasLink: Bool { return !(self.sharingInfo?.link.isEmpty ?? true) }
     public var sharingInfoData: VCSSharingInfoResponse? { return self.sharingInfo }
     public var isAvailableOnDevice: Bool {
-        if (self.files == nil && self.subfolders == nil) {
-            return false
-        }
-        
-        return self.files!.contains { return $0.isAvailableOnDevice }
-            || self.subfolders!.contains { return $0.isAvailableOnDevice }
+        return self.files.contains { return $0.isAvailableOnDevice }
+            || self.subfolders.contains { return $0.isAvailableOnDevice }
     }
     
     public var filterShowingOffline: Bool { return self.isAvailableOnDevice }

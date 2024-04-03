@@ -78,7 +78,7 @@ struct FolderChooserSub: View {
             }
             
             List {
-                ForEach(currentFolder.subfolders?.sorted(by: { $0.name.lowercased() < $1.name.lowercased() }) ?? [], id: \.rID) { subfolder in
+                ForEach(currentFolder.subfolders.sorted(by: { $0.name.lowercased() < $1.name.lowercased() }), id: \.rID) { subfolder in
                     NavigationLink(value: FCRouteData(resourceURI: subfolder.resourceURI, breadcrumbsName: subfolder.name)) {
                         FolderChooserRow(model: subfolder)
                     }
@@ -139,7 +139,7 @@ struct FolderChooserSub: View {
     }
     
     func deleteFolder(at offsets: IndexSet) {
-        let itemsToDelete = offsets.compactMap { (try? self.resultFolder?.get().subfolders?.sorted(by: { $0.name.lowercased() < $1.name.lowercased() }))?[$0] }
+        let itemsToDelete = offsets.compactMap { (try? self.resultFolder?.get().subfolders.sorted(by: { $0.name.lowercased() < $1.name.lowercased() }))?[$0] }
         itemsToDelete.forEach { (itemToDelete: VCSFolderResponse) in
             APIClient.deleteAsset(asset: itemToDelete).execute(onSuccess: { (res: VCSEmptyResponse) in
                 //TODO: iiliev FC
