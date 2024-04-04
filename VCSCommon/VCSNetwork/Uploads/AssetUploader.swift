@@ -102,7 +102,7 @@ public class AssetUploader: NSObject {
     
     public func upload(unuploadedFiles: [UploadJobLocalFile], owner: String, withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) {
         let uploadJob = UploadJob(localFiles: unuploadedFiles, owner: owner, parentFolder: nil)
-        uploadJob.addToCache()
+        VCSCache.addToCache(item: uploadJob)
         uploadJob.startUploadOperations(multiFileCompletion: { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
