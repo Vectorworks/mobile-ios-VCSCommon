@@ -3,7 +3,7 @@ import Realm
 import RealmSwift
 
 
-public class RealmSharedWithMeAsset: RealmSharedWithMeAndLinkObject, VCSRealmObject {
+public class RealmSharedWithMeAsset: Object, RealmSharedWithMeAndLinkObject, VCSRealmObject {
     public typealias Model = VCSSharedWithMeAsset
     
     @Persisted(primaryKey: true) public var RealmID: String = "nil"
@@ -19,9 +19,9 @@ public class RealmSharedWithMeAsset: RealmSharedWithMeAndLinkObject, VCSRealmObj
     @Persisted var sharedWithLogin: String?
     @Persisted var branding: RealmSharedAssetBranding?
     
-    public override var fakeRealmID: String { return RealmID }
-    public override var fakeSortingDate: Date { return self.dateCreated.VCSDateFromISO8061 ?? Date() }
-    public override var fakeFilterShowingOffline: Bool { return self.isAvailableOnDevice }
+    public var fakeRealmID: String { return RealmID }
+    public var fakeSortingDate: Date { return self.dateCreated.VCSDateFromISO8061 ?? Date() }
+    public var fakeFilterShowingOffline: Bool { return self.isAvailableOnDevice }
     private var isAvailableOnDevice: Bool { return self.asset?.isAvailableOnDevice ?? false }
     
     public required convenience init(model: Model) {

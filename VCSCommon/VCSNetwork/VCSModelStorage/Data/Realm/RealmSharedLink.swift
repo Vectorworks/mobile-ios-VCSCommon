@@ -2,14 +2,14 @@ import Foundation
 import RealmSwift
 
 //Base class for RealmSharedLink and RealmSharedWithMeAsset
-public class RealmSharedWithMeAndLinkObject: Object {
-    public var fakeRealmID: String { return "nil" }
-    public var fakeSortingDate: Date { return Date() }
-    public var fakeFilterShowingOffline: Bool { return false }
+public protocol RealmSharedWithMeAndLinkObject {
+    var fakeRealmID: String { get }
+    var fakeSortingDate: Date { get }
+    var fakeFilterShowingOffline: Bool { get }
 }
     
 
-public class RealmSharedLink: RealmSharedWithMeAndLinkObject, VCSRealmObject {
+public class RealmSharedLink: Object, RealmSharedWithMeAndLinkObject, VCSRealmObject {
     public typealias Model = SharedLink
     
     @Persisted(primaryKey: true) public var RealmID: String = "nil"
@@ -21,8 +21,8 @@ public class RealmSharedLink: RealmSharedWithMeAndLinkObject, VCSRealmObject {
     @Persisted var sharedAsset: RealmShareableLinkResponse?
     @Persisted var owner: RealmVCSUser?
     
-    public override var fakeRealmID: String { return RealmID }
-    public override var fakeSortingDate: Date {
+    public var fakeRealmID: String { return RealmID }
+    public var fakeSortingDate: Date {
         var result = self.dateCreated
         if self.isSampleFiles {
             result = self.sharedAsset?.dateCreated.VCSDateFromISO8061 ?? self.dateCreated
@@ -33,7 +33,7 @@ public class RealmSharedLink: RealmSharedWithMeAndLinkObject, VCSRealmObject {
     private var isResolved: Bool { return self.sharedAsset != nil }
     private var isAvailableOnDevice: Bool { return self.sharedAsset?.asset?.isAvailableOnDevice ?? false }
     
-    public override var fakeFilterShowingOffline: Bool {
+    public var fakeFilterShowingOffline: Bool {
         return self.isResolved ? self.isAvailableOnDevice : true
     }
     
