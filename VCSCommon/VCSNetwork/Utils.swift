@@ -87,6 +87,15 @@ public extension NotificationCenter {
         ]
         DispatchQueue.main.async { NotificationCenter.default.post(name: notificationName, object: nil, userInfo: userInfo) }
     }
+    
+    static func postFileUpdateNotification(model: FileAsset) {
+        let notificationName = Notification.Name("VCSUpdateLocalDataSourcesForFile")
+        let userInfo: [String : Any] = [
+            "fileID" : model.rID
+            , "file" : model
+        ]
+        DispatchQueue.main.async { NotificationCenter.default.post(name: notificationName, object: nil, userInfo: userInfo) }
+    }
 }
 
 public extension FileManager {
