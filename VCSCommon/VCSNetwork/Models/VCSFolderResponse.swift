@@ -132,9 +132,9 @@ public class VCSFolderResponse: NSObject, Asset, Codable {
         self.flags = try? container.decode(VCSFlagsResponse.self, forKey: CodingKeys.flags)
         self.ownerInfo = try? container.decode(VCSOwnerInfoResponse.self, forKey: CodingKeys.ownerInfo)
         self.sharingInfo = try? container.decode(VCSSharingInfoResponse.self, forKey: CodingKeys.sharingInfo)
-        self.files = try container.decode([VCSFileResponse].self, forKey: CodingKeys.files)
+        self.files = (try? container.decode([VCSFileResponse].self, forKey: CodingKeys.files)) ?? []
         self.parent = try? container.decode(String.self, forKey: CodingKeys.parent)
-        self.subfolders = try container.decode([VCSFolderResponse].self, forKey: CodingKeys.subfolders)
+        self.subfolders = (try? container.decode([VCSFolderResponse].self, forKey: CodingKeys.subfolders)) ?? []
         self.autoprocessParent = try? container.decode(String.self, forKey: CodingKeys.autoprocessParent)
         
         self.ownerLogin = self.ownerInfo?.owner ?? AuthCenter.shared.user?.login ?? ""
