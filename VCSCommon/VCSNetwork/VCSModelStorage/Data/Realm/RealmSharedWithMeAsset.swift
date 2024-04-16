@@ -20,7 +20,9 @@ public class RealmSharedWithMeAsset: Object, RealmSharedWithMeAndLinkObject, VCS
     @Persisted var branding: RealmSharedAssetBranding?
     
     public var fakeRealmID: String { return RealmID }
+    public var fakeSortingName: String { return asset?.fileAsset?.name ?? asset?.folderAsset?.name ?? "" }
     public var fakeSortingDate: Date { return self.dateCreated.VCSDateFromISO8061 ?? Date() }
+    public var fakeSortingSize: String { return asset?.fileAsset?.size ?? "0"}
     public var fakeFilterShowingOffline: Bool { return self.isAvailableOnDevice }
     private var isAvailableOnDevice: Bool { return self.asset?.isAvailableOnDevice ?? false }
     

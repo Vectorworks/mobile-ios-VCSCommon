@@ -4,8 +4,11 @@ import RealmSwift
 //Base class for RealmSharedLink and RealmSharedWithMeAsset
 public protocol RealmSharedWithMeAndLinkObject {
     var fakeRealmID: String { get }
+    var fakeSortingName: String { get }
     var fakeSortingDate: Date { get }
+    var fakeSortingSize: String { get }
     var fakeFilterShowingOffline: Bool { get }
+    
 }
     
 
@@ -22,6 +25,7 @@ public class RealmSharedLink: Object, RealmSharedWithMeAndLinkObject, VCSRealmOb
     @Persisted var owner: RealmVCSUser?
     
     public var fakeRealmID: String { return RealmID }
+    public var fakeSortingName: String { return sharedAsset?.asset?.fileAsset?.name ?? sharedAsset?.asset?.folderAsset?.name ?? linkName ?? link }
     public var fakeSortingDate: Date {
         var result = self.dateCreated
         if self.isSampleFiles {
@@ -29,6 +33,7 @@ public class RealmSharedLink: Object, RealmSharedWithMeAndLinkObject, VCSRealmOb
         }
         return result
     }
+    public var fakeSortingSize: String { return sharedAsset?.asset?.fileAsset?.size ?? "0" }
     
     private var isResolved: Bool { return self.sharedAsset != nil }
     private var isAvailableOnDevice: Bool { return self.sharedAsset?.asset?.isAvailableOnDevice ?? false }
