@@ -47,7 +47,7 @@ public class Meta: NSObject, Codable {
     public func addAvailableStorage(storage: VCSStorageResponse) {
         guard !self.storages.contains(storage) else { return }
         self.storages.append(storage)
-        VCSUser.realmStorage.addOrUpdate(item: self)
+        VCSCache.addToCache(item: self)
     }
     
     public func setStorageList(storages: StorageList) {
@@ -56,7 +56,7 @@ public class Meta: NSObject, Codable {
             storage.loadLocalPagesList()
         }
         self.storages.append(contentsOf: storages)
-        VCSUser.realmStorage.addOrUpdate(item: self)
+        VCSCache.addToCache(item: self)
     }
     
     public func removeAvailableStorage(storage: VCSStorageResponse) {
@@ -64,7 +64,14 @@ public class Meta: NSObject, Codable {
             let index = self.storages.firstIndex(of: storage) else { return }
         
         self.storages.remove(at: index)
-        VCSUser.realmStorage.addOrUpdate(item: self)
+        VCSCache.addToCache(item: self)
+    }
+    
+    public func removeAvailableStorage(storageType: StorageType) {
+        guard let index = self.storages.firstIndex(where: { $0.storageType == storageType }) else { return }
+        
+        self.storages.remove(at: index)
+        VCSCache.addToCache(item: self)
     }
     
     public func updateIsLoggedIn(_ value: Bool) {

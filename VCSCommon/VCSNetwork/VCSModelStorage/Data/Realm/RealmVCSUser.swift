@@ -76,6 +76,11 @@ public class RealmVCSUser: Object, VCSRealmObject {
             result["awskeys"] = awskeys.partialUpdateModel
         }
         
+        let partialsStorages = Array(self.storages.compactMap({ $0.partialUpdateModel }))
+        if partialsStorages.count > 1 {
+            result["storages"] = partialsStorages
+        }
+        
         return result
     }
 }

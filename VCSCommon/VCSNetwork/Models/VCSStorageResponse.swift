@@ -72,7 +72,7 @@ public class VCSStorageResponse: NSObject, Codable {
     public func setStoragePagesList(storagePages: StoragePagesList) {
         self.pages.removeAll()
         self.pages.append(contentsOf: storagePages)
-        VCSStorageResponse.realmStorage.addOrUpdate(item: self)
+        VCSCache.addToCache(item: self)
     }
     
     public func storageImage() -> UIImage? {
