@@ -88,11 +88,41 @@ public extension NotificationCenter {
         DispatchQueue.main.async { NotificationCenter.default.post(name: notificationName, object: nil, userInfo: userInfo) }
     }
     
-    static func postFileUpdateNotification(model: FileAsset) {
-        let notificationName = Notification.Name("VCSUpdateLocalDataSourcesForFile")
+    static func postSubFileUpdateNotification(model: VCSFileResponse) {
+        let notificationName = Notification.Name("VCSUpdateLocalDataSourcesForSubFile")
         let userInfo: [String : Any] = [
             "fileID" : model.rID
             , "file" : model
+        ]
+        DispatchQueue.main.async { NotificationCenter.default.post(name: notificationName, object: nil, userInfo: userInfo) }
+        
+        NotificationCenter.postSubItemUpdateNotification(item: model)
+    }
+    
+    static func postSubFolderUpdateNotification(model: VCSFolderResponse) {
+        let notificationName = Notification.Name("VCSUpdateLocalDataSourcesForSubFolder")
+        let userInfo: [String : Any] = [
+            "folderID" : model.rID
+            , "folder" : model
+        ]
+        DispatchQueue.main.async { NotificationCenter.default.post(name: notificationName, object: nil, userInfo: userInfo) }
+        
+        NotificationCenter.postSubItemUpdateNotification(item: model)
+    }
+    
+    static func postSubItemUpdateNotification(model: Asset) {
+        if model.isFile, let file = model as? VCSFileResponse {
+            NotificationCenter.postSubFileUpdateNotification(model: file)
+        } else if let folder = model as? VCSFolderResponse {
+            NotificationCenter.postSubFolderUpdateNotification(model: folder)
+        }
+    }
+    
+    private static func postSubItemUpdateNotification(item: Asset) {
+        let notificationName = Notification.Name("VCSUpdateLocalDataSourcesForSubItem")
+        let userInfo: [String : Any] = [
+            "itemID" : item.rID
+            , "item" : item
         ]
         DispatchQueue.main.async { NotificationCenter.default.post(name: notificationName, object: nil, userInfo: userInfo) }
     }
