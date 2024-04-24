@@ -11,11 +11,9 @@ import Foundation
     }
     
     @objc public var user: VCSUser? { return VCSUser.savedUser }
-    public var awsKeys: VCSAWSKeysResponse?
     
     internal func clearAllFields() {
         self.user?.updateIsLoggedIn(false)
-        self.awsKeys = nil
     }
 }
 

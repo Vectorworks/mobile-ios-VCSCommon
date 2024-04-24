@@ -150,10 +150,6 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.loginSettings)
     }
     
-    public static func awsKeys() -> Future<AWSKeysResponse, Error> {
-        return performRequest(route: APIRouter.awsKeys)
-    }
-    
     public static func vcsUser() -> Future<VCSUserResponse, Error> {
         return performRequest(route: APIRouter.vcsUser)
     }

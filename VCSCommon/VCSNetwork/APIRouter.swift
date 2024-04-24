@@ -7,7 +7,6 @@ public enum APIRouter: URLRequestConvertible {
     
     case loginSettings
     case vcsUser
-    case awsKeys
     case listFolder(folderURI: String) //delete
     
     case createFolder(storage: StorageType, folderURI: String)
@@ -61,8 +60,6 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v08)
         case .vcsUser:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v02)
-        case .awsKeys:
-            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v01)
         case .listFolder:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .createFolder:
@@ -200,8 +197,6 @@ public enum APIRouter: URLRequestConvertible {
             return "/login_settings/"
         case .vcsUser:
             return "/user/"
-        case .awsKeys:
-            return "/awskeys/"
         case .listFolder(let folderURI):
             return folderURI
         case .createFolder(let storage, let folderURI):
@@ -378,9 +373,6 @@ public enum APIRouter: URLRequestConvertible {
     
     private var queryParameters: [URLQueryItem]? {
         switch self {
-        case .awsKeys:
-            let queryItemFresh = URLQueryItem(name: "fresh", value: "yes")
-            return [queryItemFresh]
         case .getStoragePagesList:
             let querySharedPaths = URLQueryItem(name: "fields", value: "(shared_paths)")
             return [querySharedPaths]
