@@ -2,7 +2,7 @@ import Foundation
 import RealmSwift
 
 //Base class for RealmSharedLink and RealmSharedWithMeAsset
-public protocol RealmSharedWithMeAndLinkObject {
+public protocol RealmAssetWrapperWithSorting {
     var fakeRealmID: String { get }
     var fakeSortingName: String { get }
     var fakeSortingDate: Date { get }
@@ -12,7 +12,7 @@ public protocol RealmSharedWithMeAndLinkObject {
 }
     
 
-public class RealmSharedLink: Object, RealmSharedWithMeAndLinkObject, VCSRealmObject {
+public class RealmSharedLink: Object, RealmAssetWrapperWithSorting, VCSRealmObject {
     public typealias Model = SharedLink
     
     @Persisted(primaryKey: true) public var RealmID: String = "nil"

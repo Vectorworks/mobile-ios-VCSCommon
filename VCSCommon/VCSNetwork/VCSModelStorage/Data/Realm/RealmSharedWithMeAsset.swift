@@ -3,7 +3,7 @@ import Realm
 import RealmSwift
 
 
-public class RealmSharedWithMeAsset: Object, RealmSharedWithMeAndLinkObject, VCSRealmObject {
+public class RealmSharedWithMeAsset: Object, RealmAssetWrapperWithSorting, VCSRealmObject {
     public typealias Model = VCSSharedWithMeAsset
     
     @Persisted(primaryKey: true) public var RealmID: String = "nil"
