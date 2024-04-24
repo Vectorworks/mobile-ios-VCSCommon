@@ -146,8 +146,50 @@ public class APIClient: NSObject {
         })
     }
     
+    @discardableResult
+    private static func performAsyncRequest<S:Decodable>(route: APIRouter, decoder: DataDecoder = JSONDecoder()) async throws -> S {
+        return try await withCheckedThrowingContinuation { continuation in
+            AF.request(route, interceptor: APIClient.oauth2RetryHandler).responseDecodable(decoder: decoder, completionHandler: { (dataResponse: DataResponse<S, AFError>) in
+                //DEBUG: put a breakpoint here to debug response -GKK
+                APIClient.lastErrorData = nil
+                switch dataResponse.result {
+                case .success(let value):
+                    continuation.resume(returning: value)
+                case .failure(let error):
+                    //HACK THIS!!!
+                    if error.responseCode == 5,
+                        let emptyData = "{}".data(using: .utf8),
+                        let res = try? decoder.decode(S.self, from: emptyData) {
+                        continuation.resume(returning: res)
+                        return
+                    } else if error.isResponseSerializationError,
+                        let emptyData = "{}".data(using: .utf8),
+                        let res = try? decoder.decode(S.self, from: emptyData) {
+                        continuation.resume(returning: res)
+                        return
+                    }
+                    
+                    APIClient.lastErrorData = dataResponse.data
+                    DDLogError("##### VCSNetwork error:\t\(dataResponse)")
+                    DDLogError("##### VCSNetwork error code:\t\(dataResponse.response?.statusCode ?? 0)")
+                    DDLogError("##### VCSNetwork error URL:\t\(dataResponse.request?.url?.absoluteString ?? "")")
+                    DDLogError("##### VCSNetwork error HEADERS:\t\(dataResponse.request?.allHTTPHeaderFields ?? "")")
+                    if let errorData = dataResponse.data {
+                        DDLogError("##### VCSNetwork data:\t\(String(data: errorData, encoding: .utf8) ?? "nil")")
+                    }
+                    
+                    continuation.resume(throwing: error)
+                }
+            }).validate()
+        }
+    }
+    
     public static func loginSettings() -> Future<VCSLoginSettingsResponse, Error> {
         return performRequest(route: APIRouter.loginSettings)
+    }
+    
+    public static func loginSettings() async throws -> VCSLoginSettingsResponse {
+        return try await performAsyncRequest(route: APIRouter.loginSettings)
     }
     
     public static func vcsUser() -> Future<VCSUserResponse, Error> {
