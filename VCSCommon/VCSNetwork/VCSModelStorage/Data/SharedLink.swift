@@ -139,4 +139,8 @@ extension SharedLink: VCSCachable {
     public func partialUpdateToCache() {
         SharedLink.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        SharedLink.realmStorage.delete(item: self)
+    }
 }

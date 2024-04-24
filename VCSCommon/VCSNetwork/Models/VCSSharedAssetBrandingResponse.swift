@@ -42,6 +42,10 @@ extension VCSSharedAssetBrandingResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSSharedAssetBrandingResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSSharedAssetBrandingResponse.realmStorage.delete(item: self)
+    }
 }
 
 extension VCSSharedAssetBrandingResponse {

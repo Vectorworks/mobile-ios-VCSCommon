@@ -80,4 +80,8 @@ extension VCSJobResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSJobResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSJobResponse.realmStorage.delete(item: self)
+    }
 }

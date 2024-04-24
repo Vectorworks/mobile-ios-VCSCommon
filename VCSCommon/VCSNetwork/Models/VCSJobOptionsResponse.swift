@@ -56,4 +56,8 @@ extension VCSJobOptionsResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSJobOptionsResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSJobOptionsResponse.realmStorage.delete(item: self)
+    }
 }

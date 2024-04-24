@@ -80,4 +80,8 @@ extension VCSSharedAssetWrapper: VCSCachable {
     public func partialUpdateToCache() {
         VCSSharedAssetWrapper.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSSharedAssetWrapper.realmStorage.delete(item: self)
+    }
 }

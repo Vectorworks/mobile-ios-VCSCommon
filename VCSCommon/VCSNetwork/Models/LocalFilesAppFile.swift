@@ -57,4 +57,8 @@ extension LocalFilesAppFile: VCSCachable {
     public func partialUpdateToCache() {
         LocalFilesAppFile.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        LocalFilesAppFile.realmStorage.delete(item: self)
+    }
 }

@@ -61,4 +61,8 @@ extension VCSSharedWithUser: VCSCachable {
     public func partialUpdateToCache() {
         VCSSharedWithUser.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSSharedWithUser.realmStorage.delete(item: self)
+    }
 }

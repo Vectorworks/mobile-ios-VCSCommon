@@ -91,4 +91,8 @@ extension VCSSharingInfoResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSSharingInfoResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSSharingInfoResponse.realmStorage.delete(item: self)
+    }
 }

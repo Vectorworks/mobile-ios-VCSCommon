@@ -55,4 +55,8 @@ extension VCSOwnerInfoResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSOwnerInfoResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSOwnerInfoResponse.realmStorage.delete(item: self)
+    }
 }

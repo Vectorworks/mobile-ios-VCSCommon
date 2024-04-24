@@ -121,4 +121,8 @@ extension VCSShareableLinkResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSShareableLinkResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSShareableLinkResponse.realmStorage.delete(item: self)
+    }
 }

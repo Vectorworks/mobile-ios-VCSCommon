@@ -147,6 +147,10 @@ extension VCSSharedWithMeAsset: VCSCachable {
     public func partialUpdateToCache() {
         VCSSharedWithMeAsset.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSSharedWithMeAsset.realmStorage.delete(item: self)
+    }
 }
 
 extension VCSSharedWithMeAsset {

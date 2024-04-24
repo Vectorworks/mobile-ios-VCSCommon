@@ -38,7 +38,7 @@ public class UploadJob: NSObject {
         VCSCache.addToCache(item: self)
         UploadJob.deleteUnuploadedFile(localFile)
         guard self.localFiles.allSatisfy({ $0.uploadingState == .Done }) else { return }
-        self.removeFromCache()
+        self.deleteFromCache()
         NotificationCenter.postNotification(name: Notification.Name("VCSUpdateLocalDataSources"), userInfo: nil)
     }
 }
@@ -88,9 +88,9 @@ extension UploadJob: VCSCachable {
         UploadJob.realmStorage.partialUpdate(item: self)
     }
     
-    public func removeFromCache() {
+    public func deleteFromCache() {
         UploadJob.deleteUnuploadedFiles(self.localFiles)
-//        self.localFiles.forEach { $0.removeFromCache() }
+//        self.localFiles.forEach { $0.deleteFromCache() }
         UploadJob.realmStorage.delete(item: self)
     }
 }
@@ -103,7 +103,7 @@ extension UploadJob {
     static private func deleteUnuploadedFile(_ file: UploadJobLocalFile) { // after successful upload
         guard file.isAvailableOnDevice else { return }
         
-        file.removeFromCache()
+        file.deleteFromCache()
         do {
             try FileUtils.deleteItem(file.uploadPathURL.path)
         } catch {

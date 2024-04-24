@@ -55,5 +55,9 @@ extension VCSShareableLinkOwner: VCSCachable {
     public func partialUpdateToCache() {
         VCSShareableLinkOwner.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSShareableLinkOwner.realmStorage.delete(item: self)
+    }
 }
 

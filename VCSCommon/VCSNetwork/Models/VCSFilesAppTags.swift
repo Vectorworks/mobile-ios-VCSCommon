@@ -29,4 +29,8 @@ extension VCSFilesAppTags: VCSCachable {
     public func partialUpdateToCache() {
         VCSFilesAppTags.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSFilesAppTags.realmStorage.delete(item: self)
+    }
 }

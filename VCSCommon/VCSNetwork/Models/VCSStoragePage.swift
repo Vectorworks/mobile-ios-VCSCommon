@@ -100,4 +100,8 @@ extension StoragePage: VCSCachable {
     public func partialUpdateToCache() {
         StoragePage.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        StoragePage.realmStorage.delete(item: self)
+    }
 }

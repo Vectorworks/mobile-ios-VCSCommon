@@ -76,12 +76,6 @@ public class UploadJobLocalFile: NSObject, Identifiable {
         return lhs.VCSID == rhs.VCSID
     }
     
-    public func removeFromCache() {
-        self.related.forEach { $0.removeFromCache() }
-        AssetUploader.removeUploadedFileFromAPIClient(self)
-        UploadJobLocalFile.realmStorage.delete(item: self)
-    }
-    
     public static func resetStateOnStartUp() {
         let uploadingLocalFiles = VCSRealmDB.realm.objects(RealmUploadJobLocalFile.self).where({
             $0.uploadingState == UploadingState.Waiting.rawValue
@@ -179,5 +173,11 @@ extension UploadJobLocalFile: VCSCachable {
 
     public func partialUpdateToCache() {
         UploadJobLocalFile.realmStorage.partialUpdate(item: self)
+    }
+    
+    public func deleteFromCache() {
+        self.related.forEach { $0.deleteFromCache() }
+        AssetUploader.removeUploadedFileFromAPIClient(self)
+        UploadJobLocalFile.realmStorage.delete(item: self)
     }
 }

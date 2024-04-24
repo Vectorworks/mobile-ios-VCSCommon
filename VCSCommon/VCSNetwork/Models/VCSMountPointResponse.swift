@@ -41,4 +41,8 @@ extension VCSMountPointResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSMountPointResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSMountPointResponse.realmStorage.delete(item: self)
+    }
 }

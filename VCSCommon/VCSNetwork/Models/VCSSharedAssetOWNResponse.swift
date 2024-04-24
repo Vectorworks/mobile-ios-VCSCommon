@@ -87,4 +87,8 @@ extension VCSSharedAssetOWNResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSSharedAssetOWNResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSSharedAssetOWNResponse.realmStorage.delete(item: self)
+    }
 }

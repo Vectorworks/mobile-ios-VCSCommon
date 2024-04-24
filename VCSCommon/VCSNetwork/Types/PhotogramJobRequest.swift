@@ -127,6 +127,10 @@ public class PhotogramJobRequest: NSObject, Codable, VCSCachable {
     public func partialUpdateToCache() {
         PhotogramJobRequest.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        PhotogramJobRequest.realmStorage.delete(item: self)
+    }
 
     public let fileName: String
     public let jobType: String

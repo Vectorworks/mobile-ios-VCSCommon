@@ -45,4 +45,8 @@ extension VCSFlagsResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSFlagsResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSFlagsResponse.realmStorage.delete(item: self)
+    }
 }

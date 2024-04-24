@@ -99,4 +99,8 @@ extension VCSStorageResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSStorageResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSStorageResponse.realmStorage.delete(item: self)
+    }
 }

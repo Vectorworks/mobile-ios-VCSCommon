@@ -79,4 +79,8 @@ extension VCSJobFileVersionResponse: VCSCachable {
     public func partialUpdateToCache() {
         VCSJobFileVersionResponse.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSJobFileVersionResponse.realmStorage.delete(item: self)
+    }
 }

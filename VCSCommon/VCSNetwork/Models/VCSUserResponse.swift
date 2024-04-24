@@ -153,6 +153,10 @@ extension VCSUser: VCSCachable {
     public func partialUpdateToCache() {
         VCSUser.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSUser.realmStorage.delete(item: self)
+    }
 }
 
 extension VCSUser {

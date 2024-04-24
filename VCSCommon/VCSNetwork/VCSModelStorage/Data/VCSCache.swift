@@ -4,6 +4,7 @@ public protocol VCSCachable {
     func addToCache()
     func addOrPartialUpdateToCache()
     func partialUpdateToCache()
+    func deleteFromCache()
 }
 
 public class VCSCache {

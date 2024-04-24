@@ -29,4 +29,8 @@ extension VCSFilesAppFavoriteRank: VCSCachable {
     public func partialUpdateToCache() {
         VCSFilesAppFavoriteRank.realmStorage.partialUpdate(item: self)
     }
+    
+    public func deleteFromCache() {
+        VCSFilesAppFavoriteRank.realmStorage.delete(item: self)
+    }
 }
