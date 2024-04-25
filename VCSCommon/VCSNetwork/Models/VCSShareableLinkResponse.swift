@@ -99,6 +99,10 @@ extension VCSShareableLinkResponse: VCSCellDataHolder {
     public var assetData: Asset? {
         return self.asset
     }
+    public func updateSharingInfo(other: VCSSharingInfoResponse) {
+        //TODO: delete link?
+        self.asset.updateSharingInfo(other: other)
+    }
 }
 
 

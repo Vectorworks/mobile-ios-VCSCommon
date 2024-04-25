@@ -59,6 +59,12 @@ extension VCSSharedAssetWrapper: VCSCellDataHolder {
     public var assetData: Asset? {
         return self.asset
     }
+    public func updateSharingInfo(other: VCSSharingInfoResponse) {
+        self.asset.updateSharingInfo(other: other)
+        if (other.sharedWith?.count ?? 0) == 0 {
+            self.deleteFromCache()
+        }
+    }
 }
 
 extension VCSSharedAssetWrapper: VCSCachable {

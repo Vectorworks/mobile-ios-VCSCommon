@@ -118,6 +118,10 @@ extension SharedLink: VCSCellDataHolder {
     public var assetData: Asset? {
         return self.sharedAsset?.asset
     }
+    public func updateSharingInfo(other: VCSSharingInfoResponse) {
+        //TODO: delete link?
+        self.sharedAsset?.asset.updateSharingInfo(other: other)
+    }
 }
 
 extension SharedLink: VCSCachable {

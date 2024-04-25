@@ -81,8 +81,7 @@ public class VCSFolderResponse: NSObject, Asset, Codable {
         }
     }
     
-    public func updateSharingInfo(other: VCSSharingInfoResponse)
-    {
+    public func updateSharingInfo(other: VCSSharingInfoResponse) {
         self.sharingInfo = other
         VCSCache.addToCache(item: self, forceNilValuesUpdate: true)
     }

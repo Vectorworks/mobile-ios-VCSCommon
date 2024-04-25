@@ -10,15 +10,15 @@ public class WebViewTaskDialogResult: Codable
         case sharingInfo = "sharing_info"
     }
     
-    public func updateDB(_ assets: [Asset]) {
-        guard let item = assets.first(where: { (asset) -> Bool in
+    public func updateDB(_ assets: [VCSCellDataHolder]) {
+        guard let item = assets.first(where: { (cellDataHolder) -> Bool in
             var webAssetPath = self.asset.path
-            if asset.prefix.hasSuffix("/") && !self.asset.path.hasSuffix("/") {
+            if (cellDataHolder.assetData?.prefix.hasSuffix("/") ?? false) && !self.asset.path.hasSuffix("/") {
                 webAssetPath += "/"
             }
-            return self.asset.owner == asset.ownerLogin
-                && self.asset.storageType == asset.storageTypeString
-                && webAssetPath  == asset.prefix
+            return self.asset.owner == cellDataHolder.assetData?.ownerLogin
+            && self.asset.storageType == cellDataHolder.assetData?.storageTypeString
+            && webAssetPath  == cellDataHolder.assetData?.prefix
             
         }) else { return }
         

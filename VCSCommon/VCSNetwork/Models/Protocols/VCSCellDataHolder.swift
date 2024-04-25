@@ -4,6 +4,7 @@ public protocol VCSCellDataHolder {
     var cellData: VCSCellPresentable { get }
     var cellFileData: FileCellPresentable? { get }
     var assetData: Asset? { get }
+    func updateSharingInfo(other: VCSSharingInfoResponse)
 }
 
 public extension Array where Element == VCSCellDataHolder {

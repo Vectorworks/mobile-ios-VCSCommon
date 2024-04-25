@@ -126,6 +126,10 @@ extension VCSSharedWithMeAsset: VCSCellDataHolder {
     public var assetData: Asset? {
         return self.asset
     }
+    public func updateSharingInfo(other: VCSSharingInfoResponse) {
+        //TODO: delete item?
+        self.asset.updateSharingInfo(other: other)
+    }
 }
 
 extension VCSSharedWithMeAsset: VCSCachable {
