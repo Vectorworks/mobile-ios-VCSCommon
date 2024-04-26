@@ -40,7 +40,7 @@ struct FolderChooserSub: View {
                     HStack(spacing: 0) {
                         Button {
                             APIClient.listStorage().execute(onSuccess: { (result: StorageList) in
-                                AuthCenter.shared.user?.setStorageList(storages: result)
+                                VCSUser.savedUser?.setStorageList(storages: result)
                                 showStorageChooser = true
                             }, onFailure: { (err: Error) in
                                 print(err)

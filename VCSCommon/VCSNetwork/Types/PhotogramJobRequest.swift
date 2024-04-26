@@ -87,7 +87,7 @@ public class RealmPhotogramJobRequest: Object, VCSRealmObject {
         self.jobType = model.jobType
         self.fileVersion = RealmJobFileVersionRequest(model: model.fileVersion)
         self.options = RealmPhotogramOptionsRequest(model: model.options)
-        let owner = AuthCenter.shared.user?.login ?? ""
+        let owner = VCSUser.savedUser?.login ?? ""
         self.owner = owner
         self.isQueued = model.isQueued
         self.RealmID = "\(owner)/\(self.jobType)/\(self.fileName)"

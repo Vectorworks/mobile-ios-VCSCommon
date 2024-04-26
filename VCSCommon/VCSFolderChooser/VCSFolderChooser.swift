@@ -81,12 +81,12 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
             self.setHeaderLabelText(currentFolder.prefix)
             
             var image: UIImage?
-            if (AuthCenter.shared.user?.availableStorages.count ?? 0) > 1  {
+            if (VCSUser.savedUser?.availableStorages.count ?? 0) > 1  {
                 image = "drop_down_arrow".namedImage
             }
             self.storageButton?.setImage(image, for: .normal)
             
-            guard let folderStorage = AuthCenter.shared.user?.availableStorages.first(where: { $0.storageType == currentFolder.storageType }) else { return }
+            guard let folderStorage = VCSUser.savedUser?.availableStorages.first(where: { $0.storageType == currentFolder.storageType }) else { return }
             self.storageButton?.setTitle(folderStorage.storageType.displayName, for: .normal)
         }
     }
@@ -192,7 +192,7 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
     }
     
     @objc public func loadFolderData() {
-        let assetURI = self.folder?.resourceURI ?? AuthCenter.shared.user?.availableStorages.first?.folderURI ?? ""
+        let assetURI = self.folder?.resourceURI ?? VCSUser.savedUser?.availableStorages.first?.folderURI ?? ""
         
         APIClient.folderAsset(assetURI: assetURI, flags: true, thumbnail3D: false, fileTypes: false, sharingInfo: false)
             .execute(onSuccess: { (folderResult: VCSFolderResponse) in
@@ -219,7 +219,7 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
             cell.folderWarningImageView.isHidden = !flags.hasWarning
             
             
-            let isOwned = AuthCenter.shared.user?.login == nil || (folder.ownerLogin == AuthCenter.shared.user?.login)
+            let isOwned = VCSUser.savedUser?.login == nil || (folder.ownerLogin == VCSUser.savedUser?.login)
             cell.sharedIconBadge.isHidden = isOwned
             cell.permissionBadge.isHidden = isOwned
             if !isOwned {
@@ -273,7 +273,7 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
     
     @IBAction func storageButtonClicked(_ sender: UIButton) {
         APIClient.listStorage().execute(onSuccess: { (result: StorageList) in
-            AuthCenter.shared.user?.setStorageList(storages: result)
+            VCSUser.savedUser?.setStorageList(storages: result)
             self.showStorageAlert(homeButton: sender)
         }, onFailure: { (err: Error) in
             print(err)
@@ -284,7 +284,7 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
     private func showStorageAlert(homeButton: UIButton) {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        AuthCenter.shared.user?.availableStorages.forEach { [unowned self] (storage) in
+        VCSUser.savedUser?.availableStorages.forEach { [unowned self] (storage) in
             let storageAction = storage.getStorageAction(homeButton: homeButton, presenter: self)
             alertController.addAction(storageAction)
         }
@@ -311,7 +311,7 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
             print("Error loading folder \(storage.folderURI)\n\(error)")
             let errMessage = Localization.default.string(key: "There was an error while loading files. Please try again.")
             self.view.makeToast(errMessage, duration: 3, position: .center)
-            AuthCenter.shared.user?.removeAvailableStorage(storage: storage)
+            VCSUser.savedUser?.removeAvailableStorage(storage: storage)
             
             self.changeBackToS3Storage(error: error, failedStorage: storage.storageType)
         })
@@ -336,7 +336,7 @@ public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
     private func changeBackToS3Storage(error: Error, failedStorage: StorageType) {
         if error.asAFError?.responseCode == 401,
             failedStorage.isExternal,
-            let S3Storage = AuthCenter.shared.user?.availableStorages.first {
+            let S3Storage = VCSUser.savedUser?.availableStorages.first {
             self.changeStorage(storage: S3Storage)
         } else {
             self.activityIndicator?.startAnimating()

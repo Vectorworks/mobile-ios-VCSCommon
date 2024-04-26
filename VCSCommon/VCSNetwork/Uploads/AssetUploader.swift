@@ -179,7 +179,7 @@ public class AssetUploader: NSObject {
         }
         
         localUploadJobs.forEach { jobToUpload in
-            guard jobToUpload.owner == AuthCenter.shared.user?.login else { return }
+            guard jobToUpload.owner == VCSUser.savedUser?.login else { return }
             
             if jobToUpload.localFiles.allSatisfy({ $0.uploadingState != .Waiting && $0.uploadingState != .Uploading }) {
                 DDLogInfo("Start Upload for job \(jobToUpload.jobID)")

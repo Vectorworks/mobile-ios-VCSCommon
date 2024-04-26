@@ -136,7 +136,7 @@ public class VCSFolderResponse: NSObject, Asset, Codable {
         self.subfolders = (try? container.decode([VCSFolderResponse].self, forKey: CodingKeys.subfolders)) ?? []
         self.autoprocessParent = try? container.decode(String.self, forKey: CodingKeys.autoprocessParent)
         
-        self.ownerLogin = self.ownerInfo?.owner ?? AuthCenter.shared.user?.login ?? ""
+        self.ownerLogin = self.ownerInfo?.owner ?? VCSUser.savedUser?.login ?? ""
         
         if self.resourceID == "__invalid__",
            self.name == "" {
@@ -276,7 +276,7 @@ public extension VCSFolderResponse {
 //        let isGoogleDriveSharedWithMe = prefix.range(of: StoragePage.driveIDSharedRegXPattern, options:.regularExpression) != nil
 //        
 //        var isOneDriveSharedWithMe = false
-//        if storageType == StorageType.ONE_DRIVE.rawValue, let oneDriveRootPrefix = AuthCenter.shared.user?.availableStorages.first(where: { $0.storageType == StorageType.ONE_DRIVE })?.pages.first(where: { $0.name == "My Files" })?.id {
+//        if storageType == StorageType.ONE_DRIVE.rawValue, let oneDriveRootPrefix = VCSUser.savedUser?.availableStorages.first(where: { $0.storageType == StorageType.ONE_DRIVE })?.pages.first(where: { $0.name == "My Files" })?.id {
 //            isOneDriveSharedWithMe = prefix.range(of: oneDriveRootPrefix , options:.regularExpression) == nil
 //        }
 //        

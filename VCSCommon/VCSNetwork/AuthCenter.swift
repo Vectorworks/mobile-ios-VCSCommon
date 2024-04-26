@@ -9,12 +9,6 @@ import Foundation
         get { return VCSUserDefaults.default.getCodableItem(forKey: AuthCenter.loginSettingsKey) }
         set { VCSUserDefaults.default.setCodableItem(value: newValue, forKey: AuthCenter.loginSettingsKey) }
     }
-    
-    @objc public var user: VCSUser? { return VCSUser.savedUser }
-    
-    internal func clearAllFields() {
-        self.user?.updateIsLoggedIn(false)
-    }
 }
 
 public extension AuthCenter {

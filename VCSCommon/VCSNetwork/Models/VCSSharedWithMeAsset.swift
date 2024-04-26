@@ -67,7 +67,7 @@ public class VCSSharedWithMeAsset: NSObject, SharedAsset, Codable {
         self.branding = try container.decode(VCSSharedAssetBrandingResponse.self, forKey: CodingKeys.branding)
         self.branding?.realmID = self.asset.rID
         self.asset.updateSharedOwnerLogin(self.owner)
-        self.sharedWithLogin = AuthCenter.shared.user?.login
+        self.sharedWithLogin = VCSUser.savedUser?.login
     }
     
     public func encode(to encoder: Encoder) throws {

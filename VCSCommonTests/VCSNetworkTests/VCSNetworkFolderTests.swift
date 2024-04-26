@@ -103,7 +103,7 @@ class VCSNetworkFolderTests: XCTestCase {
                     $0.objects.first?.updateIsLoggedIn(true)
                 }).andThen(APIClient.awsKeys).map({
                     AuthCenter.shared.awsKeys = $0.objects.first
-                    return (storage: StorageType.S3, name: folderName, parentFolderPrefix: nil, owner: AuthCenter.shared.user?.login)
+                    return (storage: StorageType.S3, name: folderName, parentFolderPrefix: nil, owner: VCSUser.savedUser?.login)
                 }).andThen(APIClient.createFolder).map({
                     return $0.resourceURI
                 }).andThen(APIClient.deleteData).execute(completion: { (result: Result<VCSEmptyResponse, Error>) in

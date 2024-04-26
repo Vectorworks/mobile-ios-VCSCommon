@@ -168,7 +168,7 @@ public class VCSFileResponse: NSObject, Codable {
         self.related = try container.decode([VCSFileResponse].self, forKey: CodingKeys.related)
         self.fileType = try? container.decode(String.self, forKey: CodingKeys.fileType)
         
-        self.ownerLogin = self.ownerInfo?.owner ?? AuthCenter.shared.user?.login ?? ""
+        self.ownerLogin = self.ownerInfo?.owner ?? VCSUser.savedUser?.login ?? ""
         self.VCSID = self.resourceID
         
         super.init()

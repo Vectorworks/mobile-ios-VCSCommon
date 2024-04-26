@@ -10,7 +10,7 @@ struct StorageChooserLoadingButtons: View {
     @Binding var selectedStorage: VCSStorageResponse?
     
     var body: some View {
-        ForEach(AuthCenter.shared.user?.availableStorages ?? [], id: \.storageType) { (currentStorage: VCSStorageResponse) in
+        ForEach(VCSUser.savedUser?.availableStorages ?? [], id: \.storageType) { (currentStorage: VCSStorageResponse) in
             Button {
 //                if currentStorage.storageType == .GOOGLE_DRIVE || currentStorage.storageType == .ONE_DRIVE {
 //                    guard let pagesURL = currentStorage.pagesURL else { return }

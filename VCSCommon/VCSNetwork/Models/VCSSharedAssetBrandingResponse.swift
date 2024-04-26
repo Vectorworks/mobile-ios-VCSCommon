@@ -51,7 +51,7 @@ extension VCSSharedAssetBrandingResponse: VCSCachable {
 extension VCSSharedAssetBrandingResponse {
     
     public static var savedUserBranding: VCSSharedAssetBrandingResponse? {
-        return VCSSharedAssetBrandingResponse.realmStorage.getAll().first { $0.realmID == AuthCenter.shared.user?.login }
+        return VCSSharedAssetBrandingResponse.realmStorage.getAll().first { $0.realmID == VCSUser.savedUser?.login }
     }
     
     public static func brandingFromDatabase(realmID: String) -> VCSSharedAssetBrandingResponse? {

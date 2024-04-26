@@ -96,7 +96,7 @@ public class APIClient: NSObject {
     
     public static func clearAllFields() {
         self.clearCookies()
-        AuthCenter.shared.clearAllFields()
+        VCSUser.savedUser?.updateIsLoggedIn(false)
         URLCache.shared.removeAllCachedResponses()
         APIClient.oauth2Client?.forgetTokens()
         
