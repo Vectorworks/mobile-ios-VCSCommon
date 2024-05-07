@@ -49,7 +49,7 @@ public enum APIRouter: URLRequestConvertible {
     case mountFolder(storageType: String, ownerLogin: String, prefix: String, mountValue: Bool)
     case branding
     case socketPreSignedUri
-    case presentations
+    case listPresentations(limit: Int, offset: Int)
     case presentationDownload(presentationUIID: String)
     
     
@@ -139,7 +139,7 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .socketPreSignedUri:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
-        case .presentations:
+        case .listPresentations(_, _):
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .presentationDownload:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
@@ -312,7 +312,7 @@ public enum APIRouter: URLRequestConvertible {
             return "/branding/"
         case .socketPreSignedUri:
             return "/messenger/presigned-uri/"
-        case .presentations:
+        case .listPresentations(_, _):
             return "/iboards/"
         case .presentationDownload(let presentationUIID):
             return "/iboards/\(presentationUIID)/download/"
@@ -673,10 +673,14 @@ public enum APIRouter: URLRequestConvertible {
             let queryItemAppName = URLQueryItem(name: "app_name", value: "nomad")
             result.append(queryItemAppName)
             return result
-        case .presentations:
+        case .listPresentations(let limit, let offset):
             var result:[URLQueryItem] = []
-            let queryItemJSONFormat = URLQueryItem(name: "format", value: "json")
-            result.append(queryItemJSONFormat)
+            let queryItemLimit = URLQueryItem(name: "limit", value: "\(limit)")
+            result.append(queryItemLimit)
+            if offset != .zero {
+                let queryItemOffset = URLQueryItem(name: "offset", value: "\(offset)")
+                result.append(queryItemOffset)
+            }
             return result
         case .presentationDownload(_):
             var result:[URLQueryItem] = []

@@ -238,8 +238,8 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.listSharedFolder)
     }
     
-    public static func listPresentations() -> Future<VCSPresentationsResponse, Error> {
-        return performRequest(route: APIRouter.presentations)
+    public static func listPresentations(limit: Int, offset: Int) -> Future<VCSPresentationsResponse, Error> {
+        return performRequest(route: APIRouter.listPresentations(limit: limit, offset: offset))
     }
     
     public static func downloadPresentation(uuid: String) -> Future<VCSDownloadPresentationResponse, Error> {

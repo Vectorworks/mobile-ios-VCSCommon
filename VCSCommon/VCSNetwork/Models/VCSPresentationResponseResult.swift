@@ -17,7 +17,7 @@ public class VCSPresentationResponseResult: Codable, Hashable {
     public let date_modified: String
     public let props: VCSPresentationProps
     public let owner: VCSPresentationOwner
-    public let thumbnail: String
+    public let thumbnail: String?
     public let is_deleted: Bool
 
     enum CodingKeys: String, CodingKey {
@@ -43,7 +43,7 @@ public class VCSPresentationResponseResult: Codable, Hashable {
         date_modified = try values.decode(String.self, forKey: .date_modified)
         props = try values.decode(VCSPresentationProps.self, forKey: .props)
         owner = try values.decode(VCSPresentationOwner.self, forKey: .owner)
-        thumbnail = try values.decode(String.self, forKey: .thumbnail)
+        thumbnail = try values.decodeIfPresent(String.self, forKey: .thumbnail)
         is_deleted = try values.decode(Bool.self, forKey: .is_deleted)
     }
 
