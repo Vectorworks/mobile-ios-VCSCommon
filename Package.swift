@@ -18,12 +18,12 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/robbiehanson/KissXML.git", exact: "5.3.3"),
-        .package(url: "https://github.com/CocoaLumberjack/CocoaLumberjack.git", exact: "3.8.2"),
-        .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.8.1"),
-        .package(url: "https://github.com/weichsel/ZIPFoundation.git", exact: "0.9.17"),
-        .package(url: "https://github.com/realm/realm-swift.git", exact: "10.45.1"),
-        .package(url: "https://github.com/scalessec/Toast-Swift.git", exact: "5.0.1"),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "10.19.0"),
+        .package(url: "https://github.com/CocoaLumberjack/CocoaLumberjack.git", exact: "3.8.5"),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.9.1"),
+        .package(url: "https://github.com/weichsel/ZIPFoundation.git", exact: "0.9.19"),
+        .package(url: "https://github.com/realm/realm-swift.git", exact: "10.49.1"),
+        .package(url: "https://github.com/scalessec/Toast-Swift.git", exact: "5.1.0"),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "10.23.1"),
         
         .package(url: "https://github.com/Vectorworks/OAuth2.git", exact: "5.2.1"),
     ],
