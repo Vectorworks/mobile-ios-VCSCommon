@@ -1,6 +1,6 @@
 import Foundation
 
-public enum StorageType: String, Codable {
+public enum StorageType: String, Codable, Equatable {
     case INTERNAL = "internal"
     case S3 = "s3"
     case DROPBOX = "dropbox"
