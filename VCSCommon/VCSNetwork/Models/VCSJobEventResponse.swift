@@ -148,9 +148,18 @@ public class VCSDownloadPresentationJob: Codable {
 
 }
 
-public class VCSPresentation : Codable {
-    let uuid : String
-    let title : String
+public class VCSPresentation : Codable, Hashable {
+    public static func == (lhs: VCSPresentation, rhs: VCSPresentation) -> Bool {
+        return lhs.uuid == rhs.uuid && lhs.title == rhs.title
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(uuid)
+        hasher.combine(title)
+    }
+    
+    public let uuid : String
+    public let title : String
 
     enum CodingKeys: String, CodingKey {
         case uuid = "uuid"
