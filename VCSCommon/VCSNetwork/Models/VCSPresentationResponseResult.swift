@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSPresentationResponseResult: Codable, Hashable {
+public class VCSPresentationResponseResult: Codable, Hashable, Identifiable {
     public static func == (lhs: VCSPresentationResponseResult, rhs: VCSPresentationResponseResult) -> Bool {
         return lhs.uuid == rhs.uuid
     }
@@ -8,6 +8,8 @@ public class VCSPresentationResponseResult: Codable, Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(uuid)
     }
+    
+    public var id: String { return uuid }
     
     public let uuid: String
     public let version: Int?
