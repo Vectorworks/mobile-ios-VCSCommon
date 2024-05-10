@@ -77,7 +77,7 @@ public class RealmVCSUser: Object, VCSRealmObject {
         }
         
         let partialsStorages = Array(self.storages.compactMap({ $0.partialUpdateModel }))
-        if partialsStorages.count > 1 {
+        if partialsStorages.count > 0 {
             result["storages"] = partialsStorages
         }
         
