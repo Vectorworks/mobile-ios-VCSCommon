@@ -40,6 +40,7 @@ public enum VCSFileType: String
     case USDZ
     case ARWM
     case HTML
+    case VCDOC
     
     case VWX_EXTENDED
     
