@@ -5,9 +5,9 @@ public struct FileChooser: View {
     @State var isPathSetup: Bool = false
     @State var path: [FCRouteData] = []
     @State var resultFolder: VCSFileResponse? = nil
-    @State var filterExtensions: [String]
+    @State var filterExtensions: [VCSFileType]
     
-    public init(isPathSetup: Bool = false, path: [FCRouteData] = [], resultFolder: VCSFileResponse? = nil, filterExtensions: [String]) {
+    public init(isPathSetup: Bool = false, path: [FCRouteData] = [], resultFolder: VCSFileResponse? = nil, filterExtensions: [VCSFileType]) {
         self.isPathSetup = isPathSetup
         self.path = path
         self.resultFolder = resultFolder
@@ -17,9 +17,9 @@ public struct FileChooser: View {
     public var body: some View {
         NavigationStack(path: $path) {
             let resourceURI = VCSUser.savedUser?.availableStorages.first(where: { $0.storageType == .S3 })?.folderURI ?? ""
-            FileChooserSub(path: $path, resourceURI: resourceURI, result: $resultFolder)
+            FileChooserSub(path: $path, resourceURI: resourceURI, filterExtensions: $filterExtensions, result: $resultFolder)
                 .navigationDestination(for: FCRouteData.self) { routeValue in
-                    FileChooserSub(path: $path, resourceURI: routeValue.resourceURI, result: $resultFolder)
+                    FileChooserSub(path: $path, resourceURI: routeValue.resourceURI, filterExtensions: $filterExtensions, result: $resultFolder)
                 }
         }
         .tint(.label)
@@ -46,5 +46,5 @@ public struct FileChooser: View {
 }
 
 #Preview {
-    FileChooser(filterExtensions: [VCSFileType.VWX.pathExt])
+    FileChooser(filterExtensions: [VCSFileType.VWX])
 }

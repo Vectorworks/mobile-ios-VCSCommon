@@ -49,21 +49,30 @@ public enum VCSFileType: String
         return self.isInFileName(name: name)
     }
     
+    public func isInFile(file: VCSFileResponse) -> Bool {
+        switch self {
+        case VCSFileType.IMG, VCSFileType.PANORAMA, VCSFileType.VIDEO, VCSFileType.VIDEO_360:
+            return file.fileType == self.rawValue
+        default:
+            return self.isInFileName(name: file.name)
+        }
+    }
+    
     public func isInFileName(name: String) -> Bool {
         switch self {
         case VCSFileType.XMLZIP, VCSFileType.VWXPNG, VCSFileType.IMGPNG:
             return self.isInFileNameSuffix(name: name)
         case .VWX_EXTENDED:
-            return (name.pathExtension.uppercased() == VCSFileType.VWX.rawValue)
-            || (name.pathExtension.uppercased() == VCSFileType.VWXP.rawValue)
-            || (name.pathExtension.uppercased() == VCSFileType.VWXW.rawValue)
+            return (name.pathExtension.lowercased() == VCSFileType.VWX.pathExt)
+            || (name.pathExtension.lowercased() == VCSFileType.VWXP.pathExt)
+            || (name.pathExtension.lowercased() == VCSFileType.VWXW.pathExt)
         default:
-            return name.pathExtension.uppercased() == self.rawValue
+            return name.pathExtension.lowercased() == self.pathExt
         }
     }
     
     private func isInFileNameSuffix(name: String) -> Bool {
-        return name.uppercased().hasSuffix(self.rawValue)
+        return name.lowercased().hasSuffix(self.pathExt)
     }
     
     public var pathExt: String { return self.rawValue.lowercased() }

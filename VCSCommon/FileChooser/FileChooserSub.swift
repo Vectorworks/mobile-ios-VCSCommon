@@ -18,6 +18,7 @@ struct FileChooserSub: View {
     @State var showStorageChooser = false
     @State var showPagesChooser = false
     @State var selectedStorage: VCSStorageResponse?
+    @Binding var filterExtensions: [VCSFileType]
     
 //    var routeData: FCRouteData
     @State var resultFolder: Result<VCSFolderResponse, Error>?
@@ -84,10 +85,15 @@ struct FileChooserSub: View {
                 }
                 .onDelete(perform: deleteFolder)
                 
-                ForEach(currentFolder.files.sorted(by: { $0.name.lowercased() < $1.name.lowercased() }), id: \.rID) { subfolder in
-                    NavigationLink(value: FCRouteData(resourceURI: subfolder.resourceURI, breadcrumbsName: subfolder.name)) {
-                        FileChooserRow(model: subfolder)
-                    }
+                let files = currentFolder.files.sorted(by: { $0.name.lowercased() < $1.name.lowercased() }).filter { file in
+                    filterExtensions.map { filterExtension in
+                        filterExtension.isInFile(file: file)
+                    }.contains(true)
+                }
+                ForEach(files, id: \.rID) { file in
+//                    NavigationLink(value: FCRouteData(resourceURI: file.resourceURI, breadcrumbsName: file.name)) {
+                        FileChooserRow(model: file)
+//                    }
                 }
                 .onDelete(perform: deleteFile)
             }
