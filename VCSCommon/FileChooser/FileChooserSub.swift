@@ -91,9 +91,14 @@ struct FileChooserSub: View {
                     }.contains(true)
                 }
                 ForEach(files, id: \.rID) { file in
+                    Button {
+                        print("FileChooser file: \(file.name)")
+                        dismiss()
+                    } label: {
 //                    NavigationLink(value: FCRouteData(resourceURI: file.resourceURI, breadcrumbsName: file.name)) {
                         FileChooserRow(model: file)
 //                    }
+                    }
                 }
                 .onDelete(perform: deleteFile)
             }
