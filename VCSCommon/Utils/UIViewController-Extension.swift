@@ -14,38 +14,6 @@ public extension Notification.Name {
     static let VCSSwiftUIHidePlusMenu = Notification.Name("VCSSwiftUIHidePlusMenu")
 }
 
-open class VCSToggleSwiftUITabBarVC: UIViewController {
-    open override func viewDidLoad() {
-        super.viewDidLoad()
-        if self.hidesBottomBarWhenPushed == true {
-            NotificationCenter.default.post(name: .VCSSwiftUIHideTabBar, object: nil)
-        }
-    }
-    
-    open override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if self.hidesBottomBarWhenPushed == true {
-            NotificationCenter.default.post(name: .VCSSwiftUIShowTabBar, object: nil)
-        }
-    }
-}
-
-open class VCSToggleSwiftUITabBarQLVC : QLPreviewController {
-    open override func viewDidLoad() {
-        super.viewDidLoad()
-        if self.hidesBottomBarWhenPushed == true {
-            NotificationCenter.default.post(name: .VCSSwiftUIHideTabBar, object: nil)
-        }
-    }
-    
-    open override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if self.hidesBottomBarWhenPushed == true {
-            NotificationCenter.default.post(name: .VCSSwiftUIShowTabBar, object: nil)
-        }
-    }
-}
-
 @objc public extension UIViewController {
     // expected-warning {{'open' modifier conflicts with extension's default access of 'public'}}
     open class func vcsStoryboardID() -> String {return ""}

@@ -9,7 +9,7 @@ public protocol VCSFolderChooserDelegate: AnyObject {
     func createFolder(insideOf rootFolder: VCSFolderResponse, presenter: UIViewController)
 }
 
-public class VCSFolderChooser: VCSToggleSwiftUITabBarVC, UITableViewDelegate {
+public class VCSFolderChooser: UIViewController, UITableViewDelegate {
     
     public override class func vcsStoryboardID() -> String {return "VCSFolderChooser"}
     public override class func vcsStoryboardName() -> String {return "VCSFolderChooser"}
