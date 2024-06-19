@@ -117,11 +117,38 @@ public class RealmFile: Object, VCSRealmObject {
         self.related = realmRelatedArray
     }
     
+    public var entityFlat: VCSFileResponse {
+        return VCSFileResponse(versionID: self.versionID,
+                    thumbnail: self.thumbnail,
+                    size: self.size,
+                    downloadURL: self.downloadURL,
+                    lastModified: self.lastModified,
+                    thumbnail3D: self.thumbnail3D,
+                    previousVersions: [],
+                    fileType: self.fileType,
+                    related: [],
+                    
+                    resourceURI: self.resourceURI,
+                    resourceID: self.resourceID,
+                    exists: self.exists,
+                    isNameValid: self.isNameValid,
+                    name: self.name,
+                    sharingInfo: self.sharingInfo?.entity,
+                    prefix: self.prefix,
+                    storageType: StorageType.typeFromString(type: self.storageType),
+                    flags: self.flags?.entity,
+                    ownerInfo: self.ownerInfo?.entity,
+                    localFile: self.localFile?.entity,
+                    localFilesAppFile: self.localFilesAppFile?.entity,
+                    ownerLogin: self.ownerLogin,
+                    VCSID: self.RealmID)
+    }
+    
     public var entity: VCSFileResponse {
         let previousArray = self.previousVersions.compactMap({ $0.entity })
         let arrPrevious = Array(previousArray)
         
-        let relatedArray = self.related.compactMap({ $0.entity })
+        let relatedArray = self.related.compactMap({ $0.entityFlat })
         let arrRelated = Array(relatedArray)
         
         return VCSFileResponse(versionID: self.versionID,
