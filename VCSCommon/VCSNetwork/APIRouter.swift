@@ -7,6 +7,7 @@ public enum APIRouter: URLRequestConvertible {
     
     case loginSettings
     case vcsUser
+    case currentAccount
     case listFolder(folderURI: String) //delete
     
     case createFolder(storage: StorageType, folderURI: String)
@@ -60,6 +61,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v08)
         case .vcsUser:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v02)
+        case .currentAccount:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         case .listFolder:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .createFolder:
@@ -197,6 +200,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/login_settings/"
         case .vcsUser:
             return "/user/"
+        case .currentAccount:
+            return "/current-account/"
         case .listFolder(let folderURI):
             return folderURI
         case .createFolder(let storage, let folderURI):

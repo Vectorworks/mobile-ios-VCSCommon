@@ -196,6 +196,10 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.vcsUser)
     }
     
+    public static func currentAccount() -> Future<VCSCurrentAccountResponse, Error> {
+        return performRequest(route: APIRouter.currentAccount)
+    }
+    
     public static func listFolder(possibleFolderURI: String?) -> Future<VCSFolderResponse, Error> {
         guard let folderURI = possibleFolderURI else { return Future(error: VCSNetworkError.parsingError("Folder list is empty")) }
         return performRequest(route: APIRouter.listFolder(folderURI: folderURI))
