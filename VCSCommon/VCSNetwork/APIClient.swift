@@ -42,10 +42,11 @@ public class APIClient: NSObject {
     public private(set) static var oauth2Client: OAuth2CodeGrant?
     public private(set) static var oauth2RetryHandler: OAuth2RetryHandler?
     
-    public class func setOAuth2Swift(presenter: UIViewController, modalPresentationStyle: UIModalPresentationStyle = .fullScreen) {
+    public class func setOAuth2Swift(presenter: UIViewController, modalPresentationStyle: UIModalPresentationStyle = .fullScreen, useAuthenticationSession: Bool = false) {
         APIClient.oauth2Client?.authConfig.authorizeEmbedded = true
         APIClient.oauth2Client?.authConfig.authorizeContext = presenter
         APIClient.oauth2Client?.authConfig.ui.modalPresentationStyle = modalPresentationStyle
+        APIClient.oauth2Client?.authConfig.ui.useAuthenticationSession = useAuthenticationSession
         APIClient.oauth2Client?.afterAuthorizeOrFail = {
             guard let error = $1 else { return }
             

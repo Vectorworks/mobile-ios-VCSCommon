@@ -25,7 +25,7 @@ let package = Package(
         .package(url: "https://github.com/scalessec/Toast-Swift.git", exact: "5.1.0"),
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "10.26.0"),
         
-        .package(url: "https://github.com/Vectorworks/OAuth2.git", exact: "5.2.1"),
+        .package(url: "https://github.com/Vectorworks/OAuth2.git", exact: "5.2.2"),
     ],
     targets: [
         .target(
