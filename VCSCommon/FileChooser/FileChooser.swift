@@ -2,24 +2,28 @@ import SwiftUI
 import CocoaLumberjackSwift
 
 public struct FileChooser: View {
-    @State var isPathSetup: Bool = false
-    @State var path: [FCRouteData] = []
-    @State var resultFolder: VCSFileResponse? = nil
+    @State var isPathSetup: Bool
+    @State var path: [FCRouteData]
+    @State var resultFolder: VCSFileResponse?
     @State var filterExtensions: [VCSFileType]
+    var itemPickedCompletion: ((VCSFileResponse) -> Void)?
+    var dismissChooser: (() -> Void)
     
-    public init(isPathSetup: Bool = false, path: [FCRouteData] = [], resultFolder: VCSFileResponse? = nil, filterExtensions: [VCSFileType]) {
+    public init(isPathSetup: Bool = false, path: [FCRouteData] = [], resultFolder: VCSFileResponse? = nil, filterExtensions: [VCSFileType], itemPickedCompletion: ((VCSFileResponse) -> Void)? = nil, dismissChooser: @escaping (() -> Void)) {
         self.isPathSetup = isPathSetup
         self.path = path
         self.resultFolder = resultFolder
         self.filterExtensions = filterExtensions
+        self.itemPickedCompletion = itemPickedCompletion
+        self.dismissChooser = dismissChooser
     }
     
     public var body: some View {
         NavigationStack(path: $path) {
             let resourceURI = VCSUser.savedUser?.availableStorages.first(where: { $0.storageType == .S3 })?.folderURI ?? ""
-            FileChooserSub(path: $path, resourceURI: resourceURI, filterExtensions: $filterExtensions, result: $resultFolder)
+            FileChooserSub(path: $path, resourceURI: resourceURI, filterExtensions: $filterExtensions, itemPickedCompletion: itemPickedCompletion, dismissChooser: dismissChooser, result: $resultFolder)
                 .navigationDestination(for: FCRouteData.self) { routeValue in
-                    FileChooserSub(path: $path, resourceURI: routeValue.resourceURI, filterExtensions: $filterExtensions, result: $resultFolder)
+                    FileChooserSub(path: $path, resourceURI: routeValue.resourceURI, filterExtensions: $filterExtensions, itemPickedCompletion: itemPickedCompletion, dismissChooser: dismissChooser, result: $resultFolder)
                 }
         }
         .tint(.label)
@@ -46,5 +50,5 @@ public struct FileChooser: View {
 }
 
 #Preview {
-    FileChooser(filterExtensions: [VCSFileType.VWX])
+    FileChooser(filterExtensions: [VCSFileType.VWX], dismissChooser: {})
 }

@@ -19,12 +19,13 @@ struct FileChooserSub: View {
     @State var showPagesChooser = false
     @State var selectedStorage: VCSStorageResponse?
     @Binding var filterExtensions: [VCSFileType]
+    var itemPickedCompletion: ((VCSFileResponse) -> Void)?
+    var dismissChooser: (() -> Void)
     
 //    var routeData: FCRouteData
     @State var resultFolder: Result<VCSFolderResponse, Error>?
     
     @Binding var result: VCSFileResponse?
-    @Environment(\.dismiss) var dismiss
     
     func sortedByName(folders: [VCSFolderResponse]?) -> [VCSFolderResponse] {
         var result = folders ?? []
@@ -92,12 +93,11 @@ struct FileChooserSub: View {
                 }
                 ForEach(files, id: \.rID) { file in
                     Button {
-                        print("FileChooser file: \(file.name)")
-                        dismiss()
+                        print("FileChooser item: \(file.name)")
+                        dismissChooser()
+                        itemPickedCompletion?(file)
                     } label: {
-//                    NavigationLink(value: FCRouteData(resourceURI: file.resourceURI, breadcrumbsName: file.name)) {
                         FileChooserRow(model: file)
-//                    }
                     }
                 }
                 .onDelete(perform: deleteFile)
@@ -124,6 +124,13 @@ struct FileChooserSub: View {
         }
         
         APIClient.folderAsset(assetURI: resourceURI).execute { (result: Result<VCSFolderResponse, Error>) in
+            switch result {
+            case .success(let success):
+                success.loadLocalFiles()
+                VCSCache.addToCache(item: success)
+            case .failure(_):
+                break
+            }
             resultFolder = result
         }
     }
