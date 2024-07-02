@@ -23,7 +23,7 @@ struct FolderChooserSub: View {
     var routeData: FCRouteData
     @State var resultFolder: Result<VCSFolderResponse, Error>?
     
-    @Binding var result: VCSFolderResponse
+    @Binding var result: VCSFolderResponse?
     @Environment(\.dismiss) var dismiss
     
     func sortedByName(folders: [VCSFolderResponse]?) -> [VCSFolderResponse] {

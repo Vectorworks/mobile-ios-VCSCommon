@@ -107,7 +107,7 @@ extension UploadJob {
         do {
             try FileUtils.deleteItem(file.uploadPathURL.path)
         } catch {
-            DDLogError("UnuploadedFileActions deleteUnuploadedFile(_ file:" + error.localizedDescription)
+            DDLogError("UnuploadedFileActions deleteUnuploadedFile(_ file: \(error.localizedDescription)")
         }
         
         file.related.forEach { UploadJob.deleteUnuploadedFile($0) }

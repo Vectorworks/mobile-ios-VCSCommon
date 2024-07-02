@@ -395,8 +395,8 @@ public class APIClient: NSObject {
     
     /** Progress delegate calls are handled internally.
      */
-    public class func download(file: VCSFileResponse) -> Future<String, Error> {
-        return Future<String, Error> { (completion) in
+    public class func download(file: VCSFileResponse) -> Future<VCSFileResponse, Error> {
+        return Future<VCSFileResponse, Error> { (completion) in
             let download = Download(parent: file)
             self.downloads[file.rID] = download
             guard download.files.count > 0 else {
@@ -450,7 +450,7 @@ public class APIClient: NSObject {
                             
                             if (download.isFinished) {
                                 downloadFile.loadLocalFiles()
-                                completion(.success(localFile.uuid))
+                                completion(.success(file))
                                 NotificationCenter.postDownloadNotification(model: file, progress: ProgressValues.Finished.rawValue)
                             }
                         } else {

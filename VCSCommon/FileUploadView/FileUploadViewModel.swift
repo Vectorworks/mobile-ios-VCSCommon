@@ -1,32 +1,50 @@
 import SwiftUI
 import CocoaLumberjackSwift
 
-public class FileUploadViewModel: ObservableObject, Identifiable {
+public class FileUploadViewModel: ObservableObject {
+    @Published public var parentFolder: VCSFolderResponse? = nil
+    @Published public var itemsLocalNameAndPath: [LocalFileNameAndPath]
+    @Published public var itemsUploading: [URL: String] = [:]
+    @Published public var itemsUploadProgress: [String: Double] = [:]
+    @Published public var doneUploading = false
+    @Published public var isUploading = false
+    @Published public var completedUnitCount = 0.0
+    @Published public var totalUnitCount = 0.0
     
-    public static var sharedModel: FileUploadViewModel = FileUploadViewModel()
+    public var jobFilesCallback: (([UploadJobLocalFile]) -> Void)? = nil
+    public var uploadCompletion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil
     
-    @Published public var isPresented: Bool = false
-    @Published public var isFolderChooserPresented: Bool = false
-    @Published public var parentFolder: VCSFolderResponse = VCSFolderResponse.nilFolder
-    @Published public var itemsLocalNameAndPath: [LocalFileNameAndPath] = []
-    @Published public var jobFilesCallback: (([UploadJobLocalFile]) -> Void)? = nil
-    @Published public var uploadCompletion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil
-    
-    @MainActor
-    @discardableResult
-    public func setupWithData(parentFolder: VCSFolderResponse, itemsLocalNameAndPath: [LocalFileNameAndPath], jobFilesCallback: (([UploadJobLocalFile]) -> Void)? = nil, uploadCompletion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil) -> FileUploadViewModel {
-        self.isPresented = true
+    public init(parentFolder: VCSFolderResponse? = nil, itemsLocalNameAndPath: [LocalFileNameAndPath], jobFilesCallback: ( ([UploadJobLocalFile]) -> Void)? = nil, uploadCompletion: ( (Result<[VCSFileResponse], Error>) -> Void)? = nil) {
         self.parentFolder = parentFolder
         self.itemsLocalNameAndPath = itemsLocalNameAndPath
         self.jobFilesCallback = jobFilesCallback
         self.uploadCompletion = uploadCompletion
-        
-        return self
     }
     
-    public func uploadAction() {
-        defer { self.clearView() }
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    public func loadHomeUserFolder() {
+        guard let userHomeFolderURI = VCSUser.savedUser?.availableStorages.first?.folderURI else {
+            self.parentFolder = nil
+            return
+        }
         
+        APIClient.folderAsset(assetURI: userHomeFolderURI).execute(completion: { (result: Result<VCSFolderResponse, Error>) in
+            print("DONE loading - \(userHomeFolderURI)")
+            switch result {
+            case .success(let success):
+                VCSCache.addToCache(item: success)
+                self.parentFolder = success
+            case .failure(let failure):
+                DDLogError("RootFolderLoadingView - loadModelTask - error: \(failure)")
+            }
+        })
+    }
+    
+    public func uploadAction(dismiss: DismissAction) {
+        guard let parentFolder else { return }
         var jobFiles: [UploadJobLocalFile] = []
         
         itemsLocalNameAndPath.forEach { item in
@@ -50,6 +68,7 @@ public class FileUploadViewModel: ObservableObject, Identifiable {
                                                       related: relatedFiles)
             {
                 jobFiles.append(fileForUpload)
+                itemsUploading[item.itemURL] = fileForUpload.rID
             }
         }
         
@@ -57,7 +76,7 @@ public class FileUploadViewModel: ObservableObject, Identifiable {
         
         self.jobFilesCallback?(jobFiles)
         let job = UploadJob(localFiles: jobFiles, owner: parentFolder.ownerLogin, parentFolder: parentFolder)
-        AssetUploader.shared.upload(uploadJob: job, multiFileCompletion:  { (result: Result<[VCSFileResponse], Error>) in
+        AssetUploader.shared.upload(uploadJob: job, multiFileCompletion: { (result: Result<[VCSFileResponse], Error>) in
             DispatchQueue.main.async {
                 NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
                 switch result {
@@ -67,17 +86,31 @@ public class FileUploadViewModel: ObservableObject, Identifiable {
                     DDLogError("FileUploadViewModel - uploadAction - error: \(failure)")
                 }
                 self.uploadCompletion?(result)
+                dismiss()
             }
         })
+        
+        self.isUploading = true
+        
+        self.totalUnitCount = Double(jobFiles.count)
+        jobFiles.forEach { (file: UploadJobLocalFile) in
+            let uploadNotificationName = Notification.Name("uploading:\(file.rID)")
+            NotificationCenter.default.addObserver(self, selector: #selector(self.handleUploadProgress(notification:)), name: uploadNotificationName, object: nil)
+        }
     }
     
-    public func cancelAction() {
-        self.clearView()
-    }
-    
-    private func clearView() {
-        self.isPresented = false
-        self.parentFolder = VCSFolderResponse.nilFolder
-        self.itemsLocalNameAndPath = []
+    @objc public func handleUploadProgress(notification: Notification) {
+        guard let progress = notification.userInfo?["progress"] as? Double else { return }
+        
+        let fileID = notification.name.rawValue.replacingOccurrences(of: "uploading:", with: "")
+        itemsUploadProgress[fileID] = progress
+        
+        if progress == ProgressValues.Finished.rawValue {
+            self.completedUnitCount += 1
+            
+            if self.completedUnitCount == self.totalUnitCount {
+                self.doneUploading = true
+            }
+        }
     }
 }

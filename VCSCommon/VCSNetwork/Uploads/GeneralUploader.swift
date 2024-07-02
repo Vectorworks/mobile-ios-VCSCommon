@@ -3,8 +3,8 @@ import Foundation
 typealias FileWithRelatedАRGS = (uploadedFile: VCSFileResponse, uploadedRelatedFiles: [VCSFileResponse])
 
 public class Downloader {
-    public static func downloadMultiple(files: [VCSFileResponse]) -> Future<[String], Error> {
-        let download: (VCSFileResponse) -> Future<String, Error> = { (file) in APIClient.download(file: file) }
+    public static func downloadMultiple(files: [VCSFileResponse]) -> Future<[VCSFileResponse], Error> {
+        let download: (VCSFileResponse) -> Future<VCSFileResponse, Error> = { (file) in APIClient.download(file: file) }
         return FutureWrapper.execute(download, onFiles: files)
     }
 }
