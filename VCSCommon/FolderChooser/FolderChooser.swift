@@ -6,11 +6,11 @@ public struct FolderChooser: View {
     @State var path: [FCRouteData] = []
     @State var routeData: FCRouteData
     @State var rootRouteData: FCRouteData
-    @Binding var resultFolder: VCSFolderResponse?
+    @Binding var folderResult: Result<VCSFolderResponse, Error>?
     
-    public init(routeData: FCRouteData, folderResult: Binding<VCSFolderResponse?>) {
+    public init(routeData: FCRouteData, folderResult: Binding<Result<VCSFolderResponse, Error>?>) {
         self.routeData = routeData
-        self._resultFolder = folderResult
+        self._folderResult = folderResult
         
         if routeData.resourceURI.contains("/p:"), let resourceURI = routeData.resourceURI.split(separator: "/p:").first {
             self.rootRouteData = FCRouteData(resourceURI: String(resourceURI).VCSNormalizedURLString(), breadcrumbsName: routeData.folderResponse?.storageType.displayName ?? "")
@@ -21,9 +21,9 @@ public struct FolderChooser: View {
     
     public var body: some View {
         NavigationStack(path: $path) {
-            FolderChooserSub(path: $path, rootRouteData: $rootRouteData, routeData: rootRouteData, resultFolder: rootRouteData.folderResult, result: $resultFolder)
+            FolderChooserSub(path: $path, rootRouteData: $rootRouteData, routeData: rootRouteData, loadingFolder: rootRouteData.folderResult, result: $folderResult)
                 .navigationDestination(for: FCRouteData.self) { routeValue in
-                    FolderChooserSub(path: $path, rootRouteData: $rootRouteData, routeData: routeValue, resultFolder: routeValue.folderResult, result: $resultFolder)
+                    FolderChooserSub(path: $path, rootRouteData: $rootRouteData, routeData: routeValue, loadingFolder: routeValue.folderResult, result: $folderResult)
                 }
         }
         .tint(.label)
@@ -52,7 +52,7 @@ public struct FolderChooser: View {
 struct FolderChooser_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            FolderChooser(routeData: FCRouteData(resourceURI: VCSFolderResponse.testVCSFolder?.resourceURI ?? "", breadcrumbsName: VCSFolderResponse.testVCSFolder?.prefix.lastPathComponent ?? ""), folderResult: .constant(VCSFolderResponse.testVCSFolder!))
+            FolderChooser(routeData: FCRouteData(resourceURI: VCSFolderResponse.testVCSFolder?.resourceURI ?? "", breadcrumbsName: VCSFolderResponse.testVCSFolder?.prefix.lastPathComponent ?? ""), folderResult: .constant(.success(VCSFolderResponse.testVCSFolder!)))
             //            FolderChooser(currentFolder: RealmFolder(model: VCSFolderResponse.testVCSFolder!)).previewDevice(PreviewDevice(rawValue: "iPad Pro (12.9-inch) (6th generation)"))
         }
     }

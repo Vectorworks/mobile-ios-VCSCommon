@@ -2,7 +2,7 @@ import SwiftUI
 import CocoaLumberjackSwift
 
 public class FileUploadViewModel: ObservableObject {
-    @Published public var parentFolder: VCSFolderResponse? = nil
+    @Published public var folderResult: Result<VCSFolderResponse, Error>?
     @Published public var itemsLocalNameAndPath: [LocalFileNameAndPath]
     @Published public var itemsUploading: [URL: String] = [:]
     @Published public var itemsUploadProgress: [String: Double] = [:]
@@ -15,7 +15,6 @@ public class FileUploadViewModel: ObservableObject {
     public var uploadCompletion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil
     
     public init(parentFolder: VCSFolderResponse? = nil, itemsLocalNameAndPath: [LocalFileNameAndPath], jobFilesCallback: ( ([UploadJobLocalFile]) -> Void)? = nil, uploadCompletion: ( (Result<[VCSFileResponse], Error>) -> Void)? = nil) {
-        self.parentFolder = parentFolder
         self.itemsLocalNameAndPath = itemsLocalNameAndPath
         self.jobFilesCallback = jobFilesCallback
         self.uploadCompletion = uploadCompletion
@@ -27,7 +26,7 @@ public class FileUploadViewModel: ObservableObject {
     
     public func loadHomeUserFolder() {
         guard let userHomeFolderURI = VCSUser.savedUser?.availableStorages.first?.folderURI else {
-            self.parentFolder = nil
+            self.folderResult = nil
             return
         }
         
@@ -36,15 +35,18 @@ public class FileUploadViewModel: ObservableObject {
             switch result {
             case .success(let success):
                 VCSCache.addToCache(item: success)
-                self.parentFolder = success
             case .failure(let failure):
                 DDLogError("RootFolderLoadingView - loadModelTask - error: \(failure)")
             }
+            self.folderResult = result
         })
     }
     
-    public func uploadAction(dismiss: DismissAction) {
-        guard let parentFolder else { return }
+    public func areNamesValid(parentFolder: VCSFolderResponse) -> Bool {
+        return itemsLocalNameAndPath.allSatisfy { FilenameValidator.isNameValid(ownerLogin: parentFolder.ownerLogin, storage: parentFolder.storageTypeString, prefix: parentFolder.prefix, name: $0.itemName) }
+    }
+    
+    public func uploadAction(parentFolder: VCSFolderResponse, dismiss: DismissAction) {
         var jobFiles: [UploadJobLocalFile] = []
         
         itemsLocalNameAndPath.forEach { item in

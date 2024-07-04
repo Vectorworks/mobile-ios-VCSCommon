@@ -21,9 +21,9 @@ struct FolderChooserSub: View {
     @State var selectedStorage: VCSStorageResponse?
     
     var routeData: FCRouteData
-    @State var resultFolder: Result<VCSFolderResponse, Error>?
+    @State var loadingFolder: Result<VCSFolderResponse, Error>?
     
-    @Binding var result: VCSFolderResponse?
+    @Binding var result: Result<VCSFolderResponse, Error>?
     @Environment(\.dismiss) var dismiss
     
     func sortedByName(folders: [VCSFolderResponse]?) -> [VCSFolderResponse] {
@@ -33,7 +33,7 @@ struct FolderChooserSub: View {
     }
     
     var body: some View {
-        switch resultFolder {
+        switch loadingFolder {
         case .success(let currentFolder):
             ScrollViewReader { value in
                 ScrollView(.horizontal) {
@@ -50,10 +50,10 @@ struct FolderChooserSub: View {
                         }
                         .padding(.trailing, 8)
                         .confirmationDialog("", isPresented: $showStorageChooser) {
-                            StorageChooserLoadingButtons(path: $path, rootRouteData: $rootRouteData, resultFolder: $resultFolder, showStorageChooser: $showStorageChooser, showPagesChooser: $showPagesChooser, selectedStorage: $selectedStorage)
+                            StorageChooserLoadingButtons(path: $path, rootRouteData: $rootRouteData, resultFolder: $loadingFolder, showStorageChooser: $showStorageChooser, showPagesChooser: $showPagesChooser, selectedStorage: $selectedStorage)
                         }
                         .confirmationDialog("", isPresented: $showPagesChooser) {
-                            PagesLoadingButtons(path: $path, rootRouteData: $rootRouteData, resultFolder: $resultFolder, selectedStorage: $selectedStorage, showPagesChooser: $showPagesChooser)
+                            PagesLoadingButtons(path: $path, rootRouteData: $rootRouteData, resultFolder: $loadingFolder, selectedStorage: $selectedStorage, showPagesChooser: $showPagesChooser)
                         }
                         
                         Button(currentFolder.storageTypeDisplayString) {
@@ -105,10 +105,10 @@ struct FolderChooserSub: View {
                     }
                     .alertNewFolder(isPresented: $showNewFolderAlert, currentFolder: currentFolder, onSuccess: {
                         path.append(FCRouteData(folder: $0))
-                        resultFolder = nil
+                        loadingFolder = nil
                     })
                     Button {
-                        self.result = currentFolder
+                        self.result = .success(currentFolder)
                         dismiss()
                     } label: {
                         Text(FolderChooserSettings.selectButtonTitle.vcsLocalized)
@@ -116,7 +116,7 @@ struct FolderChooserSub: View {
                 }
             }
             .onChange(of: rootRouteData) { newValue in
-                self.resultFolder = newValue.folderResult
+                self.loadingFolder = newValue.folderResult
             }
         case .failure(let error):
             Text(error.localizedDescription)
@@ -129,17 +129,17 @@ struct FolderChooserSub: View {
     
     private func loadFolder() {
         guard routeData.resourceURI.isEmpty == false else {
-            resultFolder = .failure(VCSError.GenericException("resourceURI is nil"))
+            loadingFolder = .failure(VCSError.GenericException("resourceURI is nil"))
             return
         }
         
         APIClient.folderAsset(assetURI: routeData.resourceURI).execute { (result: Result<VCSFolderResponse, Error>) in
-            resultFolder = result
+            loadingFolder = result
         }
     }
     
     func deleteFolder(at offsets: IndexSet) {
-        let itemsToDelete = offsets.compactMap { (try? self.resultFolder?.get().subfolders.sorted(by: { $0.name.lowercased() < $1.name.lowercased() }))?[$0] }
+        let itemsToDelete = offsets.compactMap { (try? self.loadingFolder?.get().subfolders.sorted(by: { $0.name.lowercased() < $1.name.lowercased() }))?[$0] }
         itemsToDelete.forEach { (itemToDelete: VCSFolderResponse) in
             APIClient.deleteAsset(asset: itemToDelete).execute(onSuccess: { (res: VCSEmptyResponse) in
                 //TODO: iiliev FC
@@ -148,7 +148,7 @@ struct FolderChooserSub: View {
                 storage.delete(item: itemToDelete)
                 DDLogDebug("\(itemToDelete.name) - deleted")
                 NotificationCenter.postNotification(name: FolderChooserSettings.updateLocalDataSourcesNotification, userInfo: ["file" : itemToDelete])
-                try? self.resultFolder?.get().removeFolder(itemToDelete)
+                try? self.loadingFolder?.get().removeFolder(itemToDelete)
             }, onFailure: {(error: Error) in
                 DDLogError("\(itemToDelete.name) - deleted: \(error.localizedDescription)")
             })
