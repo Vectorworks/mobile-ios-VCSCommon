@@ -119,7 +119,9 @@ public struct FileUploadView: View, KeyboardReadable {
                     }
                 }
                 .sheet(isPresented: $isFolderChooserPresented, content: {
-                    FolderChooser(routeData: FCRouteData(folder: modelParentFolder), folderResult: $model.folderResult)
+                    FolderChooser(routeData: FCRouteData(folder: modelParentFolder), folderResult: $model.folderResult) {
+                        isFolderChooserPresented = false
+                    }
                 })
                 .onReceive(keyboardPublisher) { newIsKeyboardVisible in
                     isKeyboardVisible = newIsKeyboardVisible
@@ -129,10 +131,8 @@ public struct FileUploadView: View, KeyboardReadable {
                     Label(title: {
                         Text(failure.localizedDescription)
                     }, icon: {
-                        Image(systemName: "status-warning-big")
+                        Image(systemName: "exclamationmark.triangle")
                     })
-                    Text(failure.localizedDescription)
-                    Divider()
                     Button {
                         dismiss()
                     } label: {

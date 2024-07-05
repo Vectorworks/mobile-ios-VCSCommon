@@ -108,7 +108,18 @@ struct FileChooserSub: View {
 //                self.resultFolder = newValue.folderResult
 //            }
         case .failure(let error):
-            Text(error.localizedDescription)
+            VStack {
+                Label(title: {
+                    Text(error.localizedDescription)
+                }, icon: {
+                    Image(systemName: "exclamationmark.triangle")
+                })
+                Button {
+                    dismissChooser()
+                } label: {
+                    Text("Close".vcsLocalized)
+                }
+            }
             //            ErrorView(error: error, retryHandler: loadFolder)
         case nil:
             ProgressView()
