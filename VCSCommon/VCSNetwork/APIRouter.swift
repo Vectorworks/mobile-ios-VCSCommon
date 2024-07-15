@@ -52,7 +52,7 @@ public enum APIRouter: URLRequestConvertible {
     case socketPreSignedUri
     case listPresentations(limit: Int, offset: Int)
     case presentationDownload(presentationUIID: String)
-    
+    case listVCDOCComments(username: String, storageType: String, storagePath: String)
     
     // MARK: - requestURL
     private var requestURL: VCSRequestURL {
@@ -146,6 +146,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .presentationDownload:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .listVCDOCComments:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         }
     }
     
@@ -321,6 +323,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/iboards/"
         case .presentationDownload(let presentationUIID):
             return "/iboards/\(presentationUIID)/download/"
+        case .listVCDOCComments(let username, let storageType, let storagePath):
+            return "\(storageType.lowercased())/file/:comments/o:\(username)/p:\(storagePath)/"
         }
     }
     

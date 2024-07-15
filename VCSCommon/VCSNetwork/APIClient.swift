@@ -251,6 +251,10 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.presentationDownload(presentationUIID: uuid))
     }
     
+    public static func listVCDOCComments(username: String, storageType: String, storagePath: String) -> Future<VCSListVCDOCCommentsResponse, Error> {
+        return performRequest(route: APIRouter.listVCDOCComments(username: username, storageType: storageType, storagePath: storagePath))
+    }
+    
     public static func fileData(owner: String, storage: String, filePrefix: String, updateFromStorage: Bool = false, googleDriveID: String? = nil, googleDriveVerID: String? = nil) -> Future<VCSFileResponse, Error> {
         return performRequest(route: APIRouter.fileData(owner: owner, storage: storage, filePrefix: filePrefix, updateFromStorage: updateFromStorage, googleDriveID: googleDriveID, googleDriveVerID: googleDriveVerID))
     }
