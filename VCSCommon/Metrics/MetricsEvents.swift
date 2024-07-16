@@ -24,6 +24,7 @@ public class MetricsEvent: NSObject {
     public static let LIST_ACTION__ITEM_OPEN__PANORAMA_UNITY              = "list_action__item_open__panorama_unity"
     public static let LIST_ACTION__ITEM_OPEN__VIDEO_UNITY                 = "list_action__item_open__video_unity"
     public static let LIST_ACTION__ITEM_OPEN__PTS_VIEWER                  = "list_action__item_open__pts_viewer"
+    public static let LIST_ACTION__ITEM_OPEN__VCDOC_VIEWER                = "list_action__item_open__vcdoc_viewer"
     
     public static let LIST_ACTION__ADD__SINGLE_PHOTO_UPLOAD               = "list_action__add__single_photo_upload"
     public static let LIST_ACTION__ADD__CREATE_FOLDER                     = "list_action__add__create_folder"
