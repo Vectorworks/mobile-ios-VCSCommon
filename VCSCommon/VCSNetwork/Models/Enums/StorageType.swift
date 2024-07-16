@@ -7,6 +7,10 @@ public enum StorageType: String, Codable, Equatable {
     case GOOGLE_DRIVE = "google_drive"
     case ONE_DRIVE = "one_drive"
     
+    var storageTypeString: String {
+        return self.rawValue
+    }
+    
     public var displayName: String {
         switch self {
         case .INTERNAL:

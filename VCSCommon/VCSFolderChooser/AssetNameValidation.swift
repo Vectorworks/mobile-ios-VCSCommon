@@ -1,53 +1,48 @@
 import Foundation
 
-public enum AssetNameValidationResult<ValidationError: Error> {
-    case valid
-    case invalid(ValidationError)
-}
-
 public enum FilenameValidationError: Error {
     case empty, containsInvalidCharacters, exists
+    
+    public var localizedErrorText: String {
+        switch self {
+        case .empty:
+            return "Empty Filename".vcsLocalized
+        case .containsInvalidCharacters:
+            return "Unsupported characters".vcsLocalized
+        case .exists:
+            return "File with the same name already exists".vcsLocalized
+        }
+    }
 }
 
 public enum FolderNameValidationError: Error {
-    case lengthy, containsInvalidCaharacters
+    case lengthy, containsInvalidChaaracters
     
-    public var localizedDescription: String {
+    public var localizedErrorText: String {
         switch self {
         case .lengthy:
             return "The maximum length is 255 characters.".vcsLocalized
-        case .containsInvalidCaharacters:
+        case .containsInvalidChaaracters:
             return "\("The following characters are invalid:".vcsLocalized)\(VCSCommonConstants.invalidCharacterListStringFormat)"
         }
     }
 }
 
 public class FilenameValidator {
-    public static func isNameValid(ownerLogin: String, storage: String, prefix: String, name: String) -> Bool {
-        if name.isEmpty {
-            return false
-        } else if FolderNameValidator.doesAssetNameContainsIllegalSymbols(name) {
-            return false
-        } else if FilenameValidator.doesExist(ownerLogin: ownerLogin, storage: storage, prefix: prefix) {
-            return false
-        }
-        
-        return true
-    }
-    
-    public static func validateFilename(ownerLogin: String, storage: String, prefix: String) -> AssetNameValidationResult<FilenameValidationError> {
+    public static func validateFilename(ownerLogin: String, storage: String, prefix: String) ->
+    Result<String, FilenameValidationError> {
         let name = prefix.lastPathComponent
         if name.isEmpty {
-            return .invalid(.empty)
+            return .failure(FilenameValidationError.empty)
         }
         else if FolderNameValidator.doesAssetNameContainsIllegalSymbols(name) {
-            return .invalid(.containsInvalidCharacters)
+            return .failure(FilenameValidationError.containsInvalidCharacters)
         }
         else if FilenameValidator.doesExist(ownerLogin: ownerLogin, storage: storage, prefix: prefix) {
-            return .invalid(.exists)
+            return .failure(FilenameValidationError.exists)
         }
         
-        return .valid
+        return .success(name)
     }
 
     public static func doesExist(ownerLogin: String, storage: String, prefix: String) -> Bool {
@@ -63,19 +58,19 @@ public class FilenameValidator {
         return false
     }
     
-    public static func validateMeasureProjectPath(path: String) -> AssetNameValidationResult<FilenameValidationError> {
+    public static func validateMeasureProjectPath(path: String) -> Result<String, FilenameValidationError> {
         let name = path.lastPathComponent
         if name.isEmpty {
-            return .invalid(.empty)
+            return .failure(FilenameValidationError.empty)
         }
         else if FolderNameValidator.doesAssetNameContainsIllegalSymbols(name) {
-            return .invalid(.containsInvalidCharacters)
+            return .failure(FilenameValidationError.containsInvalidCharacters)
         }
         else if FilenameValidator.doesMeasureProjectExist(path: path) {
-            return .invalid(.exists)
+            return .failure(FilenameValidationError.exists)
         }
         
-        return .valid
+        return .success(name)
     }
     
     public static func doesMeasureProjectExist(path: String) -> Bool {
@@ -88,12 +83,12 @@ public struct FolderNameValidator {
         return name.rangeOfCharacter(from: VCSCommonConstants.invalidCharacterSet) != nil
     }
     
-    public static func validate(_ name: String) -> AssetNameValidationResult<FolderNameValidationError> {
+    public static func validate(_ name: String) -> Result<String, FolderNameValidationError> {
         if name.count > 255 {
-            return .invalid(.lengthy)
+            return .failure(FolderNameValidationError.lengthy)
         } else if doesAssetNameContainsIllegalSymbols(name) {
-            return .invalid(.containsInvalidCaharacters)
+            return .failure(FolderNameValidationError.containsInvalidChaaracters)
         }
-        return .valid
+        return .success(name)
     }
 }
