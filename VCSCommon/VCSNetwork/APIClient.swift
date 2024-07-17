@@ -392,6 +392,10 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.socketPreSignedUri)
     }
     
+    public static func sendVCDOCReply(replyData: VCSVWViewerReplyRequest) -> Future<VCSVCDOCReplyResult, Error> {
+        return performRequest(route: APIRouter.sendVCDOCReply(replyData: replyData))
+    }
+    
     //MARK: - DOWNLOAD
     // key here is file.id. The files that we compare are not actually the same object for some reason
     public static var downloads = [String : Download]()
