@@ -53,6 +53,7 @@ public enum APIRouter: URLRequestConvertible {
     case listPresentations(limit: Int, offset: Int)
     case presentationDownload(presentationUIID: String)
     case listVCDOCComments(username: String, storageType: String, storagePath: String)
+    case sendVCDOCReply(replyData: VCSVWViewerReplyRequest)
     
     // MARK: - requestURL
     private var requestURL: VCSRequestURL {
@@ -148,6 +149,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .listVCDOCComments:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
+        case .sendVCDOCReply(_):
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         }
     }
     
@@ -190,6 +193,8 @@ public enum APIRouter: URLRequestConvertible {
             return .delete
         case .mountFolder:
             return .put
+        case .sendVCDOCReply:
+            return .post
         default:
             return .get
         }
@@ -325,6 +330,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/iboards/\(presentationUIID)/download/"
         case .listVCDOCComments(let username, let storageType, let storagePath):
             return "\(storageType.lowercased())/file/:comments/o:\(username)/p:\(storagePath)/"
+        case .sendVCDOCReply:
+            return "/reply/"
         }
     }
     
@@ -364,6 +371,8 @@ public enum APIRouter: URLRequestConvertible {
         case .mountFolder(_, _, _, let mountValue):
             let actionValue = mountValue ? "mount" : "unmount"
             return [K.APIParameterKey.mountFolder.action: actionValue]
+        case .sendVCDOCReply(let replyData):
+            return replyData.asDictionary()
         default:
             return nil
         }
@@ -758,6 +767,8 @@ public enum APIRouter: URLRequestConvertible {
         case .sendFeedback:
             urlRequest.setValue(VCSServer.default.serverURLString, forHTTPHeaderField: HTTPHeaderField.referer.rawValue)
         case .ssoTempUserToken(_):
+            urlRequest.setValue(VCSServer.default.serverURLString, forHTTPHeaderField: HTTPHeaderField.referer.rawValue)
+        case .sendVCDOCReply:
             urlRequest.setValue(VCSServer.default.serverURLString, forHTTPHeaderField: HTTPHeaderField.referer.rawValue)
         default:
             break
