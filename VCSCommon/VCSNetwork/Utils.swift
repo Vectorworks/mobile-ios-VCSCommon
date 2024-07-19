@@ -312,6 +312,10 @@ public enum VCSNetworkErrorCode: Int {
     case forbidden = 403
     case notFound = 404
     case preconditionRequired = 428
+    
+    public var responseCode: Int {
+        return self.rawValue
+    }
 }
 
 public extension Data {

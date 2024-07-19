@@ -16,7 +16,7 @@ public enum StorageType: String, Codable, Equatable {
         case .INTERNAL:
             return "Internal".vcsLocalized
         case .S3:
-            return "Home".vcsLocalized
+            return "My files".vcsLocalized
         case .DROPBOX:
             return "Dropbox"
         case .GOOGLE_DRIVE:
