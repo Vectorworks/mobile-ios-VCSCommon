@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 public struct K {
     public struct APIParameterKey {
@@ -31,6 +32,52 @@ public struct K {
         public struct mountFolder {
             static public let action = "action"
         }
+    }
+    
+    public struct VCSIconStrings {
+        public static let status_warning = "status-warning-big"
+        public static let file = "file"
+        public static let folder = "folder"
+    }
+    
+    public struct Sizes {
+        static public var gridMinCellSize: CGFloat  {
+            if (UIDevice.current.userInterfaceIdiom == .pad) {
+                200
+            } else {
+                150
+            }
+        }
+        
+        static public var gridMaxCellSize: CGFloat {
+            if (UIDevice.current.userInterfaceIdiom == .pad) {
+                220
+            } else {
+                170
+            }
+        }
+        
+        static public var gridCellImageSize: CGFloat {
+            if (UIDevice.current.userInterfaceIdiom == .pad) {
+                170
+            } else {
+                130
+            }
+        }
+        
+        static public var gridCellImageBackgroundSize: CGFloat {
+            if (UIDevice.current.userInterfaceIdiom == .pad) {
+                200
+            } else {
+                160
+            }
+        }
+        
+        static public let gridBadgeSize: CGFloat = 20
+        
+        static public let gridBadgeFrameSize: CGFloat = 30
+        
+        static public let gridTextFrameSize: CGFloat = 50
     }
 }
 

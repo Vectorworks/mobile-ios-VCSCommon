@@ -24,6 +24,8 @@ let package = Package(
         .package(url: "https://github.com/realm/realm-swift.git", exact: "10.50.1"),
         .package(url: "https://github.com/scalessec/Toast-Swift.git", exact: "5.1.0"),
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "10.26.0"),
+        .package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.19.1"),
+        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI.git", exact: "3.0.2"),
         
         .package(url: "https://github.com/Vectorworks/OAuth2.git", exact: "5.2.2"),
     ],
@@ -42,6 +44,8 @@ let package = Package(
                 .product(name: "FirebaseCrashlytics", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseDynamicLinks", package: "firebase-ios-sdk"),
                 .product(name: "FirebasePerformance", package: "firebase-ios-sdk"),
+                .product(name: "SDWebImage", package: "SDWebImage"),
+                .product(name: "SDWebImageSwiftUI", package: "SDWebImageSwiftUI"),
                 
                 .product(name: "OAuth2", package: "OAuth2"),
             ],

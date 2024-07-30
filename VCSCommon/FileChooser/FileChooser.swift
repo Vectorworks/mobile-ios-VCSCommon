@@ -2,53 +2,59 @@ import SwiftUI
 import CocoaLumberjackSwift
 
 public struct FileChooser: View {
-    @State var isPathSetup: Bool
-    @State var path: [FCRouteData]
-    @State var resultFolder: VCSFileResponse?
-    @State var filterExtensions: [VCSFileType]
-    var itemPickedCompletion: ((VCSFileResponse) -> Void)?
-    var dismissChooser: (() -> Void)
+    @StateObject var viewModel: FileChooserViewModel
     
-    public init(isPathSetup: Bool = false, path: [FCRouteData] = [], resultFolder: VCSFileResponse? = nil, filterExtensions: [VCSFileType], itemPickedCompletion: ((VCSFileResponse) -> Void)? = nil, dismissChooser: @escaping (() -> Void)) {
-        self.isPathSetup = isPathSetup
-        self.path = path
-        self.resultFolder = resultFolder
-        self.filterExtensions = filterExtensions
+    private var itemPickedCompletion: ((VCSFileResponse) -> Void)?
+    
+    private var onDismiss: (() -> Void)
+    
+    public init(
+        fileTypeFilter: FileTypeFilter,
+        itemPickedCompletion: ((VCSFileResponse) -> Void)? = nil,
+        onDismiss: @escaping (() -> Void)
+    ) {
+        let s3ResourceUri = VCSUser.savedUser?.availableStorages.first(where: { $0.storageType == .S3 })?.folderURI ?? ""
+        let initialPath = [FCRouteData(resourceURI: s3ResourceUri, breadcrumbsName: "Home")]
+        _viewModel = StateObject(wrappedValue:FileChooserViewModel(fileTypeFilter: fileTypeFilter, initialPath: initialPath))
         self.itemPickedCompletion = itemPickedCompletion
-        self.dismissChooser = dismissChooser
+        self.onDismiss = onDismiss
     }
     
     public var body: some View {
-        NavigationStack(path: $path) {
-            let resourceURI = VCSUser.savedUser?.availableStorages.first(where: { $0.storageType == .S3 })?.folderURI ?? ""
-            FileChooserSub(path: $path, resourceURI: resourceURI, filterExtensions: $filterExtensions, itemPickedCompletion: itemPickedCompletion, dismissChooser: dismissChooser, result: $resultFolder)
-                .navigationDestination(for: FCRouteData.self) { routeValue in
-                    FileChooserSub(path: $path, resourceURI: routeValue.resourceURI, filterExtensions: $filterExtensions, itemPickedCompletion: itemPickedCompletion, dismissChooser: dismissChooser, result: $resultFolder)
-                }
+        NavigationStack(path: $viewModel.path) {
+            FileExplorerView(
+                fileTypeFilter: viewModel.fileTypeFilter,
+                path: $viewModel.path,
+                currentFolderResourceUri: viewModel.initialFolderResourceUri,
+                itemPickedCompletion: itemPickedCompletion,
+                onDismiss: onDismiss
+            )
+            .navigationDestination(for: FCRouteData.self) { routeValue in
+                FileExplorerView(
+                    fileTypeFilter: viewModel.fileTypeFilter,
+                    path: $viewModel.path,
+                    currentFolderResourceUri: routeValue.resourceURI,
+                    itemPickedCompletion: itemPickedCompletion,
+                    onDismiss: onDismiss
+                )
+            }
         }
-        .tint(.label)
-//        .onAppear() {
-//            if let folderResponse = routeData.folderResponse, isPathSetup == false {
-//                isPathSetup = true
-//                let routePrefixes = folderResponse.prefix.split(separator: "/")
-//                var resourceURIBase = String(folderResponse.resourceURI.split(separator: "p:").first ?? "")
-//                var isFirst = true
-//                routePrefixes.forEach {
-//                    let prefix = String($0)
-//                    let pathComponent = isFirst ? "p:" + prefix : prefix
-//                    isFirst = false
-//                    resourceURIBase = resourceURIBase.appendingPathComponent(pathComponent).VCSNormalizedURLString()
-//                    let pathRoute = FCRouteData(resourceURI: resourceURIBase, breadcrumbsName: prefix)
-//                    
-//                    path.append(pathRoute)
-//                    DDLogDebug("Folder Chooser adding to path: \(pathRoute.resourceURI)")
-//                }
-//                DDLogDebug("Folder Chooser path value: \(path.compactMap({ $0.resourceURI }))")
-//            }
-//        }
+        .tint(.VCSTeal)
     }
 }
 
-#Preview {
-    FileChooser(filterExtensions: [VCSFileType.VWX], dismissChooser: {})
+class FileChooserViewModel: ObservableObject {
+    @Published var path: [FCRouteData]
+    
+    @Published var fileTypeFilter: FileTypeFilter
+    
+    var initialFolderResourceUri: String {
+        VCSUser.savedUser?.availableStorages.first(where: { $0.storageType == .S3 })?.folderURI ?? ""
+    }
+    
+    init(fileTypeFilter: FileTypeFilter, initialPath: [FCRouteData] = []) {
+        self.fileTypeFilter = fileTypeFilter
+        self.path = initialPath
+    }
 }
+
