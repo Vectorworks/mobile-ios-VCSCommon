@@ -1,102 +1,49 @@
 import Foundation
+import SwiftData
+import CocoaLumberjackSwift
 
-public class VCSFolderResponse: NSObject, Asset, Codable {
+@Model
+public final class VCSFolderResponse: Asset, Codable, Hashable {
     
     public static var addToCacheRootFolderID: String?
     
+    public var isFolder: Bool { return true }
+    public var isFile: Bool { return false }
     
-    private(set) public var isFolder = true
-    private(set) public var isFile = false
+    public var resourceURI: String
+    public var resourceID: String
+    public var exists: Bool
+    public var isNameValid: Bool
+    public var name: String
+    public var prefix: String
     
-    public var VCSID: String
     
-    public var resourceURI: String = ""
-    public var resourceID: String = ""
-    public var exists: Bool = false
-    public var isNameValid: Bool = false
-    public var name: String = ""
-    public var prefix: String = ""
-    
-    public var displayedPrefix: String {
-        var result = self.storageTypeDisplayString
-        let prefixes = self.prefix.split(separator: "/")
-        prefixes.forEach {
-            result = result.appendingPathComponent(String($0))
-        }
-        return result
-    }
-    
+    @Relationship(deleteRule: .cascade)
     public var sharingInfo: VCSSharingInfoResponse?
+    @Relationship(deleteRule: .cascade)
     public var flags: VCSFlagsResponse?
+    @Relationship(deleteRule: .cascade)
     public var ownerInfo: VCSOwnerInfoResponse?
-    public var storageType: StorageType = .S3
-    public var storageTypeString: String { return self.storageType.rawValue }
-    public var storageTypeDisplayString: String { return self.storageType.displayName }
+    
+    public var storageType: StorageType// = StorageType.S3
     
     private(set) public var ownerLogin: String
-    public func updateSharedOwnerLogin(_ login: String) {
-        self.subfolders.forEach { $0.updateSharedOwnerLogin(login) }
-        self.files.forEach { $0.updateSharedOwnerLogin(login) }
-        self.ownerLogin = login
-    }
+    
     
     public let parent: String?
-    public let autoprocessParent: String?
+    public let autoProcessParent: String?
     
+    @Relationship(deleteRule: .nullify, inverse: \VCSFileResponse.parentFolder)
     private(set) public var files: [VCSFileResponse]
+    @Relationship(deleteRule: .nullify, inverse: \VCSFolderResponse.parentFolder)
     private(set) public var subfolders: [VCSFolderResponse]
     
-    public func appendFile(_ file: VCSFileResponse) {
-        self.files.append(file)
-        VCSCache.addToCache(item: self)
+    private(set) public var parentFolder: VCSFolderResponse?
+    
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(rID)
     }
-    
-    public func removeFile(_ file: VCSFileResponse) {
-        if let index = self.files.firstIndex(of: file) {
-            self.files.remove(at: index)
-        }
-        VCSCache.addToCache(item: self)
-    }
-    
-    public func appendShallowFolder(_ folder: VCSFolderResponse) {
-        self.subfolders.append(folder)
-        VCSCache.addToCache(item: self)
-    }
-    
-    public func removeFolder(_ folder: VCSFolderResponse) {
-        if let index = self.subfolders.firstIndex(of: folder) {
-            self.subfolders.remove(at: index)
-        }
-        VCSCache.addToCache(item: self)
-    }
-    
-    public var cachedFiles: [VCSFileResponse]? { return self.files.filter { return $0.isAvailableOnDevice } }
-    
-    public func loadLocalFiles() {
-        self.subfolders.forEach {
-            $0.loadLocalFiles()
-        }
-        self.files.forEach {
-            $0.loadLocalFiles()
-        }
-    }
-    
-    public func updateSharingInfo(other: VCSSharingInfoResponse) {
-        self.sharingInfo = other
-        VCSCache.addToCache(item: self, forceNilValuesUpdate: true)
-    }
-
-    public lazy var sortingDate: Date = { return Date() }()
-    
-    public var realStorage: String { return self.ownerInfo?.mountPoint?.storageType.rawValue ?? self.storageType.rawValue }
-    public var realPrefix: String {
-        let isMountPoint = self.flags?.isMountPoint ?? false
-        let mountPointPath = self.ownerInfo?.mountPoint?.path.VCSNormalizedURLString() ?? self.prefix
-        let prefix = self.prefix
-        let result = isMountPoint ? mountPointPath : prefix
-        return result
-    }
-    
     
     
     
@@ -134,18 +81,14 @@ public class VCSFolderResponse: NSObject, Asset, Codable {
         self.files = (try? container.decode([VCSFileResponse].self, forKey: CodingKeys.files)) ?? []
         self.parent = try? container.decode(String.self, forKey: CodingKeys.parent)
         self.subfolders = (try? container.decode([VCSFolderResponse].self, forKey: CodingKeys.subfolders)) ?? []
-        self.autoprocessParent = try? container.decode(String.self, forKey: CodingKeys.autoprocessParent)
+        self.autoProcessParent = try? container.decode(String.self, forKey: CodingKeys.autoprocessParent)
         
-        self.ownerLogin = self.ownerInfo?.owner ?? VCSUser.savedUser?.login ?? ""
+        self.ownerLogin = "" //self.ownerInfo?.owner ?? VCSUser.savedUser?.login ?? ""
         
         if self.resourceID == "__invalid__",
            self.name == "" {
             self.resourceID = self.storageType.itemIdentifier.appendingPathComponent(self.prefix)
         }
-        
-        self.VCSID = self.resourceID
-                
-        super.init()
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -164,7 +107,7 @@ public class VCSFolderResponse: NSObject, Asset, Codable {
 //        try container.encode(self.files, forKey: CodingKeys.files)
         try container.encode(self.parent, forKey: CodingKeys.parent)
 //        try container.encode(self.subfolders, forKey: CodingKeys.subfolders)
-        try container.encode(self.autoprocessParent, forKey: CodingKeys.autoprocessParent)
+        try container.encode(self.autoProcessParent, forKey: CodingKeys.autoprocessParent)
         
         try container.encode(self.isFolder, forKey: CodingKeys.isFolder)
     }
@@ -200,14 +143,90 @@ public class VCSFolderResponse: NSObject, Asset, Codable {
         self.files = files
         self.parent = parent
         self.subfolders = subfolders
-        self.autoprocessParent = autoprocessParent
+        self.autoProcessParent = autoprocessParent
         self.ownerLogin = ownerLogin
-        self.VCSID = VCSID
+    }
+}
+
+extension VCSFolderResponse: Equatable {
+    final public class func ==(lhs: VCSFolderResponse, rhs: VCSFolderResponse) -> Bool {
+        return lhs.rID == rhs.rID
+    }
+}
+
+extension VCSFolderResponse {
+    public var storageTypeString: String { return self.storageType.rawValue }
+    public var storageTypeDisplayString: String { return self.storageType.displayName }
+    
+    public var displayedPrefix: String {
+        var result = self.storageTypeDisplayString
+        let prefixes = self.prefix.split(separator: "/")
+        prefixes.forEach {
+            result = result.appendingPathComponent(String($0))
+        }
+        return result
+    }
+    
+    public func updateSharedOwnerLogin(_ login: String) {
+        self.subfolders.forEach { $0.updateSharedOwnerLogin(login) }
+        self.files.forEach { $0.updateSharedOwnerLogin(login) }
+        self.ownerLogin = login
+    }
+    
+    public func appendFile(_ file: VCSFileResponse) {
+        self.files.append(file)
+        self.addToCache()
+    }
+    
+    public func removeFile(_ file: VCSFileResponse) {
+        if let index = self.files.firstIndex(of: file) {
+            self.files.remove(at: index)
+        }
+        self.addToCache()
+    }
+    
+    public func appendShallowFolder(_ folder: VCSFolderResponse) {
+        self.subfolders.append(folder)
+        self.addToCache()
+    }
+    
+    public func removeFolder(_ folder: VCSFolderResponse) {
+        if let index = self.subfolders.firstIndex(of: folder) {
+            self.subfolders.remove(at: index)
+        }
+        self.addToCache()
+    }
+    
+    public var cachedFiles: [VCSFileResponse]? { return self.files.filter { return $0.isAvailableOnDevice } }
+    
+    public func loadLocalFiles() {
+        self.subfolders.forEach {
+            $0.loadLocalFiles()
+        }
+        self.files.forEach {
+            $0.loadLocalFiles()
+        }
+    }
+    
+    public func updateSharingInfo(other: VCSSharingInfoResponse) {
+        self.sharingInfo = other
+        self.addToCache(forceNilValuesUpdate: true)
+    }
+
+    public var sortingDate: Date { return Date() }
+    
+    public var realStorage: String { return self.ownerInfo?.mountPoint?.storageType.rawValue ?? self.storageType.rawValue }
+    public var realPrefix: String {
+        let isMountPoint = self.flags?.isMountPoint ?? false
+        let mountPointPath = self.ownerInfo?.mountPoint?.path.VCSNormalizedURLString() ?? self.prefix
+        let prefix = self.prefix
+        let result = isMountPoint ? mountPointPath : prefix
+        return result
     }
 }
 
 extension VCSFolderResponse: VCSCellPresentable {
-    public var rID: String { return self.VCSID }
+    public var rID: String { return self.resourceID }
     public var hasWarning: Bool { return (self.flags?.hasWarning ?? true) }
     public var isShared: Bool { return (self.sharingInfo?.isShared ?? false) }
     public var hasLink: Bool { return !(self.sharingInfo?.link.isEmpty ?? true) }
@@ -234,28 +253,18 @@ extension VCSFolderResponse: VCSCellDataHolder {
     }
 }
 
-extension VCSFolderResponse: VCSCachable {
-    public typealias RealmModel = RealmFolder
-    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSFolderResponse.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSFolderResponse.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSFolderResponse.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSFolderResponse.realmStorage.addOrUpdate(item: self)
+extension VCSFolderResponse: VCSCacheable {
+    public func addToCacheLogic(modelContext: ModelContext) {
+        self.files.forEach { $0.addToCache() }
+        self.subfolders.forEach { $0.addToCache() }
+        modelContext.insert(self)
+        if modelContext.hasChanges {
+            do {
+                try modelContext.save()
+            } catch {
+                DDLogError("VCSCacheable - addToCache \(self) error: \(error)")
+            }
         }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSFolderResponse.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSFolderResponse.realmStorage.delete(item: self)
     }
 }
 

@@ -1,137 +1,117 @@
 import Foundation
-import RealmSwift
+import SwiftData
 
-class RealmJobFileVersionRequest: Object, VCSRealmObject {
-    typealias Model = JobFileVersionRequest
-    
-    @Persisted(primaryKey: true) var RealmID: String = ""
-    @Persisted var path: String = ""
-    @Persisted var provider: String = ""
-    @Persisted var owner: String = ""
-    @Persisted var isFolder: Bool = true
-    
-    required convenience init(model: JobFileVersionRequest) {
-        self.init()
-        self.path = model.path
-        self.provider = model.provider
-        self.owner = model.owner
-        self.isFolder = model.isFolder
-        self.RealmID = "\(self.path)/\(self.provider)"
-    }
-    
-    public var entity: JobFileVersionRequest {
-        return JobFileVersionRequest(path: self.path, provider: self.provider, owner: self.owner, isFolder: self.isFolder)
-    }
-    
-    public var partialUpdateModel: [String : Any] {
-        return [
-            "RealmID" : self.RealmID
-            , "path" : self.path
-            , "provider" : self.provider
-            , "owner" : self.owner
-            , "isFolder" : self.isFolder
-        ]
-    }
-}
+//import RealmSwift
+//
+//class RealmJobFileVersionRequest: Object, VCSRealmObject {
+//    typealias Model = JobFileVersionRequest
+//    
+//    @Persisted(primaryKey: true) var RealmID: String = ""
+//    @Persisted var path: String = ""
+//    @Persisted var provider: String = ""
+//    @Persisted var owner: String = ""
+//    @Persisted var isFolder: Bool = true
+//    
+//    required convenience init(model: JobFileVersionRequest) {
+//        self.init()
+//        self.path = model.path
+//        self.provider = model.provider
+//        self.owner = model.owner
+//        self.isFolder = model.isFolder
+//        self.RealmID = "\(self.path)/\(self.provider)"
+//    }
+//    
+//    public var entity: JobFileVersionRequest {
+//        return JobFileVersionRequest(path: self.path, provider: self.provider, owner: self.owner, isFolder: self.isFolder)
+//    }
+//    
+//    public var partialUpdateModel: [String : Any] {
+//        return [
+//            "RealmID" : self.RealmID
+//            , "path" : self.path
+//            , "provider" : self.provider
+//            , "owner" : self.owner
+//            , "isFolder" : self.isFolder
+//        ]
+//    }
+//}
+//
+//class RealmPhotogramOptionsRequest: Object, VCSRealmObject {
+//    typealias Model = PhotogramOptionsRequest
+//    @Persisted var RealmID: String = ""
+//    @Persisted var srcStorageType: String = ""
+//    @Persisted var outputStorageType: String = ""
+//    @Persisted var outputLocation: String = ""
+//    dynamic var srcFileVersions: List<RealmJobFileVersionRequest> = List()
+//    
+//    required convenience init(model: PhotogramOptionsRequest) {
+//        self.init()
+//        self.srcStorageType = model.srcStorageType
+//        self.outputStorageType = model.outputStorageType
+//        self.outputLocation = model.outputLocation
+//        let realmJobFileVersions = List<RealmJobFileVersionRequest>()
+//        model.srcFileVersions.forEach {
+//            realmJobFileVersions.append(RealmJobFileVersionRequest(model: $0))
+//        }
+//        self.srcFileVersions = realmJobFileVersions
+//        self.RealmID = self.outputStorageType
+//    }
+//    
+//    public var entity: PhotogramOptionsRequest {
+//        return PhotogramOptionsRequest(srcStorageType: self.srcStorageType, outputStorageType: self.outputStorageType, outputLocation: self.outputLocation, srcFileVersions: self.srcFileVersions.compactMap { $0.entity })
+//    }
+//    
+//    public var partialUpdateModel: [String : Any] {
+//        return [
+//            "RealmID" : self.RealmID
+//            , "srcStorageType" : self.srcStorageType
+//            , "outputStorageType" : self.outputStorageType
+//            , "outputLocation" : self.outputLocation
+//            , "srcFileVersions" : self.srcFileVersions.compactMap { $0.partialUpdateModel }
+//        ]
+//    }
+//}
+//
+//public class RealmPhotogramJobRequest: Object, VCSRealmObject {
+//    public typealias Model = PhotogramJobRequest
+//    
+//    @Persisted(primaryKey: true) public var RealmID: String = ""
+//    @Persisted var fileName: String = ""
+//    @Persisted var jobType: String = ""
+//    @Persisted var fileVersion: RealmJobFileVersionRequest!
+//    @Persisted var options: RealmPhotogramOptionsRequest!
+//    @Persisted var owner: String = ""
+//    @Persisted var isQueued: Bool = false
+//    
+//    public required convenience init(model: PhotogramJobRequest) {
+//        self.init()
+//        self.fileName = model.fileName
+//        self.jobType = model.jobType
+//        self.fileVersion = RealmJobFileVersionRequest(model: model.fileVersion)
+//        self.options = RealmPhotogramOptionsRequest(model: model.options)
+//        let owner = VCSUser.savedUser?.login ?? ""
+//        self.owner = owner
+//        self.isQueued = model.isQueued
+//        self.RealmID = "\(owner)/\(self.jobType)/\(self.fileName)"
+//    }
+//    
+//    public var entity: PhotogramJobRequest {
+//        return PhotogramJobRequest(fileName: self.fileName, jobType: self.jobType, fileVersion: self.fileVersion.entity, options: self.options.entity, isQueued: self.isQueued)
+//    }
+//    
+//    public var partialUpdateModel: [String : Any] {
+//        return [
+//            "fileName" : self.fileName
+//            , "jobType" : self.jobType
+//            , "fileVersion" : self.fileVersion.partialUpdateModel
+//            , "options" : self.options.partialUpdateModel
+//            , "isQueued" : self.isQueued
+//        ]
+//    }
+//}
 
-class RealmPhotogramOptionsRequest: Object, VCSRealmObject {
-    typealias Model = PhotogramOptionsRequest
-    @Persisted var RealmID: String = ""
-    @Persisted var srcStorageType: String = ""
-    @Persisted var outputStorageType: String = ""
-    @Persisted var outputLocation: String = ""
-    dynamic var srcFileVersions: List<RealmJobFileVersionRequest> = List()
-    
-    required convenience init(model: PhotogramOptionsRequest) {
-        self.init()
-        self.srcStorageType = model.srcStorageType
-        self.outputStorageType = model.outputStorageType
-        self.outputLocation = model.outputLocation
-        let realmJobFileVersions = List<RealmJobFileVersionRequest>()
-        model.srcFileVersions.forEach {
-            realmJobFileVersions.append(RealmJobFileVersionRequest(model: $0))
-        }
-        self.srcFileVersions = realmJobFileVersions
-        self.RealmID = self.outputStorageType
-    }
-    
-    public var entity: PhotogramOptionsRequest {
-        return PhotogramOptionsRequest(srcStorageType: self.srcStorageType, outputStorageType: self.outputStorageType, outputLocation: self.outputLocation, srcFileVersions: self.srcFileVersions.compactMap { $0.entity })
-    }
-    
-    public var partialUpdateModel: [String : Any] {
-        return [
-            "RealmID" : self.RealmID
-            , "srcStorageType" : self.srcStorageType
-            , "outputStorageType" : self.outputStorageType
-            , "outputLocation" : self.outputLocation
-            , "srcFileVersions" : self.srcFileVersions.compactMap { $0.partialUpdateModel }
-        ]
-    }
-}
-
-public class RealmPhotogramJobRequest: Object, VCSRealmObject {
-    public typealias Model = PhotogramJobRequest
-    
-    @Persisted(primaryKey: true) public var RealmID: String = ""
-    @Persisted var fileName: String = ""
-    @Persisted var jobType: String = ""
-    @Persisted var fileVersion: RealmJobFileVersionRequest!
-    @Persisted var options: RealmPhotogramOptionsRequest!
-    @Persisted var owner: String = ""
-    @Persisted var isQueued: Bool = false
-    
-    public required convenience init(model: PhotogramJobRequest) {
-        self.init()
-        self.fileName = model.fileName
-        self.jobType = model.jobType
-        self.fileVersion = RealmJobFileVersionRequest(model: model.fileVersion)
-        self.options = RealmPhotogramOptionsRequest(model: model.options)
-        let owner = VCSUser.savedUser?.login ?? ""
-        self.owner = owner
-        self.isQueued = model.isQueued
-        self.RealmID = "\(owner)/\(self.jobType)/\(self.fileName)"
-    }
-    
-    public var entity: PhotogramJobRequest {
-        return PhotogramJobRequest(fileName: self.fileName, jobType: self.jobType, fileVersion: self.fileVersion.entity, options: self.options.entity, isQueued: self.isQueued)
-    }
-    
-    public var partialUpdateModel: [String : Any] {
-        return [
-            "fileName" : self.fileName
-            , "jobType" : self.jobType
-            , "fileVersion" : self.fileVersion.partialUpdateModel
-            , "options" : self.options.partialUpdateModel
-            , "isQueued" : self.isQueued
-        ]
-    }
-}
-
-public class PhotogramJobRequest: NSObject, Codable, VCSCachable {
-    public typealias RealmModel = RealmPhotogramJobRequest
-    public static let realmStorage = VCSGenericRealmModelStorage<RealmPhotogramJobRequest>()
-    
-    public func addToCache() {
-        PhotogramJobRequest.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if PhotogramJobRequest.realmStorage.getByIdOfItem(item: self) != nil {
-            PhotogramJobRequest.realmStorage.partialUpdate(item: self)
-        } else {
-            PhotogramJobRequest.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        PhotogramJobRequest.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        PhotogramJobRequest.realmStorage.delete(item: self)
-    }
-
+@Model
+public final class PhotogramJobRequest: Codable {
     public let fileName: String
     public let jobType: String
     public let fileVersion: JobFileVersionRequest
@@ -153,6 +133,30 @@ public class PhotogramJobRequest: NSObject, Codable, VCSCachable {
         self.options = options
         self.isQueued = isQueued
     }
+    
+    public required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        fileName = try container.decode(String.self, forKey: .fileName)
+        jobType = try container.decode(String.self, forKey: .jobType)
+        fileVersion = try container.decode(JobFileVersionRequest.self, forKey: .fileVersion)
+        options = try container.decode(PhotogramOptionsRequest.self, forKey: .options)
+    }
+    
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(fileName, forKey: .fileName)
+        try container.encode(jobType, forKey: .jobType)
+        try container.encode(fileVersion, forKey: .fileVersion)
+        try container.encode(options, forKey: .options)
+        try container.encode(isQueued, forKey: .isQueued)
+    }
+}
+
+extension PhotogramJobRequest: VCSCacheable {
+    public var rID: String { return fileName + jobType }
+    
 }
 
 public class JobFileVersionRequest: NSObject, Codable {

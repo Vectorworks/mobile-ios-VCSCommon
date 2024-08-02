@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol Asset: VCSCachable {
+public protocol Asset: VCSCacheable {
     var resourceURI: String { get }
     var resourceID: String { get }
     var exists: Bool { get }
@@ -19,8 +19,6 @@ public protocol Asset: VCSCachable {
     var ownerLogin: String { get }
     
     var isAvailableOnDevice: Bool { get }
-    var rID: String { get }
-    var VCSID: String { get }
     func updateSharingInfo(other: VCSSharingInfoResponse)
     func updateSharedOwnerLogin(_ login: String)
     func loadLocalFiles()

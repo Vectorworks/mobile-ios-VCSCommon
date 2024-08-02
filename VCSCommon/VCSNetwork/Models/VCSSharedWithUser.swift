@@ -1,6 +1,8 @@
 import Foundation
+import SwiftData
 
-public class VCSSharedWithUser: NSObject, Codable {
+@Model
+public final class VCSSharedWithUser: Codable {
     public let email: String
     public let login: String?
     public let username: String?
@@ -42,27 +44,7 @@ public class VCSSharedWithUser: NSObject, Codable {
     }
 }
 
-extension VCSSharedWithUser: VCSCachable {
-    public typealias RealmModel = RealmSharedWithUser
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
+extension VCSSharedWithUser: VCSCacheable {
+    public var rID: String { return login ?? VCSUUID().systemUUID.uuidString }
     
-    public func addToCache() {
-        VCSSharedWithUser.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSSharedWithUser.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSSharedWithUser.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSSharedWithUser.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSSharedWithUser.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSSharedWithUser.realmStorage.delete(item: self)
-    }
 }

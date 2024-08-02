@@ -46,7 +46,7 @@ public struct NewFolderAlert: ViewModifier {
                         showAlertError = true
                     } else {
                         APIClient.createFolder(storage: currentFolder.storageType, name: folderName, parentFolderPrefix: currentFolder.prefix, owner: currentFolder.ownerLogin).execute(onSuccess: { (result: VCSFolderResponse) in
-                            VCSCache.addToCache(item: result)
+                            result.addToCache()
                             folderName = ""
                             onSuccess?(result)
                         }, onFailure: { (error: Error) in

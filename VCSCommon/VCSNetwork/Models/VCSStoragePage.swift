@@ -1,5 +1,6 @@
-import UIKit
 import Foundation
+import UIKit
+import SwiftData
 
 public typealias StoragePagesList = [StoragePage]
 
@@ -9,11 +10,15 @@ public enum StoragePageConstants: String {
 }
 
 
-public class StoragePage: NSObject, Codable {
+@Model
+public final class StoragePage: Codable {
     public static let driveIDRegXPattern: String = "driveId_[\\w\\-$!]+"
     public static let driveIDSharedRegXPattern: String = "driveId_sharedWithMe[\\w\\-$!]+"
     public static let driveIDSharedOneDriveRegXPattern: String = "driveId_sharedWithMeOneDrive[\\w\\-$!]+"
-    public let id, name, folderURI: String
+    
+    public let id: String
+    public let name: String
+    public let folderURI: String
     public let sharedPaths: [String]?
     
     enum CodingKeys: String, CodingKey {
@@ -27,6 +32,24 @@ public class StoragePage: NSObject, Codable {
         self.name = name
         self.folderURI = folderURI
         self.sharedPaths = sharedPaths
+    }
+    
+    required public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.id = try container.decode(String.self, forKey: CodingKeys.id)
+        self.name = try container.decode(String.self, forKey: CodingKeys.name)
+        self.folderURI = try container.decode(String.self, forKey: CodingKeys.folderURI)
+        self.sharedPaths = try container.decode([String]?.self, forKey: CodingKeys.sharedPaths)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(self.id, forKey: CodingKeys.id)
+        try container.encode(self.name, forKey: CodingKeys.name)
+        try container.encode(self.folderURI, forKey: CodingKeys.folderURI)
+        try container.encode(self.sharedPaths, forKey: CodingKeys.sharedPaths)
     }
     
     public func storageImage() -> UIImage? {
@@ -73,35 +96,16 @@ public class StoragePage: NSObject, Codable {
 
 extension StoragePage {
     public static func getNameFromURI(_ uri: String) -> String {
-        let result = StoragePage.realmStorage.getAll().first(where: { (page: StoragePage) in uri.contains(page.id) })
-        
-        guard result?.name != StorageType.ONE_DRIVE.displayName else { return "" }
-        
-        return result?.displayName ?? ""
+        //TODO: REALM_CHANGE
+        return ""
+//        let result = StoragePage.realmStorage.getAll().first(where: { (page: StoragePage) in uri.contains(page.id) })
+//        
+//        guard result?.name != StorageType.ONE_DRIVE.displayName else { return "" }
+//        
+//        return result?.displayName ?? ""
     }
 }
 
-extension StoragePage: VCSCachable {
-    public typealias RealmModel = VCSRealmStoragPages
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        StoragePage.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if StoragePage.realmStorage.getByIdOfItem(item: self) != nil {
-            StoragePage.realmStorage.partialUpdate(item: self)
-        } else {
-            StoragePage.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        StoragePage.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        StoragePage.realmStorage.delete(item: self)
-    }
+extension StoragePage: VCSCacheable {
+    public var rID: String { return id }
 }

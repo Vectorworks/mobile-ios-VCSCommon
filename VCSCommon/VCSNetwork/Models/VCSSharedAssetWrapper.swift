@@ -1,12 +1,27 @@
 import Foundation
+import SwiftData
 
-public class VCSSharedAssetWrapper: NSObject, SharedAsset, Codable {
-    public let asset: Asset
+@Model
+public final class VCSSharedAssetWrapper: SharedAsset, Codable {
+    //TODO: check cast
+    public var asset: Asset { return self.fileAsset ?? self.folderAsset! }
+    
+    public let fileAsset: VCSFileResponse?
+    public let folderAsset: VCSFolderResponse?
+    
     public let assetType: AssetType
     public let resourceURI: String
+    public let VCSID: String
     
     init(asset: Asset, assetType: AssetType, resourceURI: String) {
-        self.asset = asset
+        if assetType == .folder {
+            self.folderAsset = asset as? VCSFolderResponse
+            self.VCSID = (asset as? VCSFolderResponse)?.rID ?? "nil"
+        } else {
+            self.fileAsset = asset as? VCSFileResponse
+            self.VCSID = (asset as? VCSFileResponse)?.rID ?? "nil"
+        }
+        
         self.assetType = assetType
         self.resourceURI = resourceURI
     }
@@ -19,14 +34,19 @@ public class VCSSharedAssetWrapper: NSObject, SharedAsset, Codable {
     
     required public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.assetType = try container.decode(AssetType.self, forKey: CodingKeys.assetType)
+        let assetType = try container.decode(AssetType.self, forKey: CodingKeys.assetType)
+        self.assetType = assetType
         self.resourceURI = try container.decode(String.self, forKey: CodingKeys.resourceURI)
         
-        switch self.assetType {
+        switch assetType {
         case .file:
-            self.asset = try container.decode(VCSFileResponse.self, forKey: CodingKeys.asset)
+            let fileAsset = try container.decode(VCSFileResponse.self, forKey: CodingKeys.asset)
+            self.fileAsset = fileAsset
+            self.VCSID = fileAsset.rID
         case .folder:
-            self.asset = try container.decode(VCSFolderResponse.self, forKey: CodingKeys.asset)
+            let folderAsset = try container.decode(VCSFolderResponse.self, forKey: CodingKeys.asset)
+            self.folderAsset = folderAsset
+            self.VCSID = folderAsset.rID
         }
     }
     
@@ -67,27 +87,6 @@ extension VCSSharedAssetWrapper: VCSCellDataHolder {
     }
 }
 
-extension VCSSharedAssetWrapper: VCSCachable {
-    public typealias RealmModel = RealmSharedAsset
-    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSSharedAssetWrapper.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSSharedAssetWrapper.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSSharedAssetWrapper.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSSharedAssetWrapper.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSSharedAssetWrapper.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSSharedAssetWrapper.realmStorage.delete(item: self)
-    }
+extension VCSSharedAssetWrapper: VCSCacheable {
+    public var rID: String { return VCSID }
 }

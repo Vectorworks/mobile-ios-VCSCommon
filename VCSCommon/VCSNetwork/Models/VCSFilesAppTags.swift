@@ -1,6 +1,8 @@
 import Foundation
+import SwiftData
 
-public class VCSFilesAppTags: NSObject {
+@Model
+public final class VCSFilesAppTags {
     public let tagData: Data?
     public var realmID: String = VCSUUID().systemUUID.uuidString
     
@@ -10,27 +12,6 @@ public class VCSFilesAppTags: NSObject {
     }
 }
 
-extension VCSFilesAppTags: VCSCachable {
-    public typealias RealmModel = RealmFilesAppTags
-    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSFilesAppTags.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSFilesAppTags.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSFilesAppTags.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSFilesAppTags.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSFilesAppTags.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSFilesAppTags.realmStorage.delete(item: self)
-    }
+extension VCSFilesAppTags: VCSCacheable {
+    public var rID: String { return realmID }
 }

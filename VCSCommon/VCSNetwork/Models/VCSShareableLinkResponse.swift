@@ -1,12 +1,21 @@
 import Foundation
+import SwiftData
 
-public class VCSShareableLinkResponse: NSObject, SharedAsset, Codable {
-    public let link, uuid, expires: String
+@Model
+public final class VCSShareableLinkResponse: SharedAsset, Codable {
+    public let link: String
+    public let uuid: String
+    public let expires: String
     public let dateCreated: String
     public let resourceURI: String
     
+    @Relationship(deleteRule: .cascade)
     public let owner: VCSShareableLinkOwner
-    public let asset: Asset
+    public var asset: Asset { return self.fileAsset ?? self.folderAsset! }
+    @Relationship(deleteRule: .nullify)
+    public let fileAsset: VCSFileResponse?
+    @Relationship(deleteRule: .nullify)
+    public let folderAsset: VCSFolderResponse?
     public let assetType: AssetType
     
     
@@ -30,15 +39,11 @@ public class VCSShareableLinkResponse: NSObject, SharedAsset, Codable {
         self.uuid = try container.decode(String.self, forKey: CodingKeys.uuid)
         self.expires = try container.decode(String.self, forKey: CodingKeys.expires)
         self.dateCreated = try container.decode(String.self, forKey: CodingKeys.dateCreated)
-        self.assetType = try container.decode(AssetType.self, forKey: CodingKeys.assetType)
+        let assetType = try container.decode(AssetType.self, forKey: CodingKeys.assetType)
+        self.assetType = assetType
         self.resourceURI = try container.decode(String.self, forKey: CodingKeys.resourceURI)
         
-        switch self.assetType {
-        case .file:
-            self.asset = try container.decode(VCSFileResponse.self, forKey: CodingKeys.asset)
-        case .folder:
-            self.asset = try container.decode(VCSFolderResponse.self, forKey: CodingKeys.asset)
-        }
+        
         
         let branding = try container.decode(VCSSharedAssetBrandingResponse.self, forKey: CodingKeys.branding)
         let owner = try container.decode(String.self, forKey: CodingKeys.owner)
@@ -46,7 +51,16 @@ public class VCSShareableLinkResponse: NSObject, SharedAsset, Codable {
         let ownerName = try container.decode(String.self, forKey: CodingKeys.ownerName)
         self.owner = VCSShareableLinkOwner(branding: branding, owner: owner, ownerEmail: ownerEmail, ownerName: ownerName)
         
-        self.asset.updateSharedOwnerLogin(owner)
+        switch assetType {
+        case .file:
+            let fileAsset = try container.decode(VCSFileResponse.self, forKey: CodingKeys.asset)
+            self.fileAsset = fileAsset
+            fileAsset.updateSharedOwnerLogin(owner)
+        case .folder:
+            let folderAsset = try container.decode(VCSFolderResponse.self, forKey: CodingKeys.asset)
+            self.folderAsset = folderAsset
+            folderAsset.updateSharedOwnerLogin(owner)
+        }
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -81,7 +95,11 @@ public class VCSShareableLinkResponse: NSObject, SharedAsset, Codable {
         self.dateCreated = dateCreated
         self.resourceURI = resourceURI
         
-        self.asset = asset
+        if assetType == .folder {
+            self.folderAsset = asset as? VCSFolderResponse
+        } else {
+            self.fileAsset = asset as? VCSFileResponse
+        }
         self.assetType = assetType
         self.owner = owner
         
@@ -106,27 +124,6 @@ extension VCSShareableLinkResponse: VCSCellDataHolder {
 }
 
 
-extension VCSShareableLinkResponse: VCSCachable {
-    public typealias RealmModel = RealmShareableLinkResponse
-    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSShareableLinkResponse.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSShareableLinkResponse.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSShareableLinkResponse.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSShareableLinkResponse.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSShareableLinkResponse.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSShareableLinkResponse.realmStorage.delete(item: self)
-    }
+extension VCSShareableLinkResponse: VCSCacheable {
+    public var rID: String { return link }
 }

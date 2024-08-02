@@ -1,9 +1,10 @@
 import Foundation
-import RealmSwift
+import SwiftData
 import CocoaLumberjackSwift
 
-public class UploadJobLocalFile: NSObject, Identifiable {
-    public enum UploadingState: String {
+@Model
+public final class UploadJobLocalFile: Identifiable, Equatable {
+    public enum UploadingState: String, Codable {
         case Ready
         case Waiting
         case Uploading
@@ -23,7 +24,7 @@ public class UploadJobLocalFile: NSObject, Identifiable {
     
     public var related: [UploadJobLocalFile]
     
-    public var uploadingState: UploadingState = .Ready
+    public var uploadingState: UploadingState = UploadingState.Ready
     
     public var parentUploadJob: UploadJob? {
         return UploadJob.uploadJobs.first { $0.localFiles.contains(where: { (localFile: UploadJobLocalFile) in localFile.VCSID == self.VCSID }) }
@@ -40,7 +41,6 @@ public class UploadJobLocalFile: NSObject, Identifiable {
         self.uploadPathSuffix = UUIDString
         self.related = related
         
-        super.init()
         
         //move files to uploads temp folder and save only the suffix
         if self.uploadPathURL.exists == false {
@@ -51,7 +51,7 @@ public class UploadJobLocalFile: NSObject, Identifiable {
                     try FileManager.default.moveItem(at: tempFileURL, to: self.uploadPathURL)
                 }
             } catch { 
-                DDLogError("UploadJobLocalFile init(ownerLogin: " + error.localizedDescription)
+                DDLogError("UploadJobLocalFile init(ownerLogin: error: \(error.localizedDescription)")
                 return nil
             }
             
@@ -68,8 +68,6 @@ public class UploadJobLocalFile: NSObject, Identifiable {
         self.uploadPathSuffix = uploadPathSuffix
         self.uploadingState = uploadingState
         self.related = related
-        
-        super.init()
     }
     
     final public class func ==(lhs: UploadJobLocalFile, rhs: UploadJobLocalFile) -> Bool {
@@ -77,16 +75,17 @@ public class UploadJobLocalFile: NSObject, Identifiable {
     }
     
     public static func resetStateOnStartUp() {
-        let uploadingLocalFiles = VCSRealmDB.realm.objects(RealmUploadJobLocalFile.self).where({
-            $0.uploadingState == UploadingState.Waiting.rawValue
-            || $0.uploadingState == UploadingState.Uploading.rawValue
-            || $0.uploadingState == UploadingState.Error.rawValue
-        })
-        try? VCSRealmDB.realm.write {
-            uploadingLocalFiles.forEach {
-                $0.uploadingState = UploadingState.Ready.rawValue
-            }
-        }
+        //TODO: REALM_CHANGE
+//        let uploadingLocalFiles = VCSRealmDB.realm.objects(RealmUploadJobLocalFile.self).where({
+//            $0.uploadingState == UploadingState.Waiting.rawValue
+//            || $0.uploadingState == UploadingState.Uploading.rawValue
+//            || $0.uploadingState == UploadingState.Error.rawValue
+//        })
+//        try? VCSRealmDB.realm.write {
+//            uploadingLocalFiles.forEach {
+//                $0.uploadingState = UploadingState.Ready.rawValue
+//            }
+//        }
     }
     
     public var isNameValid: Bool {
@@ -94,7 +93,7 @@ public class UploadJobLocalFile: NSObject, Identifiable {
     }
     
     //always show local files for upload on top when sorting by date
-    public lazy var sortingDate: Date = { return Date() }()
+    public var sortingDate: Date { return Date() }
 }
 
 extension UploadJobLocalFile: FileCellPresentable {
@@ -155,29 +154,5 @@ extension UploadJobLocalFile: FileAsset {
     public var realPrefix: String { return self.prefix.VCSNormalizedURLString() }
 }
 
-extension UploadJobLocalFile: VCSCachable {
-    public typealias RealmModel = RealmUploadJobLocalFile
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-
-    public func addToCache() {
-        UploadJobLocalFile.realmStorage.addOrUpdate(item: self)
-    }
-
-    public func addOrPartialUpdateToCache() {
-        if UploadJobLocalFile.realmStorage.getByIdOfItem(item: self) != nil {
-            UploadJobLocalFile.realmStorage.partialUpdate(item: self)
-        } else {
-            UploadJobLocalFile.realmStorage.addOrUpdate(item: self)
-        }
-    }
-
-    public func partialUpdateToCache() {
-        UploadJobLocalFile.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        self.related.forEach { $0.deleteFromCache() }
-        AssetUploader.removeUploadedFileFromAPIClient(self)
-        UploadJobLocalFile.realmStorage.delete(item: self)
-    }
+extension UploadJobLocalFile: VCSCacheable {
 }

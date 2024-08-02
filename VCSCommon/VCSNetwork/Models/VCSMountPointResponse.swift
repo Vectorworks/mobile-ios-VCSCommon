@@ -1,48 +1,53 @@
 import Foundation
+import SwiftData
 
-public class VCSMountPointResponse: NSObject, Codable {
-    public var realmID: String = VCSUUID().systemUUID.uuidString
+@Model
+public final class VCSMountPointResponse: Codable {
+    public var modelID: String = VCSUUID().systemUUID.uuidString
     
     public let storageType: StorageType
-    public let prefix, path, mountPath: String
+    public let prefix: String
+    public let path: String
+    public let mountPath: String
     
-    enum CodingKeys: String, CodingKey {
-        case storageType = "storage_type"
-        case prefix = "prefix"
-        case path = "path"
-        case mountPath = "mount_path"
-    }
-    
-    public init(storageType: StorageType, prefix: String, path: String, mountPath: String, realmID: String) {
-        self.realmID = realmID
+    public init(storageType: StorageType, prefix: String, path: String, mountPath: String, modelID: String) {
+        self.modelID = modelID
         self.storageType = storageType
         self.prefix = prefix
         self.path = path
         self.mountPath = mountPath
     }
+    
+    //MARK: - Codable
+    enum CodingKeys: String, CodingKey {
+        case modelID
+        case storageType = "storage_type"
+        case prefix = "prefix"
+        case path = "path"
+        case mountPath = "mount_path"
+        case _$backingData
+        case _$observationRegistrar
+    }
+    
+    public required init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        storageType = try container.decode(StorageType.self, forKey: .storageType)
+        prefix = try container.decode(String.self, forKey: .prefix)
+        path = try container.decode(String.self, forKey: .path)
+        mountPath = try container.decode(String.self, forKey: .mountPath)
+    }
+    
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(storageType, forKey: .storageType)
+        try container.encode(prefix, forKey: .prefix)
+        try container.encode(path, forKey: .path)
+        try container.encode(mountPath, forKey: .mountPath)
+    }
 }
 
-extension VCSMountPointResponse: VCSCachable {
-    public typealias RealmModel = RealmMountPoint
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSMountPointResponse.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSMountPointResponse.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSMountPointResponse.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSMountPointResponse.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSMountPointResponse.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSMountPointResponse.realmStorage.delete(item: self)
-    }
+extension VCSMountPointResponse: VCSCacheable {
+    public var rID: String { return modelID }
 }

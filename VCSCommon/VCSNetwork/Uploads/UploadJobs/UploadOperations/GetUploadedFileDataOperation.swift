@@ -18,7 +18,7 @@ class GetUploadedFileDataOperation: AsyncOperation {
         guard let uploadResponse = self.uploadResponseResult else {
             DDLogInfo("Skipping GetUplaodedFileDataOperation - \(localFile.name)")
             self.localFile.uploadingState = .Error
-            VCSCache.addToCache(item: self.localFile)
+            self.localFile.addToCache()
             self.state = .finished
             return
         }

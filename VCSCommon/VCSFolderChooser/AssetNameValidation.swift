@@ -47,13 +47,14 @@ public class FilenameValidator {
 
     public static func doesExist(ownerLogin: String, storage: String, prefix: String) -> Bool {
         let predicate = NSPredicate(format: "ownerLogin == %@ && storageType == %@ && prefix == %@", ownerLogin, storage, prefix)
-        if VCSGenericRealmModelStorage<VCSFileResponse.RealmModel>().getAll(predicate: predicate).first != nil {
-            return true
-        }
-        
-        if VCSGenericRealmModelStorage<UploadJobLocalFile.RealmModel>().getAll(predicate: predicate).first != nil {
-            return true
-        }
+        //TODO: REALM_CHANGE
+//        if VCSGenericRealmModelStorage<VCSFileResponse.RealmModel>().getAll(predicate: predicate).first != nil {
+//            return true
+//        }
+//        
+//        if VCSGenericRealmModelStorage<UploadJobLocalFile.RealmModel>().getAll(predicate: predicate).first != nil {
+//            return true
+//        }
         
         return false
     }

@@ -22,22 +22,22 @@ class UploadDataOperation: AsyncOperation {
         DDLogVerbose("Executing \(String(describing: self)) - with params: operationID: \(self.localFile.name), owner: \(self.localFile.ownerLogin), storage: \(self.localFile.storageTypeString), filePrefix: \(self.localFile.prefix), size: \(self.localFile.size)")
         
         self.localFile.uploadingState = .Waiting
-        VCSCache.addToCache(item: self.localFile)
+        self.localFile.addToCache()
         APIClient.getUploadURL(owner: self.localFile.ownerLogin, storage: self.localFile.storageTypeString, filePrefix: self.localFile.prefix, size: self.localFile.sizeAsInt).execute(onSuccess: { (result: VCSUploadURL) in
             self.localFile.uploadingState = .Uploading
-            VCSCache.addToCache(item: self.localFile)
+            self.localFile.addToCache()
             
             guard self.localFile.uploadPathURL.exists else {
                 DDLogInfo("File does not exists: \(self.localFile.uploadPathURL)")
                 self.localFile.uploadingState = .Error
-                VCSCache.addToCache(item: self.localFile)
+                self.localFile.addToCache()
                 self.state = .finished
                 return
             }
             guard let request = try? APIRouter.uploadFileURL(uploadURL: result).asURLRequest() else {
                 DDLogInfo("URL convetions failed")
                 self.localFile.uploadingState = .Error
-                VCSCache.addToCache(item: self.localFile)
+                self.localFile.addToCache()
                 self.state = .finished
                 return
             }

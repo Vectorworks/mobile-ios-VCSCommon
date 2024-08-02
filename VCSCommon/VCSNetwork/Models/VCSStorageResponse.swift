@@ -1,8 +1,12 @@
 import UIKit
 import Foundation
+import SwiftData
 
-public class VCSStorageResponse: NSObject, Codable {
-    public let name, folderURI, fileURI: String
+@Model
+public final class VCSStorageResponse: Codable {
+    public let name: String
+    public let folderURI: String
+    public let fileURI: String
     public let storageType: StorageType
     public let resourceURI: String
     public let autoprocessParent: String?
@@ -35,8 +39,6 @@ public class VCSStorageResponse: NSObject, Codable {
         self.accessType = try? container.decode(String.self, forKey: CodingKeys.accessType)
         self.pagesURL = try? container.decode(String.self, forKey: CodingKeys.pagesURL)
         self.pages = []
-        
-        super.init()
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -64,15 +66,16 @@ public class VCSStorageResponse: NSObject, Codable {
     }
     
     public func loadLocalPagesList() {
-        if self.pages.count == 0, let oldStorage = VCSStorageResponse.realmStorage.getById(id: self.folderURI) {
-            self.pages = oldStorage.pages
-        }
+        //TODO: REALM_CHANGE
+//        if self.pages.count == 0, let oldStorage = VCSStorageResponse.realmStorage.getById(id: self.folderURI) {
+//            self.pages = oldStorage.pages
+//        }
     }
     
     public func setStoragePagesList(storagePages: StoragePagesList) {
         self.pages.removeAll()
         self.pages.append(contentsOf: storagePages)
-        VCSCache.addToCache(item: self)
+        self.addToCache()
     }
     
     public func storageImage() -> UIImage? {
@@ -80,27 +83,6 @@ public class VCSStorageResponse: NSObject, Codable {
     }
 }
 
-extension VCSStorageResponse: VCSCachable {
-    public typealias RealmModel = VCSRealmStorage
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSStorageResponse.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSStorageResponse.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSStorageResponse.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSStorageResponse.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSStorageResponse.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSStorageResponse.realmStorage.delete(item: self)
-    }
+extension VCSStorageResponse: VCSCacheable {
+    public var rID: String { return storageType.rawValue }
 }

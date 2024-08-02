@@ -1,6 +1,17 @@
 import Foundation
+import SwiftData
 
-public class SharedLink {
+public protocol AssetWrapperWithSorting {
+    var rID: String { get }
+    var sortingName: String { get }
+    var sortingDate: Date { get }
+    var sortingSize: String { get }
+    var filterShowingOffline: Bool { get }
+    
+}
+
+@Model
+public final class SharedLink {
     public let isSampleFiles:Bool
     public let link:String
     private(set) public var linkName:String?
@@ -64,22 +75,14 @@ public class SharedLink {
     let unresolvedName = "Unknown link".vcsLocalized
     let unresolvedMoreInfo = "Click to open when internet connection is available.".vcsLocalized
     
-    public lazy var sortingDate: Date = {
-        var result = self.dateCreated
-        if self.isSampleFiles {
-            result = self.sharedAsset?.dateCreated.VCSDateFromISO8061 ?? self.dateCreated
-        }
-        return result
-    }()
-    
     public func updateOwner(_ owner: VCSUser?) {
-        defer { VCSCache.addToCache(item: self, forceNilValuesUpdate: true) }
+        defer { self.addToCache(forceNilValuesUpdate: true) }
         
         self.owner = owner
     }
     
     public func updateLinkDetails(_ linkDetails: LinkDetailsData) {
-        defer { VCSCache.addToCache(item: self, forceNilValuesUpdate: true) }
+        defer { self.addToCache(forceNilValuesUpdate: true) }
         
         self.linkName = linkDetails.title
         if let urlString = linkDetails.thumbnailURL {
@@ -98,7 +101,6 @@ extension SharedLink: FileCellPresentable {
     public var hasLink: Bool { return self.isResolved ? !(self.sharedAsset?.asset.sharingInfo?.link.isEmpty ?? true) : false }
     public var sharingInfoData: VCSSharingInfoResponse? { return self.sharedAsset?.asset.sharingInfo }
     public var isAvailableOnDevice: Bool { return self.sharedAsset?.asset.isAvailableOnDevice ?? false }
-    public var filterShowingOffline: Bool { return self.isResolved ? self.isAvailableOnDevice : true }
     public var lastModifiedString: String { return self.isResolved ? ((self.sharedAsset?.asset as? VCSFileResponse)?.lastModified ?? VCSFileResponse.defaultDateString) : ((self.linkName?.isEmpty ?? true) ? self.unresolvedMoreInfo : "Presentations".vcsLocalized) }
     public var sizeString: String { return self.isResolved ? ((self.sharedAsset?.asset as? VCSFileResponse)?.sizeString ?? "0 B") : "" }
     public var thumbnailURL: URL? { return (self.sharedAsset?.asset as? VCSFileResponse)?.thumbnailURL ?? self.linkThumbnailURL }
@@ -106,6 +108,19 @@ extension SharedLink: FileCellPresentable {
     public var isFolder: Bool { return self.sharedAsset?.asset.isFolder ?? false }
     public var permissions: [String] { return [] }
     public func hasPermission(_ permission: String) -> Bool { self.permissions.contains(permission) }
+}
+
+extension SharedLink: AssetWrapperWithSorting {
+    public var sortingName: String { return self.sharedAsset?.asset.name ?? self.linkName ?? self.unresolvedName }
+    public var sortingDate: Date {
+        var result = self.dateCreated
+        if self.isSampleFiles {
+            result = self.sharedAsset?.dateCreated.VCSDateFromISO8061 ?? self.dateCreated
+        }
+        return result
+    }
+    public var sortingSize: String { return sizeString }
+    public var filterShowingOffline: Bool { return self.isResolved ? self.isAvailableOnDevice : true }
 }
 
 extension SharedLink: VCSCellDataHolder {
@@ -124,27 +139,5 @@ extension SharedLink: VCSCellDataHolder {
     }
 }
 
-extension SharedLink: VCSCachable {
-    public typealias RealmModel = RealmSharedLink
-    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        SharedLink.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if SharedLink.realmStorage.getByIdOfItem(item: self) != nil {
-            SharedLink.realmStorage.partialUpdate(item: self)
-        } else {
-            SharedLink.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        SharedLink.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        SharedLink.realmStorage.delete(item: self)
-    }
+extension SharedLink: VCSCacheable {
 }

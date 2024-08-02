@@ -1,8 +1,10 @@
 import Foundation
+import SwiftData
 import CocoaLumberjackSwift
 
-public class UploadJob: NSObject {
-    public enum JobType: String {
+@Model
+public final class UploadJob {
+    public enum JobType: String, Codable {
         case SingleFileUpload
         case MultipleFileUpload
     }
@@ -22,7 +24,7 @@ public class UploadJob: NSObject {
         self.localFiles = localFiles
         self.parentFolder = parentFolder
         self.owner = owner
-        super.init()
+        
         if UploadJob.uploadJobs.contains(where: { $0.jobID == self.jobID }) == false {
             UploadJob.uploadJobs.append(self)
         }
@@ -35,7 +37,7 @@ public class UploadJob: NSObject {
     func reCheckState(localFile: UploadJobLocalFile) {
         DDLogInfo("UploadJob:reCheckState - \(self.localFiles.filter({ $0.uploadingState == .Done }).count) of \(self.localFiles.count)")
         self.localFiles.removeAll { $0.rID == localFile.rID }
-        VCSCache.addToCache(item: self)
+        self.addToCache()
         UploadJob.deleteUnuploadedFile(localFile)
         guard self.localFiles.allSatisfy({ $0.uploadingState == .Done }) else { return }
         self.deleteFromCache()
@@ -68,31 +70,8 @@ public extension UploadJob {
     }
 }
 
-extension UploadJob: VCSCachable {
-    public typealias RealmModel = RealmUploadJob
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-
-    public func addToCache() {
-        UploadJob.realmStorage.addOrUpdate(item: self)
-    }
-
-    public func addOrPartialUpdateToCache() {
-        if UploadJob.realmStorage.getByIdOfItem(item: self) != nil {
-            UploadJob.realmStorage.partialUpdate(item: self)
-        } else {
-            UploadJob.realmStorage.addOrUpdate(item: self)
-        }
-    }
-
-    public func partialUpdateToCache() {
-        UploadJob.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        UploadJob.deleteUnuploadedFiles(self.localFiles)
-//        self.localFiles.forEach { $0.deleteFromCache() }
-        UploadJob.realmStorage.delete(item: self)
-    }
+extension UploadJob: VCSCacheable {
+    public var rID: String { return jobID }
 }
 
 extension UploadJob {

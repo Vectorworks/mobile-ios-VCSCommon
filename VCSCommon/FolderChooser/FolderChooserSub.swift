@@ -144,8 +144,9 @@ struct FolderChooserSub: View {
             APIClient.deleteAsset(asset: itemToDelete).execute(onSuccess: { (res: VCSEmptyResponse) in
                 //TODO: iiliev FC
 //                FileActions.deleteLocally(asset: itemToDelete)
-                let storage = VCSGenericRealmModelStorage<VCSFolderResponse.RealmModel>()
-                storage.delete(item: itemToDelete)
+                //TODO: REALM_CHANGE
+//                let storage = VCSGenericRealmModelStorage<VCSFolderResponse.RealmModel>()
+//                storage.delete(item: itemToDelete)
                 DDLogDebug("\(itemToDelete.name) - deleted")
                 NotificationCenter.postNotification(name: FolderChooserSettings.updateLocalDataSourcesNotification, userInfo: ["file" : itemToDelete])
                 try? self.loadingFolder?.get().removeFolder(itemToDelete)

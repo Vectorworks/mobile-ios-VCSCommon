@@ -1,18 +1,26 @@
 import Foundation
+import SwiftData
 
-public class VCSSharedWithMeAsset: NSObject, SharedAsset, Codable {
-    public let asset: Asset
+@Model
+public final class VCSSharedWithMeAsset: SharedAsset, Codable, Hashable {
+    //TODO: check cast
+    public var asset: Asset { return self.fileAsset ?? self.folderAsset! }
+    
+    public let fileAsset: VCSFileResponse?
+    public let folderAsset: VCSFolderResponse?
+    
     public let assetType: AssetType
     public let resourceURI: String
-    public let owner, ownerEmail, ownerName, dateCreated: String
+    public let owner: String
+    public let ownerEmail: String
+    public let ownerName: String
+    public let dateCreated: String
     
     public let hasJoined: Bool
     public let permission: [SharedWithMePermission]
     public let sharedParentFolder: String
     public let sharedWithLogin: String?
     public let branding: VCSSharedAssetBrandingResponse?
-    
-    public lazy var sortingDate: Date = { return self.dateCreated.VCSDateFromISO8061 ?? Date() }()
     
     private enum CodingKeys: String, CodingKey {
         case owner
@@ -34,7 +42,12 @@ public class VCSSharedWithMeAsset: NSObject, SharedAsset, Codable {
         self.ownerName = ownerName
         self.dateCreated = dateCreated
         
-        self.asset = asset
+        if assetType == .folder {
+            self.folderAsset = asset as? VCSFolderResponse
+        } else {
+            self.fileAsset = asset as? VCSFileResponse
+        }
+        
         self.assetType = assetType
         self.resourceURI = resourceURI
         
@@ -51,16 +64,17 @@ public class VCSSharedWithMeAsset: NSObject, SharedAsset, Codable {
         self.ownerEmail = try container.decode(String.self, forKey: CodingKeys.ownerEmail)
         self.ownerName = try container.decode(String.self, forKey: CodingKeys.ownerName)
         self.dateCreated = try container.decode(String.self, forKey: CodingKeys.dateCreated)
-        self.assetType = try container.decode(AssetType.self, forKey: CodingKeys.assetType)
-        self.resourceURI = try container.decode(String.self, forKey: CodingKeys.resourceURI)
+        let assetType = try container.decode(AssetType.self, forKey: CodingKeys.assetType)
+        self.assetType = assetType
         
-        switch self.assetType {
+        switch assetType {
         case .file:
-            self.asset = try container.decode(VCSFileResponse.self, forKey: CodingKeys.asset)
+            self.fileAsset = try container.decode(VCSFileResponse.self, forKey: CodingKeys.asset)
         case .folder:
-            self.asset = try container.decode(VCSFolderResponse.self, forKey: CodingKeys.asset)
+            self.folderAsset = try container.decode(VCSFolderResponse.self, forKey: CodingKeys.asset)
         }
         
+        self.resourceURI = try container.decode(String.self, forKey: CodingKeys.resourceURI)
         self.hasJoined = try container.decode(Bool.self, forKey: CodingKeys.hasJoined)
         self.permission = try container.decode([SharedWithMePermission].self, forKey: CodingKeys.permission)
         self.sharedParentFolder = try container.decode(String.self, forKey: CodingKeys.sharedParentFolder)
@@ -106,7 +120,6 @@ extension VCSSharedWithMeAsset: FileCellPresentable {
     public var hasLink: Bool { return !(self.asset.sharingInfo?.link.isEmpty ?? true) }
     public var sharingInfoData: VCSSharingInfoResponse? { return self.asset.sharingInfo }
     public var isAvailableOnDevice: Bool { return self.asset.isAvailableOnDevice }
-    public var filterShowingOffline: Bool { return self.isAvailableOnDevice }
     public var lastModifiedString: String { return (self.asset as? VCSFileResponse)?.lastModified ?? Date().VCSISO8061String }
     public var sizeString: String { return (self.asset as? VCSFileResponse)?.sizeString ?? "0 B" }
     public var thumbnailURL: URL? { return (self.asset as? VCSFileResponse)?.thumbnailURL }
@@ -114,6 +127,13 @@ extension VCSSharedWithMeAsset: FileCellPresentable {
     public var isFolder: Bool { return self.asset.isFolder }
     public var permissions: [String] { return self.permission.map { $0.rawValue } }
     public func hasPermission(_ permission: String) -> Bool { self.permissions.contains(permission) }
+}
+
+extension VCSSharedWithMeAsset: AssetWrapperWithSorting {
+    public var sortingName: String { return name }
+    public var sortingDate: Date { return self.dateCreated.VCSDateFromISO8061 ?? Date() }
+    public var sortingSize: String { return sizeString }
+    public var filterShowingOffline: Bool { return self.isAvailableOnDevice }
 }
 
 extension VCSSharedWithMeAsset: VCSCellDataHolder {
@@ -132,33 +152,11 @@ extension VCSSharedWithMeAsset: VCSCellDataHolder {
     }
 }
 
-extension VCSSharedWithMeAsset: VCSCachable {
-    public typealias RealmModel = RealmSharedWithMeAsset
-    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSSharedWithMeAsset.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSSharedWithMeAsset.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSSharedWithMeAsset.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSSharedWithMeAsset.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSSharedWithMeAsset.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSSharedWithMeAsset.realmStorage.delete(item: self)
-    }
+extension VCSSharedWithMeAsset: VCSCacheable {
 }
 
 extension VCSSharedWithMeAsset {
-    static func == (lhs: VCSSharedWithMeAsset, rhs: VCSSharedWithMeAsset) -> Bool {
+    public static func == (lhs: VCSSharedWithMeAsset, rhs: VCSSharedWithMeAsset) -> Bool {
         return lhs.asset.rID == rhs.asset.rID
     }
 }

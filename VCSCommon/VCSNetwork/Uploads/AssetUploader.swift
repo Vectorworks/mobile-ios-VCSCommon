@@ -26,13 +26,14 @@ public class AssetUploader: NSObject {
     public func upload(_ PDFTempFile: URL, pdfMetadata: FileAsset, newName name: String, thumbnail: UploadJobLocalFile?, owner: String) {
         guard let unuploadedPDF = PDF.construct(relatedTo: pdfMetadata, withName: name, PDFTempFile: PDFTempFile, thumbnail: thumbnail) else { return }
         
-        let storage = VCSGenericRealmModelStorage<VCSFileResponse.RealmModel>()
-        if let oldFile = storage.getById(id: unuploadedPDF.rID) {
-            storage.delete(item: oldFile)
-        }
+        //TODO: REALM_CHANGE
+//        let storage = VCSGenericRealmModelStorage<VCSFileResponse.RealmModel>()
+//        if let oldFile = storage.getById(id: unuploadedPDF.rID) {
+//            storage.delete(item: oldFile)
+//        }
         
         let uploadJob = UploadJob(localFile: unuploadedPDF, owner: owner, parentFolder: nil)
-        VCSCache.addToCache(item: uploadJob)
+        uploadJob.addToCache()
         uploadJob.startUploadOperations(singleFileCompletion: { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
@@ -64,7 +65,7 @@ public class AssetUploader: NSObject {
         }
         
         let uploadJob = UploadJob(localFile: unuploadedFile, owner: owner, parentFolder: nil)
-        VCSCache.addToCache(item: uploadJob)
+        uploadJob.addToCache()
         uploadJob.startUploadOperations() { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
@@ -83,7 +84,7 @@ public class AssetUploader: NSObject {
         }
         
         let uploadJob = UploadJob(localFile: unuploadedFile, owner: owner, parentFolder: nil)
-        VCSCache.addToCache(item: uploadJob)
+        uploadJob.addToCache()
         uploadJob.startUploadOperations() { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
@@ -96,13 +97,13 @@ public class AssetUploader: NSObject {
     }
     
     public func upload(uploadJob: UploadJob, singleFileCompletion: ((Result<VCSFileResponse, Error>) -> Void)? = nil, multiFileCompletion: ((Result<[VCSFileResponse], Error>) -> Void)? = nil) {
-        VCSCache.addToCache(item: uploadJob)
+        uploadJob.addToCache()
         uploadJob.startUploadOperations(singleFileCompletion: singleFileCompletion, multiFileCompletion: multiFileCompletion)
     }
     
     public func upload(unuploadedFiles: [UploadJobLocalFile], owner: String, withCompletionHandler handler: ((Result<[VCSFileResponse], Error>) -> Void)?) {
         let uploadJob = UploadJob(localFiles: unuploadedFiles, owner: owner, parentFolder: nil)
-        VCSCache.addToCache(item: uploadJob)
+        uploadJob.addToCache()
         uploadJob.startUploadOperations(multiFileCompletion: { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
@@ -121,7 +122,7 @@ public class AssetUploader: NSObject {
         }
         
         let uploadJob = UploadJob(localFiles: unuploadedPhotos, owner: owner, parentFolder: nil)
-        VCSCache.addToCache(item: uploadJob)
+        uploadJob.addToCache()
         uploadJob.startUploadOperations(multiFileCompletion: { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
@@ -151,7 +152,7 @@ public class AssetUploader: NSObject {
         }
         
         let uploadJob = UploadJob(localFiles: unuploadedFiles, owner: owner, parentFolder: nil)
-        VCSCache.addToCache(item: uploadJob)
+        uploadJob.addToCache()
         uploadJob.startUploadOperations(multiFileCompletion: { (result) in
             NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
             switch result {
@@ -172,23 +173,24 @@ public class AssetUploader: NSObject {
             return
         }
         
-        let localUploadJobs = VCSGenericRealmModelStorage<UploadJob.RealmModel>().getAll()
-        guard localUploadJobs.isEmpty == false else {
-            didFinish?(.success(0))
-            return
-        }
-        
-        localUploadJobs.forEach { jobToUpload in
-            guard jobToUpload.owner == VCSUser.savedUser?.login else { return }
-            
-            if jobToUpload.localFiles.allSatisfy({ $0.uploadingState != .Waiting && $0.uploadingState != .Uploading }) {
-                DDLogInfo("Start Upload for job \(jobToUpload.jobID)")
-                AssetUploader.shared.upload(uploadJob: jobToUpload, singleFileCompletion: { _ in
-                    DDLogInfo("Finished upload for job: \(jobToUpload.jobID)")
-                }, multiFileCompletion: { _ in
-                    DDLogInfo("Finished upload for job: \(jobToUpload.jobID)")
-                })
-            }
-        }
+        //TODO: REALM_CHANGE
+//        let localUploadJobs = VCSGenericRealmModelStorage<UploadJob.RealmModel>().getAll()
+//        guard localUploadJobs.isEmpty == false else {
+//            didFinish?(.success(0))
+//            return
+//        }
+//        
+//        localUploadJobs.forEach { jobToUpload in
+//            guard jobToUpload.owner == VCSUser.savedUser?.login else { return }
+//            
+//            if jobToUpload.localFiles.allSatisfy({ $0.uploadingState != .Waiting && $0.uploadingState != .Uploading }) {
+//                DDLogInfo("Start Upload for job \(jobToUpload.jobID)")
+//                AssetUploader.shared.upload(uploadJob: jobToUpload, singleFileCompletion: { _ in
+//                    DDLogInfo("Finished upload for job: \(jobToUpload.jobID)")
+//                }, multiFileCompletion: { _ in
+//                    DDLogInfo("Finished upload for job: \(jobToUpload.jobID)")
+//                })
+//            }
+//        }
     }
 }

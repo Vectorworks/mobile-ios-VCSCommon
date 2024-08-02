@@ -1,36 +1,17 @@
 import Foundation
+import SwiftData
 
-public class VCSFilesAppFavoriteRank: NSObject {
-    public let favoriteRank: NSNumber
+@Model
+public final class VCSFilesAppFavoriteRank {
+    public let favoriteRank: Int
     public var realmID: String = VCSUUID().systemUUID.uuidString
     
-    public init(favoriteRank: NSNumber, realmID: String) {
+    public init(favoriteRank: Int, realmID: String) {
         self.realmID = realmID
         self.favoriteRank = favoriteRank
     }
 }
 
-extension VCSFilesAppFavoriteRank: VCSCachable {
-    public typealias RealmModel = RealmFilesAppFavoriteRank
-    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSFilesAppFavoriteRank.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSFilesAppFavoriteRank.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSFilesAppFavoriteRank.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSFilesAppFavoriteRank.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSFilesAppFavoriteRank.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSFilesAppFavoriteRank.realmStorage.delete(item: self)
-    }
+extension VCSFilesAppFavoriteRank: VCSCacheable {
+    public var rID: String { return realmID }
 }

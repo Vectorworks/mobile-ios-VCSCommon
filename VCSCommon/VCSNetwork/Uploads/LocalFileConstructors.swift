@@ -1,5 +1,4 @@
 import Foundation
-import RealmSwift
 
 struct Snap {
     public static func construct(relatedTo file: FileAsset, withName name: String) -> UploadJobLocalFile? {

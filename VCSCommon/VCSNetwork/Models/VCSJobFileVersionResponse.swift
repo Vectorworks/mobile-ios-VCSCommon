@@ -1,8 +1,13 @@
 import Foundation
+import SwiftData
 
-public class VCSJobFileVersionResponse: NSObject, Codable {
+@Model
+public final class VCSJobFileVersionResponse: Codable {
     //TODO: test changes
-    public let owner, container, provider, fileType: String
+    public let owner: String
+    public let container: String
+    public let provider: String
+    public let fileType: String
     public let path: String
     public let id: Int
     public let versionID: String
@@ -28,10 +33,9 @@ public class VCSJobFileVersionResponse: NSObject, Codable {
         self.path = try container.decode(String.self, forKey: CodingKeys.path)
         self.id = try container.decode(Int.self, forKey: CodingKeys.id)
         self.versionID = try container.decode(String.self, forKey: CodingKeys.versionID)
-        self.resourceID = try container.decode(String.self, forKey: CodingKeys.resourceID)
-        self.VCSID = self.resourceID
-        
-        super.init()
+        let resourceID = try container.decode(String.self, forKey: CodingKeys.resourceID)
+        self.resourceID = resourceID
+        self.VCSID = resourceID
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -60,27 +64,6 @@ public class VCSJobFileVersionResponse: NSObject, Codable {
     }
 }
 
-extension VCSJobFileVersionResponse: VCSCachable {
-    public typealias RealmModel = RealmJobFileVersion
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSJobFileVersionResponse.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSJobFileVersionResponse.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSJobFileVersionResponse.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSJobFileVersionResponse.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSJobFileVersionResponse.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSJobFileVersionResponse.realmStorage.delete(item: self)
-    }
+extension VCSJobFileVersionResponse: VCSCacheable {
+    public var rID: String { return owner + path }
 }

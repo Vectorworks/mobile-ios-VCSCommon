@@ -19,7 +19,7 @@ class UpdateLocalFileOperation: AsyncOperation {
         guard let fileResponse else {
             DDLogInfo("Skipping UpdateLocalFileOperation - \(localFile.name)")
             self.localFile.uploadingState = .Error
-            VCSCache.addToCache(item: self.localFile)
+            self.localFile.addToCache()
             self.state = .finished
             return
         }
@@ -31,10 +31,11 @@ class UpdateLocalFileOperation: AsyncOperation {
         DDLogInfo("LF owner - \(self.localFile.ownerLogin), storage - \(self.localFile.storageTypeString), prefix - \(self.localFile.prefix)")
         AssetUploader.updateUploadedFile(fileResponse, withLocalFileForUnuploadedFile: self.localFile)
         
-        VCSCache.addToCache(item: fileResponse)
+        fileResponse.addToCache()
         if let parentFolderID = self.localFile.parentUploadJob?.parentFolder?.rID {
             //Work with the Database to exclude ram caching bugs
-            VCSGenericRealmModelStorage<VCSFolderResponse.RealmModel>().getById(id: parentFolderID)?.appendFile(fileResponse)
+            //TODO: REALM_CHANGE
+//            VCSGenericRealmModelStorage<VCSFolderResponse.RealmModel>().getById(id: parentFolderID)?.appendFile(fileResponse)
         }
         
         DDLogInfo("Successfully uploaded \(self.localFile.name) and its related")
@@ -43,7 +44,7 @@ class UpdateLocalFileOperation: AsyncOperation {
         self.result = .success(fileResponse)
         
         self.localFile.uploadingState = .Done
-        VCSCache.addToCache(item: self.localFile)
+        self.localFile.addToCache()
         self.localFile.parentUploadJob?.reCheckState(localFile: self.localFile)
         
         self.state = .finished

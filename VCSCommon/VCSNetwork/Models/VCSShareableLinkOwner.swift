@@ -1,8 +1,13 @@
 import Foundation
+import SwiftData
 
-public class VCSShareableLinkOwner: NSObject, Codable {
+@Model
+public final class VCSShareableLinkOwner: Codable {
+    @Relationship(deleteRule: .cascade)
     public let branding: VCSSharedAssetBrandingResponse
-    public let owner, ownerEmail, ownerName: String
+    public let owner: String
+    public let ownerEmail: String
+    public let ownerName: String
     
     private enum CodingKeys: String, CodingKey {
         case branding
@@ -36,28 +41,7 @@ public class VCSShareableLinkOwner: NSObject, Codable {
     }
 }
 
-extension VCSShareableLinkOwner: VCSCachable {
-    public typealias RealmModel = RealmShareableLinkOwner
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSShareableLinkOwner.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSShareableLinkOwner.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSShareableLinkOwner.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSShareableLinkOwner.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSShareableLinkOwner.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSShareableLinkOwner.realmStorage.delete(item: self)
-    }
+extension VCSShareableLinkOwner: VCSCacheable {
+    public var rID: String { return owner }
 }
 

@@ -85,7 +85,7 @@ public class FileUploadViewModel: ObservableObject {
             DDLogInfo("DONE loading - \(userHomeFolderURI)")
             switch result {
             case .success(let success):
-                VCSCache.addToCache(item: success)
+                success.addToCache()
                 if let subfolder = success.subfolders.first {
                     self.projectFolder = subfolder
                 } else {
@@ -105,7 +105,7 @@ public class FileUploadViewModel: ObservableObject {
             DDLogInfo("DONE loading - \(projectFolderValue.resourceURI)")
             switch result {
             case .success(let success):
-                VCSCache.addToCache(item: success)
+                success.addToCache()
                 self.projectFolder = success
             case .failure(let failure):
                 DDLogError("FileUploadViewModel - loadProjectFolder - error: \(failure)")

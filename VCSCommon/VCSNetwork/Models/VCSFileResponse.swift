@@ -1,143 +1,72 @@
 import Foundation
+import SwiftData
 
-public class VCSFileResponse: NSObject, Codable {
-    private(set) public var isFolder = false
-    private(set) public var isFile = true
+@Model
+public final class VCSFileResponse: Identifiable, Codable, Hashable {
+    public var isFolder: Bool { return false }
+    public var isFile: Bool { return true }
     
-    public var resourceURI: String = ""
-    public var resourceID: String = ""
-    public var exists: Bool = false
-    public var isNameValid: Bool = false
-    public var name: String = ""
+    @Attribute(.unique)
+    public var resourceID: String
+    public let thumbnail3D: String?
+    public let versionID: String
+    public var thumbnail: String
+    public var storageType: StorageType //= StorageType.S3
+    public let size: String
+    public var resourceURI: String
+    public let downloadURL: String
+    public var exists: Bool
+    public var isNameValid: Bool
+    public let lastModified: String
+    public var name: String
     public var prefix: String
     
-    public var sharingInfo: VCSSharingInfoResponse?
-    public var flags: VCSFlagsResponse?
-    public var ownerInfo: VCSOwnerInfoResponse?
-    public var storageType: StorageType = .S3
-    public var storageTypeString: String { return self.storageType.rawValue }
-    public var storageTypeDisplayString: String { return self.storageType.displayName }
-    
-    private(set) public var ownerLogin: String
-    public func updateSharedOwnerLogin(_ login: String) {
-        self.related.forEach { $0.updateSharedOwnerLogin(login) }
-        self.ownerLogin = login
-    }
-    
-    public var VCSID: String
-    public let downloadURL: String
-    public let versionID, size, lastModified: String
-    public var thumbnail: String
-    public let thumbnail3D: String?
+    @Relationship(deleteRule: .nullify, inverse: \VCSFileResponse.previousVersionsParent)
     public let previousVersions: [VCSFileResponse]
+    @Relationship(deleteRule: .nullify, inverse: \VCSFileResponse.relatedParent)
+    public var related: [VCSFileResponse]
+    @Relationship(deleteRule: .cascade)
+    public var sharingInfo: VCSSharingInfoResponse?
+    @Relationship(deleteRule: .cascade)
+    public var flags: VCSFlagsResponse?
     public let fileType: String?
+    @Relationship(deleteRule: .cascade)
+    public var ownerInfo: VCSOwnerInfoResponse?
+    
+    
+    private(set) public var parentFolder: VCSFolderResponse?
+    private(set) public var previousVersionsParent: VCSFileResponse?
+    private(set) public var relatedParent: VCSFileResponse?
+    
+    //local files data
+    @Relationship(deleteRule: .cascade)
     private(set) public var localFile: LocalFile?
+    @Relationship(deleteRule: .cascade)
     private(set) public var localFilesAppFile: LocalFilesAppFile?
     
-    private var isOnDisk: Bool {
-        if self.filesForDownload.count == 0 {
-            return false
-        }
-        
-        let result: Bool = self.filesForDownload.reduce(true) { (res, fileInProject) -> Bool in
-            return res && (fileInProject.localFile?.exists ?? false)
-        }
-        
-        return result
-    }
-    
-    public func setLocalFile(_ newLocalFile: LocalFile?) {
-        defer {
-            //To force setting localFile to nil
-            VCSCache.addToCache(item: self, forceNilValuesUpdate: true)
-        }
-        
-        if let oldLocalFile = self.localFile {
-            try? FileUtils.deleteItem(oldLocalFile.localPath)
-        }
-        self.localFile = newLocalFile
-    }
-    
-    public func setLocalFilesAppFile(_ newLocalFilesAppFile: LocalFilesAppFile?) {
-        defer {
-            //To force setting localFile to nil
-            VCSCache.addToCache(item: self, forceNilValuesUpdate: true)
-        }
-        
-        if let localPath = self.localFilesAppFile?.localContainerURL?.path {
-            try? FileUtils.deleteItem(localPath)
-        }
-        self.localFilesAppFile = newLocalFilesAppFile
-    }
-    
-    public func loadLocalFiles() {
-        if self.related.count == 0, let oldFile = VCSFileResponse.realmStorage.getById(id: self.rID) {
-            if self.lastModified == oldFile.lastModified {
-                self.related = oldFile.related
-            } else {
-                self.related = []
-            }
-        }
-        
-        //TODO: clean way to know LocalFile data lastModified
-        self.filesForDownload.forEach {
-            if let oldFile = VCSFileResponse.realmStorage.getById(id: $0.rID) {
-                if $0.lastModified == oldFile.lastModified {
-                    $0.localFile = oldFile.localFile
-                    $0.localFilesAppFile = oldFile.localFilesAppFile //Files App
-                } else {
-                    print("REMOVE OLD - \($0.name)")
-                    oldFile.setLocalFile(nil)
-                    $0.setLocalFile(nil)
-                    oldFile.setLocalFilesAppFile(nil) //Files App
-                    $0.setLocalFilesAppFile(nil)
-                }
-                //load old optional data
-                if $0.sharingInfo == nil, oldFile.sharingInfo != nil {
-                    $0.sharingInfo = oldFile.sharingInfo
-                }
-                
-                if $0.flags == nil, oldFile.flags != nil {
-                    $0.flags = oldFile.flags
-                }
-                
-                if $0.ownerInfo == nil, oldFile.ownerInfo != nil {
-                    $0.ownerInfo = oldFile.ownerInfo
-                }
-            }
-        }
-    }
-    
-    public func updateSharingInfo(other: VCSSharingInfoResponse) {
-        self.sharingInfo = other
-        VCSCache.addToCache(item: self, forceNilValuesUpdate: true)
-    }
-    
-    public var related: [VCSFileResponse]
-    public lazy var sortingDate: Date = { return self.lastModified.VCSDateFromISO8061 ?? Date() }()
+    private(set) public var ownerLogin: String
     
     private enum CodingKeys: String, CodingKey {
-        case storageType = "storage_type"
-        case resourceURI = "resource_uri"
         case resourceID = "resource_id"
-        case exists
-        case isNameValid = "is_name_valid"
-        case name
-        case prefix
-        case sharingInfo = "sharing_info"
-        case flags
-        case ownerInfo = "owner_info"
-        
-        case id
+        case thumbnail3D = "thumbnail_3d"
         case versionID = "version_id"
         case thumbnail
-        case thumbnail3D = "thumbnail_3d"
+        case storageType = "storage_type"
         case size
+        case resourceURI = "resource_uri"
         case downloadURL = "download_url"
+        case exists
+        case isNameValid = "is_name_valid"
         case lastModified = "last_modified"
+        case name
+        case prefix
         case previousVersions = "previous_versions"
         case related
+        case sharingInfo = "sharing_info"
+        case flags
         case fileType = "file_type"
+        case ownerInfo = "owner_info"
+        
         case localFile
         case parentFolder
         
@@ -168,10 +97,7 @@ public class VCSFileResponse: NSObject, Codable {
         self.related = try container.decode([VCSFileResponse].self, forKey: CodingKeys.related)
         self.fileType = try? container.decode(String.self, forKey: CodingKeys.fileType)
         
-        self.ownerLogin = self.ownerInfo?.owner ?? VCSUser.savedUser?.login ?? ""
-        self.VCSID = self.resourceID
-        
-        super.init()
+        self.ownerLogin = "" //self.ownerInfo?.owner ?? VCSUser.savedUser?.login ?? ""
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -199,6 +125,10 @@ public class VCSFileResponse: NSObject, Codable {
         
         try container.encode(self.isFolder, forKey: CodingKeys.isFolder)
         
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(rID)
     }
     
     init(versionID: String,
@@ -248,15 +178,113 @@ public class VCSFileResponse: NSObject, Codable {
         self.localFile = localFile
         self.localFilesAppFile = localFilesAppFile
         self.ownerLogin = ownerLogin
-        self.VCSID = VCSID
     }
     
+    
+}
+
+extension VCSFileResponse: Equatable {
     final public class func ==(lhs: VCSFileResponse, rhs: VCSFileResponse) -> Bool {
         return lhs.rID == rhs.rID
     }
 }
 
+extension VCSFileResponse {
+    
+    public var sortingDate: Date { return self.lastModified.VCSDateFromISO8061 ?? Date() }
+    
+//    private(set) public var ownerLogin: String
+    public func updateSharedOwnerLogin(_ login: String) {
+        self.related.forEach { $0.updateSharedOwnerLogin(login) }
+        self.ownerLogin = login
+    }
+    
+    private var isOnDisk: Bool {
+        if self.filesForDownload.count == 0 {
+            return false
+        }
+        
+        let result: Bool = self.filesForDownload.reduce(true) { (res, fileInProject) -> Bool in
+            return res && (fileInProject.localFile?.exists ?? false)
+        }
+        
+        return result
+    }
+    
+    public func setLocalFile(_ newLocalFile: LocalFile?) {
+        defer {
+            //To force setting localFile to nil
+            self.addToCache(forceNilValuesUpdate: true)
+        }
+        
+        if let oldLocalFile = self.localFile {
+            try? FileUtils.deleteItem(oldLocalFile.localPath)
+        }
+        self.localFile = newLocalFile
+    }
+    
+    public func setLocalFilesAppFile(_ newLocalFilesAppFile: LocalFilesAppFile?) {
+        defer {
+            //To force setting localFile to nil
+            self.addToCache(forceNilValuesUpdate: true)
+        }
+        
+        if let localPath = self.localFilesAppFile?.localContainerURL?.path {
+            try? FileUtils.deleteItem(localPath)
+        }
+        self.localFilesAppFile = newLocalFilesAppFile
+    }
+    
+    public func loadLocalFiles() {
+        //TODO: REALM_CHANGE
+//        if self.related.count == 0, let oldFile = VCSFileResponse.realmStorage.getById(id: self.rID) {
+//            if self.lastModified == oldFile.lastModified {
+//                self.related = oldFile.related
+//            } else {
+//                self.related = []
+//            }
+//        }
+//        
+//        //TODO: clean way to know LocalFile data lastModified
+//        self.filesForDownload.forEach {
+//            if let oldFile = VCSFileResponse.realmStorage.getById(id: $0.rID) {
+//                if $0.lastModified == oldFile.lastModified {
+//                    $0.localFile = oldFile.localFile
+//                    $0.localFilesAppFile = oldFile.localFilesAppFile //Files App
+//                } else {
+//                    print("REMOVE OLD - \($0.name)")
+//                    oldFile.setLocalFile(nil)
+//                    $0.setLocalFile(nil)
+//                    oldFile.setLocalFilesAppFile(nil) //Files App
+//                    $0.setLocalFilesAppFile(nil)
+//                }
+//                //load old optional data
+//                if $0.sharingInfo == nil, oldFile.sharingInfo != nil {
+//                    $0.sharingInfo = oldFile.sharingInfo
+//                }
+//                
+//                if $0.flags == nil, oldFile.flags != nil {
+//                    $0.flags = oldFile.flags
+//                }
+//                
+//                if $0.ownerInfo == nil, oldFile.ownerInfo != nil {
+//                    $0.ownerInfo = oldFile.ownerInfo
+//                }
+//            }
+//        }
+    }
+    
+    public func updateSharingInfo(other: VCSSharingInfoResponse) {
+        self.sharingInfo = other
+        self.addToCache(forceNilValuesUpdate: true)
+    }
+}
+
 extension VCSFileResponse : FileAsset {
+    public var storageTypeString: String { return self.storageType.storageTypeString }
+    
+    public var storageTypeDisplayString: String { return self.storageType.displayName }
+    
     public var downloadURLString: String { return self.downloadURL }
     public var relatedFileAssets: [FileAsset] { return self.related }
     public var localPathString: String? { return self.localFile?.localPath }
@@ -271,7 +299,7 @@ extension VCSFileResponse : FileAsset {
 }
 
 extension VCSFileResponse : FileCellPresentable {
-    public var rID: String { return self.VCSID }
+    public var rID: String { return self.resourceID }
     public var nameString: String { return (self.name) }
     public var hasWarning: Bool { return (self.flags?.hasWarning ?? true) }
     public var isShared: Bool { return (self.sharingInfo?.isShared ?? false) }
@@ -303,29 +331,7 @@ extension VCSFileResponse: VCSCellDataHolder {
     }
 }
 
-extension VCSFileResponse: VCSCachable {
-    public typealias RealmModel = RealmFile
-    public static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSFileResponse.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSFileResponse.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSFileResponse.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSFileResponse.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSFileResponse.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSFileResponse.realmStorage.delete(item: self)
-    }
+extension VCSFileResponse: VCSCacheable {
 }
 
 extension VCSFileResponse {

@@ -1,10 +1,21 @@
 import Foundation
+import SwiftData
 
-public class VCSSharedAssetOWNResponse: NSObject, SharedAsset, Codable {
-    public let asset: Asset
+@Model
+public final class VCSSharedAssetOWNResponse: SharedAsset, Codable {
+    public var asset: Asset { return self.fileAsset ?? self.folderAsset! }
+    @Relationship(deleteRule: .nullify)
+    public let fileAsset: VCSFileResponse?
+    @Relationship(deleteRule: .nullify)
+    public let folderAsset: VCSFolderResponse?
+    public let VCSID: String
+    
     public let assetType: AssetType
     public let resourceURI: String
-    public let owner, ownerEmail, ownerName, dateCreated: String
+    public let owner: String
+    public let ownerEmail: String
+    public let ownerName: String
+    public let dateCreated: String
     
     private enum CodingKeys: String, CodingKey {
         case owner
@@ -22,14 +33,19 @@ public class VCSSharedAssetOWNResponse: NSObject, SharedAsset, Codable {
         self.ownerEmail = try container.decode(String.self, forKey: CodingKeys.ownerEmail)
         self.ownerName = try container.decode(String.self, forKey: CodingKeys.ownerName)
         self.dateCreated = try container.decode(String.self, forKey: CodingKeys.dateCreated)
-        self.assetType = try container.decode(AssetType.self, forKey: CodingKeys.assetType)
+        let assetType = try container.decode(AssetType.self, forKey: CodingKeys.assetType)
+        self.assetType = assetType
         self.resourceURI = try container.decode(String.self, forKey: CodingKeys.resourceURI)
         
-        switch self.assetType {
+        switch assetType {
         case .file:
-            self.asset = try container.decode(VCSFileResponse.self, forKey: CodingKeys.asset)
+            let fileAsset = try container.decode(VCSFileResponse.self, forKey: CodingKeys.asset)
+            self.fileAsset = fileAsset
+            self.VCSID = fileAsset.rID
         case .folder:
-            self.asset = try container.decode(VCSFolderResponse.self, forKey: CodingKeys.asset)
+            let folderAsset = try container.decode(VCSFolderResponse.self, forKey: CodingKeys.asset)
+            self.folderAsset = folderAsset
+            self.VCSID = folderAsset.rID
         }
         
         self.asset.updateSharedOwnerLogin(self.owner)
@@ -61,34 +77,22 @@ public class VCSSharedAssetOWNResponse: NSObject, SharedAsset, Codable {
         self.ownerEmail = ownerEmail
         self.ownerName = ownerName
         self.dateCreated = dateCreated
-        
-        self.asset = asset
         self.assetType = assetType
+        
+        switch assetType {
+        case .file:
+            let fileAsset = asset as? VCSFileResponse
+            self.fileAsset = fileAsset
+            self.VCSID = fileAsset?.rID ?? "nil"
+        case .folder:
+            let folderAsset = asset as? VCSFolderResponse
+            self.folderAsset = folderAsset
+            self.VCSID = folderAsset?.rID ?? "nil"
+        }
         self.resourceURI = resourceURI
     }
 }
 
-extension VCSSharedAssetOWNResponse: VCSCachable {
-    public typealias RealmModel = RealmSharedAssetOWN
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSSharedAssetOWNResponse.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSSharedAssetOWNResponse.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSSharedAssetOWNResponse.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSSharedAssetOWNResponse.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSSharedAssetOWNResponse.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSSharedAssetOWNResponse.realmStorage.delete(item: self)
-    }
+extension VCSSharedAssetOWNResponse: VCSCacheable {
+    public var rID: String { return VCSID }
 }

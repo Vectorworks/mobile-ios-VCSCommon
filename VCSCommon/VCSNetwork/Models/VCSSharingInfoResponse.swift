@@ -1,6 +1,8 @@
 import Foundation
+import SwiftData
 
-public class VCSSharingInfoResponse: NSObject, Codable {
+@Model
+public final class VCSSharingInfoResponse: Codable {
     private(set) public var realmID: String = VCSUUID().systemUUID.uuidString
     public let isShared: Bool
     public let link: String
@@ -9,6 +11,7 @@ public class VCSSharingInfoResponse: NSObject, Codable {
     public let linkVisitsCount: Int
     public let allowComments: Bool
     
+    @Relationship(deleteRule: .nullify)
     public let sharedWith: [VCSSharedWithUser]?
     public let resourceURI: String
     public let lastShareDate: String?
@@ -72,27 +75,6 @@ public class VCSSharingInfoResponse: NSObject, Codable {
     }
 }
 
-extension VCSSharingInfoResponse: VCSCachable {
-    public typealias RealmModel = RealmSharingInfo
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSSharingInfoResponse.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSSharingInfoResponse.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSSharingInfoResponse.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSSharingInfoResponse.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSSharingInfoResponse.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSSharingInfoResponse.realmStorage.delete(item: self)
-    }
+extension VCSSharingInfoResponse: VCSCacheable {
+    public var rID: String { return link }
 }

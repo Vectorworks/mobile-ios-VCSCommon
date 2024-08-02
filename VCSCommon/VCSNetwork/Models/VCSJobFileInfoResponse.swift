@@ -1,6 +1,8 @@
 import Foundation
+import SwiftData
 
-public class VCSJobFileInfoResponse: NSObject, Codable {
+@Model
+public final class VCSJobFileInfoResponse: Codable {
     public let fileCount: Int
     public let path: String
     public let provider: String
@@ -16,29 +18,24 @@ public class VCSJobFileInfoResponse: NSObject, Codable {
         self.path = path
         self.provider = provider
     }
+    
+    required public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.fileCount = try container.decode(Int.self, forKey: CodingKeys.fileCount)
+        self.path = try container.decode(String.self, forKey: CodingKeys.path)
+        self.provider = try container.decode(String.self, forKey: CodingKeys.provider)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(self.fileCount, forKey: CodingKeys.fileCount)
+        try container.encode(self.path, forKey: CodingKeys.path)
+        try container.encode(self.provider, forKey: CodingKeys.provider)
+    }
 }
 
-extension VCSJobFileInfoResponse: VCSCachable {
-    public typealias RealmModel = RealmJobFileInfo
-    private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()
-    
-    public func addToCache() {
-        VCSJobFileInfoResponse.realmStorage.addOrUpdate(item: self)
-    }
-    
-    public func addOrPartialUpdateToCache() {
-        if VCSJobFileInfoResponse.realmStorage.getByIdOfItem(item: self) != nil {
-            VCSJobFileInfoResponse.realmStorage.partialUpdate(item: self)
-        } else {
-            VCSJobFileInfoResponse.realmStorage.addOrUpdate(item: self)
-        }
-    }
-    
-    public func partialUpdateToCache() {
-        VCSJobFileInfoResponse.realmStorage.partialUpdate(item: self)
-    }
-    
-    public func deleteFromCache() {
-        VCSJobFileInfoResponse.realmStorage.delete(item: self)
-    }
+extension VCSJobFileInfoResponse: VCSCacheable {
+    public var rID: String { return path }
 }

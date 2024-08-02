@@ -7,7 +7,7 @@ public class FolderCreator: NSObject {
         guard let presenterVC = presenter else { return }
         
         APIClient.createFolder(storage: storage, name: foldername, parentFolderPrefix: parentPrefix, owner: owner).execute(onSuccess: { (result: VCSFolderResponse) in
-            VCSCache.addToCache(item: result)
+            result.addToCache()
             if let folderChooser = presenter as? VCSFolderChooser {
                 folderChooser.openInNewController(folder: result)
             }
