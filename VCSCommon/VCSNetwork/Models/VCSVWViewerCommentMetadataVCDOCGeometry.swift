@@ -14,4 +14,9 @@ public struct VCSVWViewerCommentMetadataVCDOCGeometry: Codable {
         id = try values.decode(String.self, forKey: .id)
         geometry = try values.decode(VCSVWViewerCommentGeometry.self, forKey: .geometry)
     }
+    
+    public init(id: String, geometry: VCSVWViewerCommentGeometry) {
+        self.id = id
+        self.geometry = geometry
+    }
 }

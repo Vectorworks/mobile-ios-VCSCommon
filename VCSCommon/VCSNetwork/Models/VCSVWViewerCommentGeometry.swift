@@ -20,4 +20,11 @@ public struct VCSVWViewerCommentGeometry: Codable {
         displayName = try values.decode(String.self, forKey: .displayName)
         isPolyClosed = try values.decode(Bool.self, forKey: .isPolyClosed)
     }
+    
+    public init(page: VCSVWViewerCommentPage, points: [VCSVWViewerCommentGeometryPoints], displayName: String, isPolyClosed: Bool) {
+        self.page = page
+        self.points = points
+        self.displayName = displayName
+        self.isPolyClosed = isPolyClosed
+    }
 }

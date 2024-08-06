@@ -20,4 +20,11 @@ public struct VCSVWViewerCommentGeometryPoints: Codable {
         page = try values.decode(VCSVWViewerCommentPage.self, forKey: .page)
         vectorworksCoordinates = try values.decode(VCSVWViewerCommentGeometryVectorworkCoordinates.self, forKey: .vectorworksCoordinates)
     }
+    
+    public init(top: Double, left: Double, page: VCSVWViewerCommentPage, vectorworksCoordinates: VCSVWViewerCommentGeometryVectorworkCoordinates) {
+        self.top = top
+        self.left = left
+        self.page = page
+        self.vectorworksCoordinates = vectorworksCoordinates
+    }
 }

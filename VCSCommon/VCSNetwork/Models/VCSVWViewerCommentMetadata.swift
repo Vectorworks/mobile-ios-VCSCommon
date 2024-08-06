@@ -11,4 +11,8 @@ public struct VCSVWViewerCommentMetadata: Codable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         vcdoc = try values.decode(VCSVWViewerCommentMetadataVCDOC.self, forKey: .vcdoc)
     }
+    
+    public init(vcdoc: VCSVWViewerCommentMetadataVCDOC) {
+        self.vcdoc = vcdoc
+    }
 }

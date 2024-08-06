@@ -54,6 +54,8 @@ public enum APIRouter: URLRequestConvertible {
     case presentationDownload(presentationUIID: String)
     case listVCDOCComments(username: String, storageType: String, storagePath: String)
     case sendVCDOCReply(replyData: VCSVWViewerReplyRequest)
+    case getTrustedAccounts
+    case addVCDOCComment(commentData: VCSVWViewerAddCommentRequest)
     
     // MARK: - requestURL
     private var requestURL: VCSRequestURL {
@@ -109,7 +111,7 @@ public enum APIRouter: URLRequestConvertible {
         case .genericJob:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
             
-        //NEW API CALLS
+            //NEW API CALLS
         case .sharedWithMeAsset:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .sharedWithMeFileInfo:
@@ -150,6 +152,10 @@ public enum APIRouter: URLRequestConvertible {
         case .listVCDOCComments:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         case .sendVCDOCReply(_):
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .getTrustedAccounts:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
+        case .addVCDOCComment(_):
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         }
     }
@@ -194,6 +200,8 @@ public enum APIRouter: URLRequestConvertible {
         case .mountFolder:
             return .put
         case .sendVCDOCReply:
+            return .post
+        case .addVCDOCComment:
             return .post
         default:
             return .get
@@ -291,7 +299,7 @@ public enum APIRouter: URLRequestConvertible {
         case .genericJob:
             return "/jobs/"
             
-        //NEW API CALLS
+            //NEW API CALLS
         case .sharedWithMeAsset(let assetURI, _, _, _, _, _, _, _):
             return assetURI
         case .sharedWithMeFileInfo(let rID, _, _, _, _, _, _, _):
@@ -332,6 +340,10 @@ public enum APIRouter: URLRequestConvertible {
             return "\(storageType.lowercased())/file/:comments/o:\(username)/p:\(storagePath)/"
         case .sendVCDOCReply:
             return "/reply/"
+        case .getTrustedAccounts:
+            return "/trusted-accounts/"
+        case .addVCDOCComment:
+            return "/comment/"
         }
     }
     
@@ -373,6 +385,8 @@ public enum APIRouter: URLRequestConvertible {
             return [K.APIParameterKey.mountFolder.action: actionValue]
         case .sendVCDOCReply(let replyData):
             return replyData.asDictionary()
+        case .addVCDOCComment(let commentData):
+            return commentData.asDictionary()
         default:
             return nil
         }

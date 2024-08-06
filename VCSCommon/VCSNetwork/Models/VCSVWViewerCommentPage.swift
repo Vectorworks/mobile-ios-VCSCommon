@@ -26,4 +26,13 @@ public struct VCSVWViewerCommentPage: Codable {
         pageNumber = try values.decode(Int.self, forKey: .pageNumber)
         sheetTitle = try values.decode(String.self, forKey: .sheetTitle)
     }
+    
+    public init(dpmm: Double, width: Int, height: Int, sheetName: String, pageNumber: Int, sheetTitle: String) {
+        self.dpmm = dpmm
+        self.width = width
+        self.height = height
+        self.sheetName = sheetName
+        self.pageNumber = pageNumber
+        self.sheetTitle = sheetTitle
+    }
 }

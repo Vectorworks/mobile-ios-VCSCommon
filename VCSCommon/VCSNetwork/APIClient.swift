@@ -396,6 +396,14 @@ public class APIClient: NSObject {
         return performRequest(route: APIRouter.sendVCDOCReply(replyData: replyData))
     }
     
+    public static func getTrustedAccounts() -> Future<VCSTrustedAccountsResponse, Error> {
+        return performRequest(route: APIRouter.getTrustedAccounts)
+    }
+    
+    public static func addVCDOCComment(commentData: VCSVWViewerAddCommentRequest) -> Future<VCSVWViewerComment, Error> {
+        return performRequest(route: APIRouter.addVCDOCComment(commentData: commentData))
+    }
+    
     //MARK: - DOWNLOAD
     // key here is file.id. The files that we compare are not actually the same object for some reason
     public static var downloads = [String : Download]()

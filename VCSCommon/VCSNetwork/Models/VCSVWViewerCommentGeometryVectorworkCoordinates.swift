@@ -14,4 +14,9 @@ public struct VCSVWViewerCommentGeometryVectorworkCoordinates: Codable {
         x = try container.decode(CGFloat.self, forKey: .x)
         y = try container.decode(CGFloat.self, forKey: .y)
     }
+    
+    public init(x: CGFloat, y: CGFloat) {
+        self.x = x
+        self.y = y
+    }
 }
