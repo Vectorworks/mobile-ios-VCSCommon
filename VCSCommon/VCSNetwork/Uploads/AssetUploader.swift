@@ -11,7 +11,7 @@ fileprivate struct MetadataForVCSFileResponse {
     let filePrefix: String
 }
 
-public class AssetUploader: NSObject {
+public class AssetUploader {
     public static var shared: AssetUploader = AssetUploader()
     
     public class func removeUploadedFileIDFromAPIClient(_ rID: String) {

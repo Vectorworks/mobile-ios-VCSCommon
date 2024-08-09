@@ -6,11 +6,10 @@ let kVCSMetricsNotification            = "kVCSMetricsNotification"
 let kVCSMetricsNotification_event      = "kVCSMetricsNotification_event"
 let kVCSMetricsNotification_params     = "kVCSMetricsNotification_params"
 
-public class Metrics: NSObject {
+public class Metrics {
     public static let `default` = Metrics()
     
-    public override init() {
-        super.init()
+    public init() {
         NotificationCenter.default.addObserver(self, selector: #selector(handleNotification(notification:)), name: .VCSMetricsNotification, object: nil)
     }
     
@@ -35,7 +34,7 @@ public class Metrics: NSObject {
             paramString = ": \(params)"
         }
         let logString = event + paramString
-        DDLogInfo(event + paramString)
+        DDLogInfo("\(event + paramString)")
         Analytics.logEvent(event, parameters: parameters)
     }
 }

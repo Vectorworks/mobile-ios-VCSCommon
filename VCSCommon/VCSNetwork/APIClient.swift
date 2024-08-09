@@ -21,7 +21,7 @@ public class VCSFlagStates {
     public static let sharingInfo = true
 }
 
-public class APIClient: NSObject {
+public class APIClient {
     private static var SFDelegate = APIClient()
     private static var SFDelegateOnSuccess: (() -> Void)?
     private static var SFDelegateOnFail: ((Error) -> Void)?

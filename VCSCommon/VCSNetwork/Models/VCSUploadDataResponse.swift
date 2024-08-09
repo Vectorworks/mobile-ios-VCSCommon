@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSUploadDataResponse: NSObject {
+public class VCSUploadDataResponse {
     public let uploadDate: Date
     public let googleDriveID: String?
     public let googleDriveVerID: String?

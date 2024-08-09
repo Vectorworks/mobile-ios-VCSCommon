@@ -1,6 +1,6 @@
 import Foundation
 
-public class LocalFilesAppFile: NSObject {
+public class LocalFilesAppFile {
     
     public static var rootFilesAppURL: URL?
     
@@ -23,8 +23,6 @@ public class LocalFilesAppFile: NSObject {
     public init(VCSID: String, pathSuffix: String) {
         self.VCSID = VCSID
         self.pathSuffix = pathSuffix
-        
-        super.init()
     }
     
     public convenience init(VCSID: String, path: String) {

@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSFilesAppTags: NSObject {
+public class VCSFilesAppTags {
     public let tagData: Data?
     public var realmID: String = VCSUUID().systemUUID.uuidString
     

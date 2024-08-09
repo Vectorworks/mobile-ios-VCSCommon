@@ -1,7 +1,7 @@
 import Foundation
 import CocoaLumberjackSwift
 
-public class LocalFile: NSObject {
+public class LocalFile {
     private(set) public var uuid: String = VCSUUID().systemUUID.uuidString
     private(set) public var name: String
     private(set) public var parent: String
@@ -26,14 +26,12 @@ public class LocalFile: NSObject {
             self.uuid = fileUUID
         }
         
-        super.init()
-        
         if let fileURL = tempFileURL {
             let localFileURL = URL(fileURLWithPath: self.localPath)
             do {
                 try FileUtils.copyFile(at: fileURL, to: localFileURL)
             } catch {
-                DDLogError("LocalFile init(name: " + error.localizedDescription)
+                DDLogError("LocalFile init(name: \(error.localizedDescription)")
             }
             
         }

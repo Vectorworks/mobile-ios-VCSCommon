@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSSharedAssetWrapper: NSObject, SharedAsset, Codable {
+public class VCSSharedAssetWrapper: SharedAsset, Codable {
     public let asset: Asset
     public let assetType: AssetType
     public let resourceURI: String

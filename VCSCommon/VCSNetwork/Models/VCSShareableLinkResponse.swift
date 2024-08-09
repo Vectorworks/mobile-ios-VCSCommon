@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSShareableLinkResponse: NSObject, SharedAsset, Codable {
+public class VCSShareableLinkResponse: SharedAsset, Codable {
     public let link, uuid, expires: String
     public let dateCreated: String
     public let resourceURI: String

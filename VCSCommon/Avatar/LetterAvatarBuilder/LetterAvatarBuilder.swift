@@ -1,6 +1,6 @@
 import UIKit
 
-class LetterAvatarBuilder: NSObject {
+class LetterAvatarBuilder {
 
     func makeAvatar(with configuration: LetterAvatarBuilderConfiguration) -> UIImage? {
         return drawAvatar(with: configuration, letters: configuration.letters, backgroundColor: configuration.backgroundColor)

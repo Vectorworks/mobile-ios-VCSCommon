@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSSSOUser: NSObject, Codable {
+public class VCSSSOUser: Codable {
     public let id: Int
     public let firstName, lastName, email: String
     public let isActive: Bool
@@ -68,7 +68,7 @@ public class VCSSSOUser: NSObject, Codable {
     }
 }
 
-public class OtherLogin: NSObject, Codable {
+public class OtherLogin: Codable {
     public let id: Int
     public let firstName, lastName, email: String
     public let isActive: Bool

@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSLoginSettingsResponse: NSObject, Codable {
+public class VCSLoginSettingsResponse: Codable {
     public let loginServerSessionName, forgotPassword, loginURL, registerURL: String
     public let notifyChannels: VCSNotifyChannelsResponse
     public let loginWithTokenURL, logoutURL, loginWithServerAuthCode, loginServerCSRFName: String
@@ -30,7 +30,7 @@ public class VCSLoginSettingsResponse: NSObject, Codable {
     }
 }
 
-public class VCSNotifyChannelsResponse: NSObject, Codable {
+public class VCSNotifyChannelsResponse: Codable {
     public let jobs: String
     public let file: String
     public let folder: String

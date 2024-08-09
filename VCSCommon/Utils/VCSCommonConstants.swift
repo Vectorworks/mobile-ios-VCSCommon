@@ -1,7 +1,6 @@
 import Foundation
 
-@objc
-public class VCSCommonConstants: NSObject {
+public class VCSCommonConstants {
     public static let invalidCharacterSet = CharacterSet(charactersIn: "\\?<>:*|%&\"/~#")
     public static let invalidCharacterListStringFormat = "\\ ? < > : * | %% & \" / ~ %@ #."
 }

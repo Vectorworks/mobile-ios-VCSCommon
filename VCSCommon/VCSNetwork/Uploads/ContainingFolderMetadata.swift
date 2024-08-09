@@ -1,6 +1,6 @@
 import Foundation
 
-public class ContainingFolderMetadata: NSObject {
+public class ContainingFolderMetadata {
     public let ownerLogin: String
     public let storageType: StorageType
     public let prefix: String

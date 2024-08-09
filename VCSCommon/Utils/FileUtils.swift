@@ -1,7 +1,7 @@
 import Foundation
 import ZIPFoundation
 
-public class FileUtils: NSObject {
+public class FileUtils {
     public static var cacheDirectory: String {
         return FileUtils.cacheDirectoryURL.path
     }

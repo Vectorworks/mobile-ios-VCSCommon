@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSVCDOCReplyResult: NSObject, Codable {
+public class VCSVCDOCReplyResult: Codable {
     public let id: Int
     public let owner: VCSVWViewerCommentReplyOwner
     public let content: String

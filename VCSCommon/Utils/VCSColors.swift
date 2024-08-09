@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-public class VCSColors: NSObject {
+public class VCSColors {
     public static var teal: UIColor {
         return UIColor(red: 0, green: 188, blue: 180)
     }

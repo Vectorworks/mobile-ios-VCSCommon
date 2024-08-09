@@ -18,7 +18,7 @@ public enum PresentationDownloadJobState: String {
     case done = "done"
 }
 
-public class VCSJobEventResponse: NSObject, Codable {
+public class VCSJobEventResponse: Codable {
     public let id: Int
     public let jobType: String
     public let lastUpdate: String

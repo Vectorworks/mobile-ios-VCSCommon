@@ -9,7 +9,7 @@ public enum StoragePageConstants: String {
 }
 
 
-public class StoragePage: NSObject, Codable {
+public class StoragePage: Codable {
     public static let driveIDRegXPattern: String = "driveId_[\\w\\-$!]+"
     public static let driveIDSharedRegXPattern: String = "driveId_sharedWithMe[\\w\\-$!]+"
     public static let driveIDSharedOneDriveRegXPattern: String = "driveId_sharedWithMeOneDrive[\\w\\-$!]+"

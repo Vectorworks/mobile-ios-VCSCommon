@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSFlagsResponse: NSObject, Codable {
+public class VCSFlagsResponse: Codable {
     public let isNameValid, isFileTypeSupported, isNameDuplicate, isSupported, isMounted, isMountPoint: Bool
     public var realmID: String = VCSUUID().systemUUID.uuidString
     

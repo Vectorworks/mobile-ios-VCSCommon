@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSAnnouncementResponse: NSObject, Codable {
+public class VCSAnnouncementResponse: Codable {
     public let code: String
     public let id: Int
     public let resourceURI: String

@@ -1,13 +1,13 @@
 import Foundation
 
-public class JobsResponse: NSObject, Codable {
+public class JobsResponse: Codable {
     public let count: Int
     public let next: String?
     public let previous: String?
     public let results: [VCSJobResponse]
 }
 
-public class VCSJobResponse: NSObject, Codable {
+public class VCSJobResponse: Codable {
     public let id: Int
     public let user: String
     public let fileVersion: VCSJobFileVersionResponse?

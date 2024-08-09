@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSFeedbackResultResponse: NSObject, Codable {
+public class VCSFeedbackResultResponse: Codable {
     public let hasSent: Bool
     
     enum CodingKeys: String, CodingKey {

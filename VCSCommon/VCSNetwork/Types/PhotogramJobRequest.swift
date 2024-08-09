@@ -108,7 +108,7 @@ public class RealmPhotogramJobRequest: Object, VCSRealmObject {
     }
 }
 
-public class PhotogramJobRequest: NSObject, Codable, VCSCachable {
+public class PhotogramJobRequest: Codable, VCSCachable {
     public typealias RealmModel = RealmPhotogramJobRequest
     public static let realmStorage = VCSGenericRealmModelStorage<RealmPhotogramJobRequest>()
     
@@ -155,7 +155,7 @@ public class PhotogramJobRequest: NSObject, Codable, VCSCachable {
     }
 }
 
-public class JobFileVersionRequest: NSObject, Codable {
+public class JobFileVersionRequest: Codable {
     public let path:String
     public let provider:String
     public let owner:String
@@ -176,7 +176,7 @@ public class JobFileVersionRequest: NSObject, Codable {
     }
 }
 
-public class PhotogramOptionsRequest: NSObject, Codable {
+public class PhotogramOptionsRequest: Codable {
     public let srcStorageType:String
     public let srcFileVersions:[JobFileVersionRequest]
     public let outputStorageType:String

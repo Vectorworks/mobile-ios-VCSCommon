@@ -1,10 +1,10 @@
 import Foundation
 
-public class VCSSharedAssetBrandingResponseWrapper: NSObject, Codable {
+public class VCSSharedAssetBrandingResponseWrapper: Codable {
     public let branding: VCSSharedAssetBrandingResponse
 }
 
-public class VCSSharedAssetBrandingResponse: NSObject, Codable {
+public class VCSSharedAssetBrandingResponse: Codable {
     public let position: BrandingLogoPosition?
     public let image: String?
     public let opacity, size: Float?
@@ -59,7 +59,7 @@ extension VCSSharedAssetBrandingResponse {
     }
 }
 
-public class BrandingLogoPosition: NSObject, Codable {
+public class BrandingLogoPosition: Codable {
     public let top, left, logoAR: Double
     public var realmID: String?
     

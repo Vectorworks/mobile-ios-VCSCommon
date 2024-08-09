@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSJobFileInfoResponse: NSObject, Codable {
+public class VCSJobFileInfoResponse: Codable {
     public let fileCount: Int
     public let path: String
     public let provider: String

@@ -1,11 +1,8 @@
 import Foundation
 
-public class Localization: NSObject {
+public class Localization {
     public static var privateDefaultInstance: Localization = Localization()
     public static var `default`: Localization { return Localization.privateDefaultInstance }
-    
-    @objc
-    public static var defaultOBJC: Localization { return Localization.default }
     
     var currentBundle: Bundle?
     public var devPseudoTranslations: Bool = false
@@ -45,8 +42,7 @@ public class Localization: NSObject {
         get { return Bundle.main.preferredLocalizations.first ?? "en" }
     }
     
-    override init() {
-        super.init()
+    init() {
         self.updateCurrentStringTable()
     }
     

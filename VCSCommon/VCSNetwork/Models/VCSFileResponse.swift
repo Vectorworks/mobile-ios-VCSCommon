@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSFileResponse: NSObject, Codable {
+public class VCSFileResponse: Codable {
     private(set) public var isFolder = false
     private(set) public var isFile = true
     
@@ -170,8 +170,6 @@ public class VCSFileResponse: NSObject, Codable {
         
         self.ownerLogin = self.ownerInfo?.owner ?? VCSUser.savedUser?.login ?? ""
         self.VCSID = self.resourceID
-        
-        super.init()
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -250,10 +248,6 @@ public class VCSFileResponse: NSObject, Codable {
         self.ownerLogin = ownerLogin
         self.VCSID = VCSID
     }
-    
-    final public class func ==(lhs: VCSFileResponse, rhs: VCSFileResponse) -> Bool {
-        return lhs.rID == rhs.rID
-    }
 }
 
 extension VCSFileResponse : FileAsset {
@@ -300,6 +294,16 @@ extension VCSFileResponse: VCSCellDataHolder {
     }
     public var assetData: Asset? {
         return self
+    }
+}
+
+extension VCSFileResponse: Hashable {
+    final public class func ==(lhs: VCSFileResponse, rhs: VCSFileResponse) -> Bool {
+        return lhs.rID == rhs.rID
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(rID)
     }
 }
 

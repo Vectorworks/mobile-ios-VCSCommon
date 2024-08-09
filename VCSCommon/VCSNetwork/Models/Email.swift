@@ -1,6 +1,6 @@
 import Foundation
 
-public class Email: NSObject, Codable {
+public class Email: Codable {
     public let email: String
     public let isVerified: Bool
     

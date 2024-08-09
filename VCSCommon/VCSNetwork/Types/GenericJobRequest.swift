@@ -1,6 +1,6 @@
 import Foundation
 
-public class GenericJobRequest: NSObject, Codable {
+public class GenericJobRequest: Codable {
     public let jobType:String
     public let fileVersion: JobFileVersionRequest
     public let options: GenericJobOptionsRequest
@@ -23,7 +23,7 @@ public enum GenericJobOptionOperations: String {
     case measure
 }
 
-public class GenericJobOptionsRequest: NSObject, Codable {
+public class GenericJobOptionsRequest: Codable {
     public let jobName:String
     public let operation: String
     public let outputStorageType: String

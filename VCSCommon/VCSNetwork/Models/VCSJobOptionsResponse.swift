@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSJobOptionsResponse: NSObject, Codable {
+public class VCSJobOptionsResponse: Codable {
     public let options: String? = nil
     public let jobName, operation: String?
     public let srcFileInfo: VCSJobFileInfoResponse?

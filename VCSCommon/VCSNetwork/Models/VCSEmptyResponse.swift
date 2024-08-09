@@ -1,4 +1,4 @@
 import Foundation
 
-public class VCSEmptyResponse: NSObject, Codable {
+public class VCSEmptyResponse: Codable {
 }

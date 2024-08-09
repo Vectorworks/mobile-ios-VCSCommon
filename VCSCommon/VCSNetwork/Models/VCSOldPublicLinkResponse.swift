@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSOldPublicLinkResponse: NSObject, Codable {
+public class VCSOldPublicLinkResponse: Codable {
     public let dateCreated: String
     public let expired: Bool
     public let expires: String

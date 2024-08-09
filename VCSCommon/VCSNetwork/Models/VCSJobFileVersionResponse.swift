@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSJobFileVersionResponse: NSObject, Codable {
+public class VCSJobFileVersionResponse: Codable {
     //TODO: test changes
     public let owner, container, provider, fileType: String
     public let path: String
@@ -30,8 +30,6 @@ public class VCSJobFileVersionResponse: NSObject, Codable {
         self.versionID = try container.decode(String.self, forKey: CodingKeys.versionID)
         self.resourceID = try container.decode(String.self, forKey: CodingKeys.resourceID)
         self.VCSID = self.resourceID
-        
-        super.init()
     }
     
     public func encode(to encoder: Encoder) throws {

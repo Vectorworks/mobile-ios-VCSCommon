@@ -106,19 +106,13 @@ public enum ClientType: String {
     case iOS = "iOS"
 }
 
-public class ClientVersion: NSObject {
+public class ClientVersion {
     var verValue: String = "0.0"
     public static var privateDefaultInstance: ClientVersion!
     public static var `default`: ClientVersion { return ClientVersion.privateDefaultInstance }
-    @objc
-    public static var defaultOBJC: ClientVersion { return ClientVersion.default }
     
     public class func setDefault(version: String) {
         ClientVersion.privateDefaultInstance = ClientVersion(version: version)
-    }
-    
-    override init() {
-        super.init()
     }
     
     public init(version: String) {

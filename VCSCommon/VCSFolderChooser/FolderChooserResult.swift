@@ -1,6 +1,6 @@
 import Foundation
 
-public class FolderChooserResult: NSObject, Codable {
+public class FolderChooserResult: Codable {
     public let ownerLogin: String
     public let storageType: StorageType
     public let prefix: String
@@ -11,7 +11,5 @@ public class FolderChooserResult: NSObject, Codable {
         self.storageType = storageType
         self.prefix = prefix
         self.fileName = fileName
-        
-        super.init()
     }
 }

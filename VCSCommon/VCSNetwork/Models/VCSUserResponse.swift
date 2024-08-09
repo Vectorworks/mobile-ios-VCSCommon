@@ -2,12 +2,12 @@ import Foundation
 
 public typealias StorageList = [VCSStorageResponse]
 
-public class VCSUserResponse: NSObject, Codable {
+public class VCSUserResponse: Codable {
     public let meta: Meta
     public let objects: [VCSUser]
 }
 
-public class Meta: NSObject, Codable {
+public class Meta: Codable {
     public let limit: Int
     public let next: String?
     public let offset: Int
@@ -26,11 +26,10 @@ public class Meta: NSObject, Codable {
         self.offset = try container.decode(Int.self, forKey: CodingKeys.offset)
         self.previous = try? container.decode(String.self, forKey: CodingKeys.previous)
         self.totalCount = try container.decode(Int.self, forKey: CodingKeys.totalCount)
-        super.init()
     }
 }
 
-@objc public class VCSUser: NSObject, Codable {
+public class VCSUser: Codable {
     public let allowedLanguages: String
     public let awskeys: VCSAWSkeys
     @objc public let email, firstName: String
@@ -130,7 +129,6 @@ public class Meta: NSObject, Codable {
         self.resourceURI = try container.decode(String.self, forKey: CodingKeys.resourceURI)
         self.username = try container.decode(String.self, forKey: CodingKeys.username)
         self.isLoggedIn = false
-        super.init()
     }
 }
 
@@ -169,7 +167,7 @@ extension VCSUser {
     }
 }
 
-public class VCSAWSkeys: NSObject, Codable {
+public class VCSAWSkeys: Codable {
     public let awsSynced: Bool
     public let linksExpireAfter: Int
     public let awskeysPrefix, s3Bucket, s3Key, s3Secret: String
@@ -207,7 +205,7 @@ public class VCSAWSkeys: NSObject, Codable {
     }
 }
 
-public class Quotas: NSObject, Codable {
+public class Quotas: Codable {
     public let processingQuota: Int
     public let processingUsed: Double
     public let storageQuota, storageUsed: Int

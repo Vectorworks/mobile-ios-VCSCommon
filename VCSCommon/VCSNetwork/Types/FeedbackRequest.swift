@@ -1,6 +1,6 @@
 import Foundation
 
-public class FeedbackRequest: NSObject, Codable {
+public class FeedbackRequest: Codable {
     public let csrftoken:String
     public let feedback:String
     public let category:String

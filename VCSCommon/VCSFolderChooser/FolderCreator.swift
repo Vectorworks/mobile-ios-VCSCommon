@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-public class FolderCreator: NSObject {
+public class FolderCreator {
 
     public static func sendCreateFolderRequest(_ foldername: String, _ storage: StorageType, _ parentPrefix: String, owner: String, _ presenter: UIViewController?) {
         guard let presenterVC = presenter else { return }

@@ -1,7 +1,7 @@
 import UIKit
 import Foundation
 
-public class VCSStorageResponse: NSObject, Codable {
+public class VCSStorageResponse: Codable {
     public let name, folderURI, fileURI: String
     public let storageType: StorageType
     public let resourceURI: String
@@ -35,8 +35,6 @@ public class VCSStorageResponse: NSObject, Codable {
         self.accessType = try? container.decode(String.self, forKey: CodingKeys.accessType)
         self.pagesURL = try? container.decode(String.self, forKey: CodingKeys.pagesURL)
         self.pages = []
-        
-        super.init()
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -77,6 +75,16 @@ public class VCSStorageResponse: NSObject, Codable {
     
     public func storageImage() -> UIImage? {
         return UIImage(named: self.storageType.storageImageName)
+    }
+}
+
+extension VCSStorageResponse: Hashable {
+    public static func == (lhs: VCSStorageResponse, rhs: VCSStorageResponse) -> Bool {
+        return lhs.storageType == rhs.storageType
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(storageType)
     }
 }
 

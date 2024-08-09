@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSAnnouncementSettingsResponse: NSObject, Codable {
+public class VCSAnnouncementSettingsResponse: Codable {
     public let message: String
     public let dismissed: String?
     public let title: String
@@ -13,6 +13,6 @@ public class VCSAnnouncementSettingsResponse: NSObject, Codable {
     }
 }
 
-public class Accept: NSObject, Codable {
+public class Accept: Codable {
     public let title, type, url: String
 }

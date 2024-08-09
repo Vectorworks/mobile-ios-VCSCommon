@@ -1,7 +1,7 @@
 import Foundation
 import CocoaLumberjackSwift
 
-public class UploadJob: NSObject {
+public class UploadJob {
     public enum JobType: String {
         case SingleFileUpload
         case MultipleFileUpload
@@ -22,7 +22,6 @@ public class UploadJob: NSObject {
         self.localFiles = localFiles
         self.parentFolder = parentFolder
         self.owner = owner
-        super.init()
         if UploadJob.uploadJobs.contains(where: { $0.jobID == self.jobID }) == false {
             UploadJob.uploadJobs.append(self)
         }

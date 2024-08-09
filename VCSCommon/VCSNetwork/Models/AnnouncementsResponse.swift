@@ -1,10 +1,10 @@
 import Foundation
 
-public class AnnouncementsResponse: NSObject, Codable {
+public class AnnouncementsResponse: Codable {
     public let unseen: [Int]
 }
 
-public class ClearNotificationHolder: NSObject, Codable {
+public class ClearNotificationHolder: Codable {
     public let sequenceNumbers: [Int]
     
     enum CodingKeys: String, CodingKey {

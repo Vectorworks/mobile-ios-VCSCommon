@@ -1,7 +1,7 @@
 import Foundation
 
 // MARK: - SharedFolderResponse
-public class VCSAccessTokenResponse: NSObject, Codable {
+public class VCSAccessTokenResponse: Codable {
     public let accessToken: String
     public let expiresIn: Int
     public let tokenType: String

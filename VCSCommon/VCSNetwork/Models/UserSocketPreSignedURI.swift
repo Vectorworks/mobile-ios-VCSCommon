@@ -1,5 +1,5 @@
 import Foundation
 
-public class UserSocketPreSignedURI: NSObject, Codable {
+public class UserSocketPreSignedURI: Codable {
     public let uri: String
 }

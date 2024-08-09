@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-public class PageData: NSObject {
+public class PageData {
     public static let DEFAULT_DEC_DIM_PRECISION: Int = 2
     public static let DEFAULT_DPI: Int = 72
     public var name: String = ""
@@ -23,23 +23,29 @@ public class PageData: NSObject {
     public var viewports: [Viewport] = []
 }
 
-public class VWPoint: NSObject {
+public class VWPoint: Equatable {
     public var x: Double = 0.0
     public var y: Double = 0.0
+    
+    public static func == (lhs: VWPoint, rhs: VWPoint) -> Bool {
+        return lhs.x == rhs.x && lhs.y == rhs.y
+    }
 }
 
-public class CropRect: NSObject {
+public class CropRect {
     public var x: Double = 0.0
     public var y: Double = 0.0
     public var width: Double = 0.0
     public var height: Double = 0.0
+    
+    public init() {}
 }
 
-public class CropPoly: NSObject {
+public class CropPoly {
     public var vertices: [VWPoint] = []
 }
 
-public class CropOval: NSObject {
+public class CropOval {
     public var center: VWPoint = VWPoint()
     public var radius: VWPoint = VWPoint()
 }
@@ -47,7 +53,7 @@ public class CropOval: NSObject {
 public class MeasurementLayer: CAShapeLayer {
 }
 
-public class Viewport: NSObject {
+public class Viewport {
     public var x: Double = 0.0
     public var y: Double = 0.0
     public var rotation: Double = 0.0
@@ -58,4 +64,6 @@ public class Viewport: NSObject {
     public var cropRect: CropRect?
     public var cropPoly: CropPoly?
     public var cropOval: CropOval?
+    
+    public init() {}
 }

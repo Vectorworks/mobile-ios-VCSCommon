@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSCurrentAccountResponse: NSObject, Codable {
+public class VCSCurrentAccountResponse: Codable {
     public let login: String
     public  let email: String
     public let firstName: String

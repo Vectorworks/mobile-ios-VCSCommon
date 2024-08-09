@@ -1,6 +1,6 @@
 import Foundation
 
-public class UserLogoutRequest: NSObject, Codable {
+public class UserLogoutRequest: Codable {
     public let loginServer:String
     public let logoutURL:String
     public let loginServerCSRFName:String

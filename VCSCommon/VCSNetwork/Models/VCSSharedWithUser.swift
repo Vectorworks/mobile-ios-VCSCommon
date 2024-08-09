@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSSharedWithUser: NSObject, Codable {
+public class VCSSharedWithUser: Codable {
     public let email: String
     public let login: String?
     public let username: String?

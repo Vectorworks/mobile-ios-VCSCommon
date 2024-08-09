@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSFolderResponse: NSObject, Asset, Codable {
+public class VCSFolderResponse: Asset, Codable {
     
     public static var addToCacheRootFolderID: String?
     
@@ -144,8 +144,6 @@ public class VCSFolderResponse: NSObject, Asset, Codable {
         }
         
         self.VCSID = self.resourceID
-                
-        super.init()
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -282,6 +280,16 @@ public extension VCSFolderResponse {
 //        
 //        return isGoogleDriveSharedWithMe || isOneDriveSharedWithMe
 //    }
+}
+
+extension VCSFolderResponse: Hashable {
+    public static func == (lhs: VCSFolderResponse, rhs: VCSFolderResponse) -> Bool {
+        return lhs.VCSID == rhs.VCSID
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(VCSID)
+    }
 }
 
 public extension VCSFolderResponse {

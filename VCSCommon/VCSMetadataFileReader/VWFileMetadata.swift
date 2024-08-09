@@ -3,7 +3,7 @@ import KissXML
 import CocoaLumberjackSwift
 import simd
 
-public class VWFileMetadata: NSObject {
+public class VWFileMetadata {
     public var filePath: String
     public var designLayers: [DesignLayerData] = []
     public var classes: [ClassData] = []
@@ -14,7 +14,6 @@ public class VWFileMetadata: NSObject {
     
     public init(withFile: String) {
         self.filePath = withFile
-        super.init()
         self.parse()
     }
     

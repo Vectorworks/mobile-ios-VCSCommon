@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSVWViewerReplyRequest: NSObject, Codable {
+public class VCSVWViewerReplyRequest: Codable {
     let parentID: Int
     let content: String
     let mentions: [VCSVWViewerMentionedUser]

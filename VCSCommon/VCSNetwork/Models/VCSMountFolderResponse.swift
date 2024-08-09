@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSMountFolderResponse: NSObject, Codable {
+public class VCSMountFolderResponse: Codable {
     public var realmID: String = VCSUUID().systemUUID.uuidString
     
     public let isMounted: Bool

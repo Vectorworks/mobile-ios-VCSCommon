@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class VCSFCIconsStr: NSObject {
+class VCSFCIconsStr {
     public static let badge_view = "badge-view"
     public static let badge_download = "badge-download"
     public static let badge_edit = "badge-edit"

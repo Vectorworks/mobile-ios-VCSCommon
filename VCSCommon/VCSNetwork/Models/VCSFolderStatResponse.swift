@@ -1,9 +1,9 @@
 import Foundation
 
-public class VCSFolderStatResponse: NSObject, Codable {
+public class VCSFolderStatResponse: Codable {
     public let folders, files: VCSAssetStatResponse
 }
 
-public class VCSAssetStatResponse: NSObject, Codable {
+public class VCSAssetStatResponse: Codable {
     public let count: Int
 }

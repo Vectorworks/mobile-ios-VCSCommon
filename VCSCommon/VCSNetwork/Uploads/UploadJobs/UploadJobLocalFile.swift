@@ -2,7 +2,7 @@ import Foundation
 import RealmSwift
 import CocoaLumberjackSwift
 
-public class UploadJobLocalFile: NSObject, Identifiable {
+public class UploadJobLocalFile: Identifiable {
     public enum UploadingState: String {
         case Ready
         case Waiting
@@ -40,8 +40,6 @@ public class UploadJobLocalFile: NSObject, Identifiable {
         self.uploadPathSuffix = UUIDString
         self.related = related
         
-        super.init()
-        
         //move files to uploads temp folder and save only the suffix
         if self.uploadPathURL.exists == false {
             do {
@@ -68,8 +66,6 @@ public class UploadJobLocalFile: NSObject, Identifiable {
         self.uploadPathSuffix = uploadPathSuffix
         self.uploadingState = uploadingState
         self.related = related
-        
-        super.init()
     }
     
     final public class func ==(lhs: UploadJobLocalFile, rhs: UploadJobLocalFile) -> Bool {

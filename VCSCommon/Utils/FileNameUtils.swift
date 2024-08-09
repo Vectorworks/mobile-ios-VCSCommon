@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-public class FileNameUtils: NSObject {
+public class FileNameUtils {
     public static func appendingShortUUIDName(name: String, UUDIString: String? = nil) -> String { // "Nomad_20191111-163306.9260"
         return name + "_" + (UUDIString ?? VCSUUID().shortenString())
     }

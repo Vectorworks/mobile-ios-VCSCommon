@@ -2,13 +2,12 @@ import Foundation
 import CocoaLumberjackSwift
 import UIKit
 
-public class CapturedPhoto: NSObject {
+public class CapturedPhoto {
     public let name: String
     public var pathURL: URL { return URL(fileURLWithPath: FileManager.AppBurstPhotosTempDirectory.appendingPathComponent(self.name).appendingPathExtension("jpg")) }
     
     public init(image: UIImage, name: String) {
         self.name = name
-        super.init()
         self.saveToDisk(image: image)
     }
     

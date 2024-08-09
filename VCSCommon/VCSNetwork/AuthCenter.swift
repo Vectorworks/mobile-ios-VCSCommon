@@ -1,7 +1,7 @@
 import Foundation
 
-@objc public class AuthCenter: NSObject {
-    @objc public static let shared = AuthCenter()
+public class AuthCenter {
+    public static let shared = AuthCenter()
     
     private static let loginSettingsKey = "AuthCenter.loginSettingsKey"
     

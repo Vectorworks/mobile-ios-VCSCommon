@@ -15,12 +15,8 @@ public enum VCSAPIVersion: String {
     case v2 = "/restapi/public/v2/"
 }
 
-public class VCSServer: NSObject, Codable {
+public class VCSServer: Codable {
     public static var `default`: VCSServer { return VCSUserDefaults.default.getCodableItem(forKey: "VCSNetwork_defaultServer") ?? VCSServer.prod }
-    @objc
-    public static var defaultOBJC: VCSServer {
-        return VCSServer.default
-    }
     
     public let serverURLString: String
     
@@ -36,4 +32,10 @@ public class VCSServer: NSObject, Codable {
     public static func setDefaultServer(server: VCSServer) {
         VCSUserDefaults.default.setCodableItem(value: server, forKey: "VCSNetwork_defaultServer")
     }
+}
+
+extension VCSServer: Equatable {
+    public static func == (lhs: VCSServer, rhs: VCSServer) -> Bool {
+        return lhs.serverURLString == rhs.serverURLString
+    }    
 }

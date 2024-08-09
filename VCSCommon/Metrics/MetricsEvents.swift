@@ -1,7 +1,7 @@
 import Foundation
 import FirebaseAnalytics
 
-public class MetricsEvent: NSObject {
+public class MetricsEvent {
     //MARK: - EVENTS_LIST_ACTION
     public static let LIST_ACTION__SELECT_ITEMS                           = "list_action__select_items"
     public static let LIST_ACTION__REALOD_ITEMS                           = "list_action__reload_items"
