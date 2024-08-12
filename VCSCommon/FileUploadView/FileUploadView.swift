@@ -195,13 +195,7 @@ public struct FileUploadView: View, KeyboardReadable {
             }
         } else {
             ProgressView()
-                .modify({
-                    if #available(iOS 17.0, *) {
-                        $0.controlSize(.extraLarge)
-                    } else {
-                        $0.controlSize(.large)
-                    }
-                })
+                .controlSize(.extraLarge)
                 .task {
                     model.loadHomeUserFolder()
                 }
