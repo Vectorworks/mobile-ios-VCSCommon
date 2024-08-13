@@ -23,7 +23,10 @@ extension VCSStorageResponse {
     private func storageAction(presenter: VCSFolderChooser) {
         guard self.folderURI != presenter.folder?.resourceURI else { return }
         
-        presenter.changeStorage(storage: self)
+        Task {
+            await presenter.changeStorage(storage: self)
+        }
+        
     }
     
     private func googleStorageAction(homeButton: UIButton, presenter: VCSFolderChooser) {

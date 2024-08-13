@@ -247,7 +247,7 @@ public class VCSFolderChooser: UIViewController, UITableViewDelegate {
         })
     }
     
-    public func openInNewController(folder: VCSFolderResponse) {
+    public func openInNewController(folder: VCSFolderResponse) async {
         guard let controller = VCSFolderChooser.fromStoryboard(withDelegate: self.delegate, andFileName: self.fileName) else { return }
         controller.folder = folder
         self.navigationController?.pushViewController(controller, animated: true)
@@ -268,7 +268,9 @@ public class VCSFolderChooser: UIViewController, UITableViewDelegate {
             return
         }
         
-        self.openInNewController(folder: folderData)
+        Task {
+            await self.openInNewController(folder: folderData)
+        }
     }
     
     @IBAction func storageButtonClicked(_ sender: UIButton) {

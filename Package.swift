@@ -46,13 +46,16 @@ let package = Package(
                 .product(name: "FirebasePerformance", package: "firebase-ios-sdk"),
                 .product(name: "SDWebImage", package: "SDWebImage"),
                 .product(name: "SDWebImageSwiftUI", package: "SDWebImageSwiftUI"),
-                
                 .product(name: "OAuth2", package: "OAuth2"),
             ],
             path: "VCSCommon",
             exclude: [
                 "PromisedFuture/README.md",
                 "Info.plist",
-            ])
+            ],
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]
+        )
     ]
 )

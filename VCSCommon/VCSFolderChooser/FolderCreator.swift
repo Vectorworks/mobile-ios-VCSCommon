@@ -9,7 +9,9 @@ public class FolderCreator {
         APIClient.createFolder(storage: storage, name: foldername, parentFolderPrefix: parentPrefix, owner: owner).execute(onSuccess: { (result: VCSFolderResponse) in
             VCSCache.addToCache(item: result)
             if let folderChooser = presenter as? VCSFolderChooser {
-                folderChooser.openInNewController(folder: result)
+                Task {
+                    await folderChooser.openInNewController(folder: result)
+                }
             }
         }, onFailure: { (error: Error) in
             let localizedTitle = "Could Not Create Folder".vcsLocalized
