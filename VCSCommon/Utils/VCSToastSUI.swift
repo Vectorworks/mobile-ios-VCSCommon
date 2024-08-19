@@ -1,8 +1,8 @@
 import SwiftUI
 
 public struct VCSToastSUI: ViewModifier {
-    public static let short: TimeInterval = 2
-    public static let long: TimeInterval = 3.5
+    nonisolated public static let short: TimeInterval = 2
+    nonisolated public static let long: TimeInterval = 3.5
     
     public let message: String
     @Binding public var isShowing: Bool
