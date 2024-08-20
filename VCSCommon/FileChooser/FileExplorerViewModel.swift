@@ -10,29 +10,14 @@ import Foundation
 class FileExplorerViewModel: ObservableObject {
     @Published var resultFolder: Result<VCSFolderResponse, Error>? = nil
     
-    @Published var currentFolder: VCSFolderResponse? = nil
+    @Published var sortedFolders: [VCSFolderResponse] = []
+    
+    @Published var sortedFiles: [VCSFileResponse] = []
     
     @Published var fileTypeFilter: FileTypeFilter
     
-    var currentFolderResourceUri: String
-    
-    var sortedFolders: [VCSFolderResponse] {
-        currentFolder?.subfolders.sorted(by: { $0.name.lowercased() < $1.name.lowercased() }) ?? []
-    }
-    
-    var sortedFiles: [VCSFileResponse] {
-        currentFolder?.files
-            .sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
-            .filter { file in
-                fileTypeFilter.extensions.map { filterExtension in
-                    filterExtension.isInFile(file: file)
-                }.contains(true)
-            } ?? []
-    }
-    
-    init(fileTypeFilter: FileTypeFilter, currentFolderResourceUri: String) {
+    init(fileTypeFilter: FileTypeFilter) {
         self.fileTypeFilter = fileTypeFilter
-        self.currentFolderResourceUri = currentFolderResourceUri
     }
     
     func getThumbnailURL(file: VCSFileResponse) -> URL? {
@@ -42,13 +27,10 @@ class FileExplorerViewModel: ObservableObject {
         return URL(string: thumbnailString)
     }
     
-    func loadFolder() {
-        guard currentFolderResourceUri.isEmpty == false else {
-            resultFolder = .failure(VCSError.GenericException("resourceURI is nil"))
-            return
-        }
-        
-        APIClient.folderAsset(assetURI: currentFolderResourceUri).execute { (result: Result<VCSFolderResponse, Error>) in
+    func loadFolder(resourceUri: String) {
+        self.resultFolder = nil
+
+        APIClient.folderAsset(assetURI: resourceUri).execute { (result: Result<VCSFolderResponse, Error>) in
             switch result {
             case .success(let success):
                 success.loadLocalFiles()
@@ -59,10 +41,19 @@ class FileExplorerViewModel: ObservableObject {
             self.resultFolder = result
             
             do {
-                self.currentFolder = try self.resultFolder?.get()
+                let loadedFolderResponse = try self.resultFolder?.get()
+                self.sortedFolders = loadedFolderResponse?.subfolders.sorted(by: { $0.name.lowercased() < $1.name.lowercased() }) ?? []
+                self.sortedFiles = loadedFolderResponse?.files
+                    .sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
+                    .filter { file in
+                        self.fileTypeFilter.extensions.map { filterExtension in
+                            filterExtension.isInFile(file: file)
+                        }.contains(true)
+                    } ?? []
             } catch {
                 print("Error retrieving the value: \(error)")
             }
+            
         }
     }
 }

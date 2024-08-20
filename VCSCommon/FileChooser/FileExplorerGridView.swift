@@ -9,9 +9,9 @@ import Foundation
 import SwiftUI
 
 struct FileExplorerGridView: View {
-    @State var folders: [VCSFolderResponse]
+    @Binding var folders: [VCSFolderResponse]
     
-    @State var files: [VCSFileResponse]
+    @Binding var files: [VCSFileResponse]
     
     var itemPickedCompletion: ((VCSFileResponse) -> Void)?
     

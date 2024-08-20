@@ -25,8 +25,8 @@ struct FileChooserActiveFilterView: View {
             
             Image(systemName: "xmark")
                 .foregroundColor(colorScheme == .light ? .gray : .white)
+                .padding(5)
         }
-        .padding(8)
         .background(colorScheme == .light ? Color.black.opacity(0.1) : Color.white.opacity(0.1))
         .cornerRadius(10)
     }
