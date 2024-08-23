@@ -52,7 +52,7 @@ public enum APIRouter: URLRequestConvertible {
     case socketPreSignedUri
     case listPresentations(limit: Int, offset: Int)
     case presentationDownload(presentationUIID: String)
-    case listVCDOCComments(username: String, storageType: String, storagePath: String)
+    case listVCDOCComments(fileOwner: String, storageType: String, storagePath: String)
     case sendVCDOCReply(replyData: VCSVWViewerReplyRequest)
     case getTrustedAccounts
     case addVCDOCComment(commentData: VCSVWViewerAddCommentRequest)
@@ -336,8 +336,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/iboards/"
         case .presentationDownload(let presentationUIID):
             return "/iboards/\(presentationUIID)/download/"
-        case .listVCDOCComments(let username, let storageType, let storagePath):
-            return "\(storageType.lowercased())/file/:comments/o:\(username)/p:\(storagePath)/"
+        case .listVCDOCComments(let fileOwner, let storageType, let storagePath):
+            return "\(storageType.lowercased())/file/:comments/o:\(fileOwner)/p:\(storagePath)/"
         case .sendVCDOCReply:
             return "/reply/"
         case .getTrustedAccounts:

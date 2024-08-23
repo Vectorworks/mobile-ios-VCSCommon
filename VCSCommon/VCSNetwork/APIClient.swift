@@ -251,8 +251,8 @@ public class APIClient {
         return performRequest(route: APIRouter.presentationDownload(presentationUIID: uuid))
     }
     
-    public static func listVCDOCComments(username: String, storageType: String, storagePath: String) async throws -> VCSListVCDOCCommentsResponse {
-        return try await performAsyncRequest(route: APIRouter.listVCDOCComments(username: username, storageType: storageType, storagePath: storagePath))
+    public static func listVCDOCComments(fileOwner: String, storageType: String, storagePath: String) async throws -> VCSListVCDOCCommentsResponse {
+        return try await performAsyncRequest(route: APIRouter.listVCDOCComments(fileOwner: fileOwner, storageType: storageType, storagePath: storagePath))
     }
     
     public static func fileData(owner: String, storage: String, filePrefix: String, updateFromStorage: Bool = false, googleDriveID: String? = nil, googleDriveVerID: String? = nil) -> Future<VCSFileResponse, Error> {
