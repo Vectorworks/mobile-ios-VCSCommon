@@ -16,33 +16,53 @@ struct FileExplorerListView: View {
     var itemPickedCompletion: ((VCSFileResponse) -> Void)?
     
     var getThumbnailURL: ((VCSFileResponse) -> URL?)
-
+    
     var onDismiss: (() -> Void)
+    
+    var isInRoot: Bool = false
+    
+    var isGuest: Bool = false
     
     var body: some View {
         List {
-            ForEach(folders, id: \.rID) { subfolder in
-                NavigationLink(value: FCRouteData(resourceURI: subfolder.resourceURI, breadcrumbsName: subfolder.name)) {
+            if isInRoot && !isGuest {
+                Section {
                     FileChooserListRow(
                         thumbnailURL: nil,
-                        flags: subfolder.flags,
-                        name: subfolder.name,
-                        isFolder: true
+                        flags: nil,
+                        name: "Shared with me".vcsLocalized,
+                        isFolder: true,
+                        isSharedWithMeFolder: true
                     )
                 }
             }
             
-            ForEach(files, id: \.rID) { file in
-                Button {
-                    onDismiss()
-                    itemPickedCompletion?(file)
-                } label: {
-                    FileChooserListRow(
-                        thumbnailURL: getThumbnailURL(file),
-                        flags: file.flags,
-                        name: file.name,
-                        isFolder: false
-                    )
+            Section {
+                ForEach(folders, id: \.rID) { subfolder in
+                    NavigationLink(value: FCRouteData(resourceURI: subfolder.resourceURI, breadcrumbsName: subfolder.name)) {
+                        FileChooserListRow(
+                            thumbnailURL: nil,
+                            flags: subfolder.flags,
+                            name: subfolder.name,
+                            isFolder: true
+                        )
+                    }
+                }
+            }
+            
+            Section {
+                ForEach(files, id: \.rID) { file in
+                    Button {
+                        onDismiss()
+                        itemPickedCompletion?(file)
+                    } label: {
+                        FileChooserListRow(
+                            thumbnailURL: getThumbnailURL(file),
+                            flags: file.flags,
+                            name: file.name,
+                            isFolder: false
+                        )
+                    }
                 }
             }
         }

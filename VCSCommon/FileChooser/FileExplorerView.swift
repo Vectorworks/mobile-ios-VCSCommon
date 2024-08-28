@@ -1,11 +1,12 @@
 import SwiftUI
 import CocoaLumberjackSwift
 import UIKit
+import RealmSwift
 
 struct FileExplorerView: View {
     @ObservedObject private var viewsLayoutSetting: ViewsLayoutSetting = ViewsLayoutSetting.listDefault
     
-    @Environment(\.colorScheme) var colorScheme
+    @ObservedResults(VCSUser.RealmModel.self, where: { $0.isLoggedIn == true }) var users
     
     @StateObject private var viewModel: FileExplorerViewModel
     
@@ -13,23 +14,18 @@ struct FileExplorerView: View {
     
     @Binding var rootRoute: FCRouteData
     
-    @State private var showDropdown = false
-        
     @State var currentFolderResourceUri: String?
     
     var itemPickedCompletion: ((VCSFileResponse) -> Void)?
     
     var onDismiss: (() -> Void)
     
-    var onStorageChange: ((VCSStorageResponse) -> Void)
-        
     private var isInRoot: Bool {
         path.count == 0
     }
     
-    private var previousFolderName: String {
-        guard path.count >= 2 else { return "Back".vcsLocalized }
-        return path[path.count - 2].breadcrumbsName
+    private var isGuest: Bool {
+        users.first?.entity == nil
     }
     
     init(fileTypeFilter: FileTypeFilter,
@@ -37,25 +33,13 @@ struct FileExplorerView: View {
          currentFolderResourceUri: String?,
          itemPickedCompletion: ((VCSFileResponse) -> Void)?,
          onDismiss: @escaping (() -> Void),
-         onStorageChange: @escaping ((VCSStorageResponse) -> Void),
          rootRoute: Binding<FCRouteData>) {
         _viewModel = StateObject(wrappedValue: FileExplorerViewModel(fileTypeFilter: fileTypeFilter))
         self._path = path
         self.currentFolderResourceUri = currentFolderResourceUri
         self.itemPickedCompletion = itemPickedCompletion
         self.onDismiss = onDismiss
-        self.onStorageChange = onStorageChange
         self._rootRoute = rootRoute
-    }
-    
-    func onToolbarBackButtonPressed() {
-        if isInRoot {
-            onDismiss()
-        } else {
-            if !path.isEmpty {
-                path.removeLast()
-            }
-        }
     }
     
     var body: some View {
@@ -81,7 +65,9 @@ struct FileExplorerView: View {
                                 files: $viewModel.sortedFiles,
                                 itemPickedCompletion: itemPickedCompletion,
                                 getThumbnailURL: viewModel.getThumbnailURL,
-                                onDismiss: onDismiss
+                                onDismiss: onDismiss,
+                                isInRoot: isInRoot,
+                                isGuest: isGuest
                             )
                         case .grid :
                             FileExplorerGridView(
@@ -89,7 +75,9 @@ struct FileExplorerView: View {
                                 files: $viewModel.sortedFiles,
                                 itemPickedCompletion: itemPickedCompletion,
                                 getThumbnailURL: viewModel.getThumbnailURL,
-                                onDismiss: onDismiss
+                                onDismiss: onDismiss,
+                                isInRoot: isInRoot,
+                                isGuest: isGuest
                             )
                         }
                     }
@@ -104,55 +92,12 @@ struct FileExplorerView: View {
                         }
                 }
             }
-            .onChange(of: rootRoute) { newValue in
+            .frame(maxWidth: .infinity)
+            .onChange(of: rootRoute) { oldValue, newValue in
                 if isInRoot {
                     viewModel.loadFolder(resourceUri: newValue.resourceURI)
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle(previousFolderName)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    FileExplorerToolbarBackButton(
-                        label: previousFolderName,
-                        onPress: onToolbarBackButtonPressed
-                    )
-                }
-                
-                ToolbarItem(placement: .principal) {
-                    FileExplorerDropdownButton(
-                        currentFolderName: path.last?.breadcrumbsName ?? rootRoute.breadcrumbsName,
-                        isInRoot: isInRoot,
-                        viewWidth: UIDevice.current.userInterfaceIdiom == .pad ? geometry.size.width * 0.2 : geometry.size.width * 0.5,
-                        showDropdown: $showDropdown
-                    )
-                    .id(path.last?.breadcrumbsName ?? rootRoute.breadcrumbsName)
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Picker(selection: $viewsLayoutSetting.layout, label: Text("Style")) {
-                        Label(ListLayoutCriteria.grid.buttonName, image: ListLayoutCriteria.grid.buttonImageName)
-                            .tag(ListLayoutCriteria.grid.rawValue)
-                        Label(ListLayoutCriteria.list.buttonName, image: ListLayoutCriteria.list.buttonImageName)
-                            .tag(ListLayoutCriteria.list.rawValue)
-                    }
-                    .tint(Color.label)
-                }
-            }
-            .overlay(
-                Group {
-                    if showDropdown {
-                        FileExplorerDropdownView(
-                            showDropdown: $showDropdown,
-                            path: $path,
-                            onStorageChange: self.onStorageChange
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    }
-                }
-            )
-            .frame(maxWidth: .infinity)
         }
     }
 }

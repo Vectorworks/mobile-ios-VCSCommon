@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Veneta Todorova on 24.07.24.
 //
@@ -15,6 +15,7 @@ struct FileChooserGridItemView: View {
     @State var flags: VCSFlagsResponse?
     @State var name: String
     @State var isFolder: Bool
+    @State var isSharedWithMeFolder: Bool = false
     
     var placeholderImageIconString: String {
         if isFolder {
@@ -30,11 +31,20 @@ struct FileChooserGridItemView: View {
                 image.resizable()
                     .frame(width: K.Sizes.gridCellImageBackgroundSize, height: K.Sizes.gridCellImageBackgroundSize)
             } placeholder: {
-                Image(placeholderImageIconString)
-                    .resizable()
-                    .foregroundStyle(.gray)
-                    .frame(width: K.Sizes.gridCellImageSize, height: K.Sizes.gridCellImageSize)
-                    .padding(15)
+                Group {
+                    if isSharedWithMeFolder {
+                        Image("shared-with-me")
+                            .resizable()
+                            .foregroundStyle(.gray)
+                            .frame(width: 50, height: 50)
+                    } else {
+                        Image(placeholderImageIconString)
+                            .resizable()
+                            .foregroundStyle(.gray)
+                            .frame(width: K.Sizes.gridCellImageSize, height: K.Sizes.gridCellImageSize)
+                            .padding(15)
+                    }
+                }
             }
             .indicator(.activity)
             .transition(.fade(duration: 0.5))

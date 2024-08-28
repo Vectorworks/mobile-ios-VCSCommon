@@ -32,18 +32,18 @@ public extension UIColor {
 }
 
 public extension Color {
-    static var label: Color = { return Color(uiColor: .label) }()
-    static var secondaryLabel: Color = { return Color(uiColor: .secondaryLabel) }()
-    static var tertiaryLabel: Color = { return Color(uiColor: .tertiaryLabel) }()
-    static var quaternaryLabel: Color = { return Color(uiColor: .quaternaryLabel) }()
+    static let label: Color = { return Color(uiColor: .label) }()
+    static let secondaryLabel: Color = { return Color(uiColor: .secondaryLabel) }()
+    static let tertiaryLabel: Color = { return Color(uiColor: .tertiaryLabel) }()
+    static let quaternaryLabel: Color = { return Color(uiColor: .quaternaryLabel) }()
     
-    static var systemBackground: Color = { return Color(uiColor: .systemBackground) }()
-    static var secondarySystemBackground: Color = { return Color(uiColor: .secondarySystemBackground) }()
-    static var tertiarySystemBackground: Color = { return Color(uiColor: .tertiarySystemBackground) }()
+    static let systemBackground: Color = { return Color(uiColor: .systemBackground) }()
+    static let secondarySystemBackground: Color = { return Color(uiColor: .secondarySystemBackground) }()
+    static let tertiarySystemBackground: Color = { return Color(uiColor: .tertiarySystemBackground) }()
     
-    static var systemFill: Color = { return Color(uiColor: .systemFill) }()
-    static var secondarySystemFill: Color = { return Color(uiColor: .secondarySystemFill) }()
-    static var tertiarySystemFill: Color = { return Color(uiColor: .tertiarySystemFill) }()
+    static let systemFill: Color = { return Color(uiColor: .systemFill) }()
+    static let secondarySystemFill: Color = { return Color(uiColor: .secondarySystemFill) }()
+    static let tertiarySystemFill: Color = { return Color(uiColor: .tertiarySystemFill) }()
     
-    static var VCSTeal: Color = { return Color(uiColor: VCSColors.teal) }()
+    static let VCSTeal: Color = { return Color(uiColor: VCSColors.teal) }()
 }

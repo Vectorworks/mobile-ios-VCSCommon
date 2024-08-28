@@ -15,6 +15,7 @@ struct FileChooserListRow: View {
     @State var flags: VCSFlagsResponse?
     @State var name: String
     @State var isFolder: Bool
+    @State var isSharedWithMeFolder: Bool = false
     
     var placeholderImageIconString: String {
         if isFolder {
@@ -29,9 +30,17 @@ struct FileChooserListRow: View {
             WebImage(url: thumbnailURL) { image in
                 image.resizable()
             } placeholder: {
-                Image(placeholderImageIconString)
-                    .resizable()
-                    .foregroundStyle(.gray)
+                Group {
+                    if isSharedWithMeFolder {
+                        Image("shared-with-me")
+                            .resizable()
+                            .foregroundStyle(.gray)
+                    } else {
+                        Image(placeholderImageIconString)
+                            .resizable()
+                            .foregroundStyle(.gray)
+                    }
+                }
             }
             .indicator(.activity)
             .transition(.fade(duration: 0.5))
