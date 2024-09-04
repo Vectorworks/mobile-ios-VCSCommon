@@ -191,8 +191,9 @@ public class VCSFileResponse: Codable {
         try container.encode(self.size, forKey: CodingKeys.size)
         try container.encode(self.downloadURL, forKey: CodingKeys.downloadURL)
         try container.encode(self.lastModified, forKey: CodingKeys.lastModified)
-//        try container.encode(self.previousVersions, forKey: CodingKeys.previousVersions)
-//        try container.encode(self.related, forKey: CodingKeys.related)
+        //Export flat structure
+        try container.encode([VCSFileResponse](), forKey: CodingKeys.previousVersions)
+        try container.encode([VCSFileResponse](), forKey: CodingKeys.related)
         try container.encode(self.fileType, forKey: CodingKeys.fileType)
         
         try container.encode(self.isFolder, forKey: CodingKeys.isFolder)
