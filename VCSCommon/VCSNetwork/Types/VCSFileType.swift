@@ -41,6 +41,7 @@ public enum VCSFileType: String
     case ARWM
     case HTML
     case VCDOC
+    case SAVEDVIEWS
     
     case VWX_EXTENDED
     
