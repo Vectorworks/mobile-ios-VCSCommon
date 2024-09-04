@@ -33,7 +33,7 @@ class PatchPDFOperation: AsyncOperation {
         DDLogInfo("Executing PatchPDFOperation")
         DDLogVerbose("Executing \(String(describing: self)) - with params: operationID: \(self.localFile.name), file: \(self.localFile.name), fileWithRelated: \(fileWithRelated.uploadedFile.name), fileWithRelated: \(fileWithRelated.uploadedRelatedFiles.compactMap({ $0.name}))")
         
-        APIClient.patchFile(owner: self.localFile.ownerLogin, storage: self.localFile.storageTypeString, filePrefix: self.localFile.prefix, updateFromStorage: true, bodyData: bodyData, googleDriveID: uploadResponse.googleDriveID, googleDriveVerID: uploadResponse.googleDriveVerID).execute { (result: Result<VCSEmptyResponse, Error>) in
+        APIClient.patchFile(owner: fileWithRelated.uploadedFile.ownerLogin, storage: fileWithRelated.uploadedFile.storageTypeString, filePrefix: fileWithRelated.uploadedFile.prefix, updateFromStorage: true, bodyData: bodyData, googleDriveID: uploadResponse.googleDriveID, googleDriveVerID: uploadResponse.googleDriveVerID).execute { (result: Result<VCSEmptyResponse, Error>) in
             self.result = result
             self.state = .finished
         }

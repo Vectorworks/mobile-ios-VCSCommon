@@ -22,6 +22,7 @@ public class UploadJobLocalFile: Identifiable {
     public var uploadPathURL: URL { return FileManager.AppUploadsDirectory.appendingPathComponent(self.uploadPathSuffix) }
     
     public var related: [UploadJobLocalFile]
+    public var parentPatchFile: VCSFileResponse?
     
     public var uploadingState: UploadingState = .Ready
     
@@ -30,7 +31,7 @@ public class UploadJobLocalFile: Identifiable {
     }
 
         
-    public init?(ownerLogin: String, storageType: StorageType, prefix: String, tempFileURL: URL, copyFile: Bool = false, related: [UploadJobLocalFile]) {
+    public init?(ownerLogin: String, storageType: StorageType, prefix: String, tempFileURL: URL, copyFile: Bool = false, related: [UploadJobLocalFile], parentPatchFile: VCSFileResponse? = nil) {
         let UUIDString = VCSUUID().systemUUID.uuidString
         self.VCSID = UUIDString
         
@@ -39,6 +40,7 @@ public class UploadJobLocalFile: Identifiable {
         self.prefix = prefix
         self.uploadPathSuffix = UUIDString
         self.related = related
+        self.parentPatchFile = parentPatchFile
         
         //move files to uploads temp folder and save only the suffix
         if self.uploadPathURL.exists == false {
@@ -54,6 +56,18 @@ public class UploadJobLocalFile: Identifiable {
             }
             
         }
+    }
+    
+    public init(file: VCSFileResponse) {
+        let UUIDString = file.rID
+        self.VCSID = UUIDString
+        
+        self.ownerLogin = file.ownerLogin
+        self.storageType = file.storageType
+        self.prefix = file.prefix
+        self.uploadPathSuffix = VCSUUID().systemUUID.uuidString
+        self.related = file.related.map({ UploadJobLocalFile(file: $0) })
+        self.parentPatchFile = nil
     }
     
     //Realm only

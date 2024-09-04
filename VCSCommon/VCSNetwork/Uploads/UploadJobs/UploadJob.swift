@@ -5,6 +5,7 @@ public class UploadJob {
     public enum JobType: String {
         case SingleFileUpload
         case MultipleFileUpload
+        case PatchExistingFileUpload
     }
     
     public static private(set) var uploadJobs: [UploadJob] = []
@@ -50,6 +51,8 @@ public extension UploadJob {
             operations = getSimpleFileUpload(completion: singleFileCompletion)
         case .MultipleFileUpload:
             operations = getMultipleFileUpload(completion: multiFileCompletion)
+        case .PatchExistingFileUpload:
+            operations = getPatchExistingFileUpload(completion: singleFileCompletion)
         }
         
         VCSBackgroundSession.default.operationQueue.addOperations(operations, waitUntilFinished: false)
@@ -65,6 +68,12 @@ public extension UploadJob {
         let localFiles = self.localFiles.filter { $0.uploadingState != .Done }
         return SimpleFileMultipleUploadsOperations().getOperations(localFiles: localFiles, completion: completion)
     }
+                                                           
+    private func getPatchExistingFileUpload(completion: ((Result<VCSFileResponse, Error>) -> Void)? = nil) -> [Operation] {
+        guard let singleFile = self.localFiles.first, singleFile.uploadingState != .Done else { return [] }
+        return PatchExistingFileUploadOperations().getOperations(localFile: singleFile, completion: completion)
+    }
+                                                           
 }
 
 extension UploadJob: VCSCachable {
