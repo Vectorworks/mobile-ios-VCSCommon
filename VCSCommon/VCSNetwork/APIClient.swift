@@ -479,9 +479,14 @@ public class APIClient {
                         DDLogError("##### VCSNetwork error code:\t\(dataResponse.response?.statusCode ?? 0)")
                         DDLogError("##### VCSNetwork error URL:\t\(dataResponse.request?.url?.absoluteString ?? "")")
                         
+                        download.update(progress: 1, forFile: downloadFile)
+                        NotificationCenter.postDownloadNotification(model: file, progress: download.totalProgress)
                         download.cancel()
-                        completion(.failure(error))
-                        NotificationCenter.postDownloadNotification(model: file, progress: ProgressValues.Finished.rawValue)
+                        
+                        if (download.isFinished) {
+                            completion(.failure(error))
+                            NotificationCenter.postDownloadNotification(model: file, progress: ProgressValues.Finished.rawValue)
+                        }
                     }
                     self.downloads[file.rID] = nil
                 }
