@@ -336,7 +336,8 @@ extension VCSFileResponse: VCSCachable {
 extension VCSFileResponse {
     public static let relatedExtensions = [
         VCSFileType.PDF.rawValue : [VCSFileType.PDF, VCSFileType.VWSNAP, VCSFileType.XMLZIP],
-        VCSFileType.USDZ.rawValue : [VCSFileType.USDZ, VCSFileType.ARWM]
+        VCSFileType.USDZ.rawValue : [VCSFileType.USDZ, VCSFileType.ARWM],
+        VCSFileType.VGX.rawValue : [VCSFileType.VGX, VCSFileType.SAVEDVIEWS]
     ]
     
     public var filesForDownload: [VCSFileResponse] {
