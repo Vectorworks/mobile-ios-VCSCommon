@@ -158,6 +158,10 @@ extension VCSUser: VCSCachable {
 }
 
 extension VCSUser {
+    public static var hasSavedUser: Bool {
+        return VCSUser.savedUser != nil
+    }
+    
     public static var savedUser: VCSUser? {
         return VCSUser.realmStorage.getAll().first { $0.isLoggedIn }
     }
