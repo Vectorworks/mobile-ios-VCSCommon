@@ -8,11 +8,11 @@
 import Foundation
 import SwiftUI
 
-struct FileExplorerDropdownButton: View {
-    @State var currentFolderName: String
-    @State var isInRoot: Bool
-    @State var viewWidth: CGFloat
+struct DropdownButton: View {
+    @Binding var currentFolderName: String
     @Binding var showDropdown: Bool
+    var isInRoot: Bool
+    var viewWidth: CGFloat
     
     var body: some View {
         HStack {

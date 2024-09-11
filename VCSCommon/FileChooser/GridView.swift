@@ -8,16 +8,14 @@
 import Foundation
 import SwiftUI
 
-struct FileExplorerGridView: View {
+struct GridView: View {
     @Environment(\.colorScheme) var colorScheme
 
-    @Binding var folders: [VCSFolderResponse]
+    var models: [FileChooserModel]
     
-    @Binding var files: [VCSFileResponse]
-    
-    var itemPickedCompletion: ((VCSFileResponse) -> Void)?
-    
-    var getThumbnailURL: ((VCSFileResponse) -> URL?)
+    @Binding var currentRouteData: FileChooserRouteData
+
+    var itemPickedCompletion: ((FileChooserModel) -> Void)?
     
     var onDismiss: (() -> Void)
     
@@ -29,37 +27,51 @@ struct FileExplorerGridView: View {
         colorScheme == .dark ? Color(UIColor.secondarySystemBackground) : Color.white
     }
     
+    private var files: [FileChooserModel] {
+        models.filter { !$0.isFolder }
+    }
+    
+    private var folders: [FileChooserModel] {
+        models.filter { $0.isFolder }
+    }
+    
     var body: some View {
         ScrollView {
-            if isInRoot && !isGuest {
-                HStack {
-                    FileChooserListRow(
-                        thumbnailURL: nil,
-                        flags: nil,
-                        name: "Shared with me".vcsLocalized,
-                        isFolder: true,
-                        isSharedWithMeFolder: true
-                    )
-                    .padding()
-                    
-                    Spacer()
+            if case .s3(_) = currentRouteData {
+                if !isGuest && isInRoot {
+                    NavigationLink(value: FileChooserRouteData.sharedWithMeRoot) {
+                        VStack {
+                            HStack {
+                                ListItemView(
+                                    thumbnailURL: nil,
+                                    flags: nil,
+                                    name: "Shared with me".vcsLocalized,
+                                    isFolder: true,
+                                    isSharedWithMeFolder: true
+                                )
+                                .padding()
+                                
+                                Spacer()
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(adaptiveBackgroundColor)
+                            .cornerRadius(10)
+                            .padding(10)
+                            
+                            Divider()
+                                .background(Color.white)
+                                .frame(height: 1)
+                                .padding(EdgeInsets(top: 0, leading: 30, bottom: 0, trailing: 30))
+                        }
+                    }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(adaptiveBackgroundColor)
-                .cornerRadius(10)
-                .padding(10)
-                
-                Divider()
-                    .background(Color.white)
-                    .frame(height: 1)
-                    .padding(EdgeInsets(top: 0, leading: 30, bottom: 0, trailing: 30))
             }
             
             LazyVGrid(columns: [GridItem(.flexible())]) {
-                ForEach(folders, id: \.rID) { subfolder in
-                    NavigationLink(value: FCRouteData(resourceURI: subfolder.resourceURI, breadcrumbsName: subfolder.name)) {
+                ForEach(folders, id: \.resourceUri) { subfolder in
+                    NavigationLink(value: subfolder.route) {
                         HStack {
-                            FileChooserListRow(
+                            ListItemView(
                                 thumbnailURL: nil,
                                 flags: subfolder.flags,
                                 name: subfolder.name,
@@ -79,13 +91,13 @@ struct FileExplorerGridView: View {
             .padding(EdgeInsets(top: 8, leading: 0, bottom: 0, trailing: 0))
             
             LazyVGrid(columns: [.init(.adaptive(minimum: K.Sizes.gridMinCellSize))], spacing: 20) {
-                ForEach(files, id: \.rID) { file in
+                ForEach(files, id: \.resourceUri) { file in
                     Button {
                         onDismiss()
                         itemPickedCompletion?(file)
                     } label: {
-                        FileChooserGridItemView(
-                            thumbnailURL: getThumbnailURL(file),
+                        GridItemView(
+                            thumbnailURL: file.thumbnailUrl,
                             flags: file.flags,
                             name: file.name,
                             isFolder: false

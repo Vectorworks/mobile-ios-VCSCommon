@@ -8,8 +8,9 @@
 import Foundation
 import SwiftUI
 
-struct FileChooserActiveFilterView: View {
+struct ActiveFilterView: View {
     @State var fileTypeFilter: FileTypeFilter
+    
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {

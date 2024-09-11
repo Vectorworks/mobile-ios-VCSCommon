@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Veneta Todorova on 24.07.24.
 //
@@ -10,7 +10,7 @@ import SwiftUI
 import SDWebImage
 import SDWebImageSwiftUI
 
-struct FileChooserListRow: View {
+struct GridItemView: View {
     @State var thumbnailURL: URL?
     @State var flags: VCSFlagsResponse?
     @State var name: String
@@ -26,39 +26,45 @@ struct FileChooserListRow: View {
     }
     
     var body: some View {
-        HStack {
+        VStack {
             WebImage(url: thumbnailURL) { image in
                 image.resizable()
+                    .frame(width: K.Sizes.gridCellImageBackgroundSize, height: K.Sizes.gridCellImageBackgroundSize)
             } placeholder: {
                 Group {
                     if isSharedWithMeFolder {
                         Image("shared-with-me")
                             .resizable()
                             .foregroundStyle(.gray)
+                            .frame(width: 50, height: 50)
                     } else {
                         Image(placeholderImageIconString)
                             .resizable()
                             .foregroundStyle(.gray)
+                            .frame(width: K.Sizes.gridCellImageSize, height: K.Sizes.gridCellImageSize)
+                            .padding(15)
                     }
                 }
             }
             .indicator(.activity)
             .transition(.fade(duration: 0.5))
             .scaledToFit()
-            .frame(width: 50, height: 50)
+            .cornerRadius(5)
             
-            VStack(alignment: .leading) {
-                HStack(spacing: 10) {
+            VStack() {
+                HStack(spacing: 5) {
                     if flags?.hasWarning == true {
                         Image(K.VCSIconStrings.status_warning)
                             .resizable()
                             .frame(width: 20, height: 20)
                     }
                     Text(name)
-                        .listCellTextModifier()
+                        .gridCellTextModifier()
                 }
             }
-            .padding(.leading)
+            
+            Spacer()
         }
     }
 }
+

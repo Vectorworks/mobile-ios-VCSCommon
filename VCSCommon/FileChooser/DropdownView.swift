@@ -9,9 +9,9 @@ import Foundation
 import SwiftUI
 import UIKit
 
-struct FileExplorerDropdownView: View {
+struct DropdownView: View {
     @Binding var showDropdown: Bool
-    @Binding var path: [FCRouteData]
+    @Binding var path: [FileChooserRouteData]
     @Environment(\.colorScheme) var colorScheme
     
     var availableStorages: [VCSStorageResponse] = VCSUser.savedUser?.availableStorages ?? []
@@ -21,10 +21,10 @@ struct FileExplorerDropdownView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             VStack {
-                ForEach(path.dropLast(), id: \.self) { folder in
+                ForEach(path.dropLast(), id: \.self) { route in
                     VStack {
                         HStack{
-                            Text(folder.breadcrumbsName)
+                            Text(route.displayName)
                                 .padding()
                                 .truncationMode(.middle)
                             Spacer()
@@ -35,12 +35,12 @@ struct FileExplorerDropdownView: View {
                                 .padding()
                         }
                         .onTapGesture {
-                            if let index = path.firstIndex(of: folder) {
+                            if let index = path.firstIndex(of: route) {
                                 path = Array(path.prefix(upTo: index + 1))
                             }
                             showDropdown = false
                         }
-                        if path.firstIndex(of: folder) ?? 0 < path.count - 2 {
+                        if path.firstIndex(of: route) ?? 0 < path.count - 2 {
                             Divider()
                         }
                     }

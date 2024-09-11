@@ -8,8 +8,9 @@
 import Foundation
 import SwiftUI
 
-struct FileExplorerToolbarBackButton: View {
+struct ToolbarBackButton: View {
     @State var label: String
+    @State var viewWidth: CGFloat
     var onPress: () -> Void
     
     var body: some View {
@@ -22,6 +23,8 @@ struct FileExplorerToolbarBackButton: View {
                     Image(systemName: "chevron.left")
                     Text(label)
                 }
+                .truncationMode(.middle)
+                .frame(maxWidth: viewWidth, alignment: .leading)
                 .foregroundColor(.VCSTeal)
             }
         )

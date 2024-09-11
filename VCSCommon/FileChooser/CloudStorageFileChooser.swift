@@ -3,43 +3,38 @@ import CocoaLumberjackSwift
 import UIKit
 import RealmSwift
 
-struct FileExplorerView: View {
+struct CloudStorageFileChooser: View {
     @ObservedObject private var viewsLayoutSetting: ViewsLayoutSetting = ViewsLayoutSetting.listDefault
     
     @ObservedResults(VCSUser.RealmModel.self, where: { $0.isLoggedIn == true }) var users
     
-    @StateObject private var viewModel: FileExplorerViewModel
+    @StateObject private var viewModel: CloudStorageViewModel
     
-    @Binding var path: [FCRouteData]
+    @Binding var rootRoute: FileChooserRouteData
     
-    @Binding var rootRoute: FCRouteData
+    @State var currentRoute: FileChooserRouteData
     
-    @State var currentFolderResourceUri: String?
-    
-    var itemPickedCompletion: ((VCSFileResponse) -> Void)?
+    var itemPickedCompletion: ((FileChooserModel) -> Void)?
     
     var onDismiss: (() -> Void)
     
-    private var isInRoot: Bool {
-        path.count == 0
-    }
+    private var isInRoot: Bool
     
     private var isGuest: Bool {
         users.first?.entity == nil
     }
     
     init(fileTypeFilter: FileTypeFilter,
-         path: Binding<[FCRouteData]>,
-         currentFolderResourceUri: String?,
-         itemPickedCompletion: ((VCSFileResponse) -> Void)?,
+         itemPickedCompletion: ((FileChooserModel) -> Void)?,
          onDismiss: @escaping (() -> Void),
-         rootRoute: Binding<FCRouteData>) {
-        _viewModel = StateObject(wrappedValue: FileExplorerViewModel(fileTypeFilter: fileTypeFilter))
-        self._path = path
-        self.currentFolderResourceUri = currentFolderResourceUri
+         rootRoute: Binding<FileChooserRouteData>,
+         currentRoute: FileChooserRouteData) {
+        _viewModel = StateObject(wrappedValue: CloudStorageViewModel(fileTypeFilter: fileTypeFilter))
         self.itemPickedCompletion = itemPickedCompletion
         self.onDismiss = onDismiss
         self._rootRoute = rootRoute
+        self.currentRoute = currentRoute
+        self.isInRoot = currentRoute == rootRoute.wrappedValue
     }
     
     var body: some View {
@@ -50,31 +45,29 @@ struct FileExplorerView: View {
                         onDismiss()
                     },
                     label : {
-                        FileChooserActiveFilterView(fileTypeFilter: viewModel.fileTypeFilter)
+                        ActiveFilterView(fileTypeFilter: viewModel.fileTypeFilter)
                     }
                 )
                 .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? geometry.size.width * 0.2 : geometry.size.width * 0.4)
 
-                switch viewModel.resultFolder {
-                case .success(_):
+                switch viewModel.viewState {
+                case .loaded:
                     Group {
                         switch viewsLayoutSetting.layout.asListLayoutCriteria {
                         case .list :
-                            FileExplorerListView(
-                                folders: $viewModel.sortedFolders,
-                                files: $viewModel.sortedFiles,
+                            ListView(
+                                models: viewModel.models,
+                                currentRouteData: $currentRoute,
                                 itemPickedCompletion: itemPickedCompletion,
-                                getThumbnailURL: viewModel.getThumbnailURL,
                                 onDismiss: onDismiss,
                                 isInRoot: isInRoot,
                                 isGuest: isGuest
                             )
                         case .grid :
-                            FileExplorerGridView(
-                                folders: $viewModel.sortedFolders,
-                                files: $viewModel.sortedFiles,
+                            GridView(
+                                models: viewModel.models,
+                                currentRouteData: $currentRoute,
                                 itemPickedCompletion: itemPickedCompletion,
-                                getThumbnailURL: viewModel.getThumbnailURL,
                                 onDismiss: onDismiss,
                                 isInRoot: isInRoot,
                                 isGuest: isGuest
@@ -82,20 +75,21 @@ struct FileExplorerView: View {
                         }
                     }
                     
-                case .failure(let error):
+                case .error(let error):
                     ErrorView(error: error, onDismiss: onDismiss)
                     
-                case nil:
+                case .loading:
                     ProgressView()
                         .onAppear {
-                            viewModel.loadFolder(resourceUri: currentFolderResourceUri ?? rootRoute.resourceURI)
+                            viewModel.loadFolder(resourceUri: currentRoute.resourceUri)
                         }
                 }
             }
             .frame(maxWidth: .infinity)
             .onChange(of: rootRoute) { oldValue, newValue in
                 if isInRoot {
-                    viewModel.loadFolder(resourceUri: newValue.resourceURI)
+                    currentRoute = newValue
+                    viewModel.loadFolder(resourceUri: newValue.resourceUri)
                 }
             }
         }

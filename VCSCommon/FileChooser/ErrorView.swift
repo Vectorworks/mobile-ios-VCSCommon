@@ -9,13 +9,13 @@ import Foundation
 import SwiftUI
 
 struct ErrorView: View {
-    @State var error: Error
+    @State var error: String
     var onDismiss: (() -> Void)
     
     var body: some View {
         VStack {
             Label(title: {
-                Text(error.localizedDescription)
+                Text(error)
             }, icon: {
                 Image(systemName: "exclamationmark.triangle")
             })

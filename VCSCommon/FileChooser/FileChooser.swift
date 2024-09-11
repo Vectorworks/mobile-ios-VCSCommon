@@ -2,26 +2,26 @@ import SwiftUI
 import CocoaLumberjackSwift
 
 public struct FileChooser: View {
-    @State var path: [FCRouteData] = []
+    @State var path: [FileChooserRouteData] = []
     
     @State var fileTypeFilter: FileTypeFilter
     
-    @State var rootRoute: FCRouteData
+    @State var rootRoute: FileChooserRouteData
     
-    private var itemPickedCompletion: ((VCSFileResponse) -> Void)?
+    private var itemPickedCompletion: (RealmFile) -> Void
     
     private var onDismiss: (() -> Void)
     
     public init(
         fileTypeFilter: FileTypeFilter,
-        itemPickedCompletion: ((VCSFileResponse) -> Void)? = nil,
+        itemPickedCompletion: @escaping (RealmFile) -> Void,
         onDismiss: @escaping (() -> Void)
     ) {
         let s3Storage = VCSUser.savedUser?.availableStorages.first(where: { $0.storageType == .S3 })
         if s3Storage == nil {
-            self.rootRoute = FCRouteData(resourceURI: "todo", breadcrumbsName: "todo")
+            self.rootRoute = .sharedWithMeRoot
         } else {
-            self.rootRoute = FCRouteData(resourceURI: s3Storage!.folderURI, breadcrumbsName: s3Storage!.storageType.displayName)
+            self.rootRoute = .s3(MyFilesRouteData(resourceURI: s3Storage!.folderURI, displayName: s3Storage!.storageType.displayName))
         }
         self.fileTypeFilter = fileTypeFilter
         self.itemPickedCompletion = itemPickedCompletion
@@ -30,7 +30,11 @@ public struct FileChooser: View {
     
     private func onStorageChange(selectedStorage: VCSStorageResponse) {
         path.removeAll()
-        self.rootRoute = FCRouteData(resourceURI: selectedStorage.folderURI, breadcrumbsName: selectedStorage.storageType.displayName)
+        if selectedStorage.storageType.isExternal {
+            self.rootRoute = .externalStorage(MyFilesRouteData(resourceURI: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+        } else {
+            self.rootRoute = .s3(MyFilesRouteData(resourceURI: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+        }
     }
     
     private func onToolbarBackButtonPressed() {
@@ -43,39 +47,54 @@ public struct FileChooser: View {
         }
     }
     
+    private func onItemPicked(pickedModel: FileChooserModel) {
+        guard let id = pickedModel.resourceId else {
+            fatalError("ResourceId is nil.")
+        }
+        
+        guard let filePicked = VCSFileResponse.realmStorage.getModelById(id: id) else {
+            fatalError("Picked file not found.")
+        }
+        
+        itemPickedCompletion(filePicked)
+    }
+    
     private var isInRoot: Bool {
         path.count == 0
+    }
+    
+    @MainActor @ViewBuilder
+    func buildView(for routeValue: FileChooserRouteData) -> some View {
+        switch routeValue {
+        case .s3(_), .externalStorage(_):
+            CloudStorageFileChooser(
+                fileTypeFilter: fileTypeFilter,
+                itemPickedCompletion: onItemPicked,
+                onDismiss: onDismiss,
+                rootRoute: $rootRoute,
+                currentRoute: routeValue
+            )
+        case .sharedWithMe(_), .sharedWithMeRoot :
+            SharedWithMeFileChooser(
+                fileTypeFilter: fileTypeFilter,
+                itemPickedCompletion: onItemPicked,
+                onDismiss: onDismiss,
+                rootRoute: $rootRoute,
+                currentRoute: routeValue
+            )
+        }
     }
     
     public var body: some View {
         GeometryReader { geometry in
             NavigationStack(path: $path) {
-                FileExplorerView(
+                CloudStorageFileChooser(
                     fileTypeFilter: fileTypeFilter,
-                    path: $path,
-                    currentFolderResourceUri: nil,
-                    itemPickedCompletion: itemPickedCompletion,
+                    itemPickedCompletion: onItemPicked,
                     onDismiss: onDismiss,
-                    rootRoute: $rootRoute
+                    rootRoute: $rootRoute,
+                    currentRoute: rootRoute
                 )
-                .navigationDestination(for: FCRouteData.self) { routeValue in
-                    FileExplorerView(
-                        fileTypeFilter: fileTypeFilter,
-                        path: $path,
-                        currentFolderResourceUri: routeValue.resourceURI,
-                        itemPickedCompletion: itemPickedCompletion,
-                        onDismiss: onDismiss,
-                        rootRoute: $rootRoute
-                    )
-                    .configureNavigation(
-                        path: $path,
-                        rootRoute: $rootRoute,
-                        isInRoot: isInRoot,
-                        screenWidth: geometry.size.width,
-                        onToolbarBackButtonPressed: onToolbarBackButtonPressed,
-                        onStorageChange: onStorageChange
-                    )
-                }
                 .configureNavigation(
                     path: $path,
                     rootRoute: $rootRoute,
@@ -84,6 +103,17 @@ public struct FileChooser: View {
                     onToolbarBackButtonPressed: onToolbarBackButtonPressed,
                     onStorageChange: onStorageChange
                 )
+                .navigationDestination(for: FileChooserRouteData.self) { routeValue in
+                    buildView(for: routeValue)
+                        .configureNavigation(
+                            path: $path,
+                            rootRoute: $rootRoute,
+                            isInRoot: isInRoot,
+                            screenWidth: geometry.size.width,
+                            onToolbarBackButtonPressed: onToolbarBackButtonPressed,
+                            onStorageChange: onStorageChange
+                        )
+                }
             }
         }
     }
@@ -92,9 +122,9 @@ public struct FileChooser: View {
 struct NavigationConfigurationModifier: ViewModifier {
     @ObservedObject private var viewsLayoutSetting: ViewsLayoutSetting = ViewsLayoutSetting.listDefault
     
-    @Binding var path: [FCRouteData]
+    @Binding var path: [FileChooserRouteData]
     
-    @Binding var rootRoute: FCRouteData
+    @Binding var rootRoute: FileChooserRouteData
     
     @State var isInRoot: Bool
     
@@ -108,7 +138,7 @@ struct NavigationConfigurationModifier: ViewModifier {
     
     private var previousFolderName: String {
         guard path.count >= 2 else { return "Back".vcsLocalized }
-        return path[path.count - 2].breadcrumbsName
+        return path[path.count - 2].displayName
     }
     
     func body(content: Content) -> some View {
@@ -118,20 +148,24 @@ struct NavigationConfigurationModifier: ViewModifier {
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    FileExplorerToolbarBackButton(
+                    ToolbarBackButton(
                         label: previousFolderName,
+                        viewWidth: screenWidth * 0.3,
                         onPress: onToolbarBackButtonPressed
                     )
                 }
                 
                 ToolbarItem(placement: .principal) {
-                    FileExplorerDropdownButton(
-                        currentFolderName: path.last?.breadcrumbsName ?? rootRoute.breadcrumbsName,
+                    DropdownButton(
+                        currentFolderName: Binding(
+                            get: { path.last?.displayName ?? rootRoute.displayName },
+                            set: { newValue in
+                            }
+                        ),
+                        showDropdown: $showDropdown,
                         isInRoot: isInRoot,
-                        viewWidth: UIDevice.current.userInterfaceIdiom == .pad ? screenWidth * 0.2 : screenWidth * 0.5,
-                        showDropdown: $showDropdown
+                        viewWidth: UIDevice.current.userInterfaceIdiom == .pad ? screenWidth * 0.2 : screenWidth * 0.5
                     )
-                    .id(path.last?.breadcrumbsName ?? rootRoute.breadcrumbsName)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -147,7 +181,7 @@ struct NavigationConfigurationModifier: ViewModifier {
             .overlay(
                 Group {
                     if showDropdown {
-                        FileExplorerDropdownView(
+                        DropdownView(
                             showDropdown: $showDropdown,
                             path: $path,
                             onStorageChange: self.onStorageChange
@@ -163,8 +197,8 @@ struct NavigationConfigurationModifier: ViewModifier {
 
 extension View {
     @MainActor func configureNavigation(
-        path: Binding<[FCRouteData]>,
-        rootRoute: Binding<FCRouteData>,
+        path: Binding<[FileChooserRouteData]>,
+        rootRoute: Binding<FileChooserRouteData>,
         isInRoot: Bool,
         screenWidth: CGFloat,
         onToolbarBackButtonPressed: @escaping () -> Void,
