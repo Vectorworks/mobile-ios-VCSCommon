@@ -81,7 +81,7 @@ struct CloudStorageFileChooser: View {
                 case .loading:
                     ProgressView()
                         .onAppear {
-                            viewModel.loadFolder(resourceUri: currentRoute.resourceUri)
+                            viewModel.loadFolder(route: currentRoute)
                         }
                 }
             }
@@ -89,7 +89,7 @@ struct CloudStorageFileChooser: View {
             .onChange(of: rootRoute) { oldValue, newValue in
                 if isInRoot {
                     currentRoute = newValue
-                    viewModel.loadFolder(resourceUri: newValue.resourceUri)
+                    viewModel.loadFolder(route: currentRoute)
                 }
             }
         }

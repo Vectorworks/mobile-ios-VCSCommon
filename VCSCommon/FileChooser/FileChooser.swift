@@ -21,7 +21,7 @@ public struct FileChooser: View {
         if s3Storage == nil {
             self.rootRoute = .sharedWithMeRoot
         } else {
-            self.rootRoute = .s3(MyFilesRouteData(resourceURI: s3Storage!.folderURI, displayName: s3Storage!.storageType.displayName))
+            self.rootRoute = .s3(MyFilesRouteData(resourceUri: s3Storage!.folderURI, displayName: s3Storage!.storageType.displayName))
         }
         self.fileTypeFilter = fileTypeFilter
         self.itemPickedCompletion = itemPickedCompletion
@@ -31,9 +31,9 @@ public struct FileChooser: View {
     private func onStorageChange(selectedStorage: VCSStorageResponse) {
         path.removeAll()
         if selectedStorage.storageType.isExternal {
-            self.rootRoute = .externalStorage(MyFilesRouteData(resourceURI: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+            self.rootRoute = .externalStorage(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
         } else {
-            self.rootRoute = .s3(MyFilesRouteData(resourceURI: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+            self.rootRoute = .s3(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
         }
     }
     
@@ -74,7 +74,7 @@ public struct FileChooser: View {
                 rootRoute: $rootRoute,
                 currentRoute: routeValue
             )
-        case .sharedWithMe(_), .sharedWithMeRoot :
+        case .sharedWithMe(_), .sharedWithMeRoot, .sharedLink(_) :
             SharedWithMeFileChooser(
                 fileTypeFilter: fileTypeFilter,
                 itemPickedCompletion: onItemPicked,
@@ -88,32 +88,26 @@ public struct FileChooser: View {
     public var body: some View {
         GeometryReader { geometry in
             NavigationStack(path: $path) {
-                CloudStorageFileChooser(
-                    fileTypeFilter: fileTypeFilter,
-                    itemPickedCompletion: onItemPicked,
-                    onDismiss: onDismiss,
-                    rootRoute: $rootRoute,
-                    currentRoute: rootRoute
-                )
-                .configureNavigation(
-                    path: $path,
-                    rootRoute: $rootRoute,
-                    isInRoot: isInRoot,
-                    screenWidth: geometry.size.width,
-                    onToolbarBackButtonPressed: onToolbarBackButtonPressed,
-                    onStorageChange: onStorageChange
-                )
-                .navigationDestination(for: FileChooserRouteData.self) { routeValue in
-                    buildView(for: routeValue)
-                        .configureNavigation(
-                            path: $path,
-                            rootRoute: $rootRoute,
-                            isInRoot: isInRoot,
-                            screenWidth: geometry.size.width,
-                            onToolbarBackButtonPressed: onToolbarBackButtonPressed,
-                            onStorageChange: onStorageChange
-                        )
-                }
+                buildView(for: rootRoute)
+                    .configureNavigation(
+                        path: $path,
+                        rootRoute: $rootRoute,
+                        isInRoot: isInRoot,
+                        screenWidth: geometry.size.width,
+                        onToolbarBackButtonPressed: onToolbarBackButtonPressed,
+                        onStorageChange: onStorageChange
+                    )
+                    .navigationDestination(for: FileChooserRouteData.self) { routeValue in
+                        buildView(for: routeValue)
+                            .configureNavigation(
+                                path: $path,
+                                rootRoute: $rootRoute,
+                                isInRoot: isInRoot,
+                                screenWidth: geometry.size.width,
+                                onToolbarBackButtonPressed: onToolbarBackButtonPressed,
+                                onStorageChange: onStorageChange
+                            )
+                    }
             }
         }
     }
@@ -141,6 +135,10 @@ struct NavigationConfigurationModifier: ViewModifier {
         return path[path.count - 2].displayName
     }
     
+    private var availableStorages: [VCSStorageResponse] {
+        VCSUser.savedUser?.availableStorages ?? []
+    }
+    
     func body(content: Content) -> some View {
         content
             .navigationBarTitleDisplayMode(.inline)
@@ -163,6 +161,7 @@ struct NavigationConfigurationModifier: ViewModifier {
                             }
                         ),
                         showDropdown: $showDropdown,
+                        showDropdownArrow: !path.isEmpty || !availableStorages.isEmpty,
                         isInRoot: isInRoot,
                         viewWidth: UIDevice.current.userInterfaceIdiom == .pad ? screenWidth * 0.2 : screenWidth * 0.5
                     )
@@ -184,6 +183,7 @@ struct NavigationConfigurationModifier: ViewModifier {
                         DropdownView(
                             showDropdown: $showDropdown,
                             path: $path,
+                            availableStorages: availableStorages,
                             onStorageChange: self.onStorageChange
                         )
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

@@ -12,9 +12,8 @@ import UIKit
 struct DropdownView: View {
     @Binding var showDropdown: Bool
     @Binding var path: [FileChooserRouteData]
+    var availableStorages: [VCSStorageResponse]
     @Environment(\.colorScheme) var colorScheme
-    
-    var availableStorages: [VCSStorageResponse] = VCSUser.savedUser?.availableStorages ?? []
     
     var onStorageChange: ((VCSStorageResponse) -> Void)
     

@@ -24,10 +24,10 @@ class CloudStorageViewModel: ObservableObject {
         self.fileTypeFilter = fileTypeFilter
     }
     
-    func loadFolder(resourceUri: String) {
+    func loadFolder(route: FileChooserRouteData) {
         self.viewState = .loading
         
-        APIClient.folderAsset(assetURI: resourceUri).execute { (result: Result<VCSFolderResponse, Error>) in
+        APIClient.folderAsset(assetURI: route.resourceUri).execute { (result: Result<VCSFolderResponse, Error>) in
             switch result {
                 
             case .success(let success):
@@ -52,7 +52,7 @@ class CloudStorageViewModel: ObservableObject {
     }
     
     private func calculateRoute(resourceUri: String, displayName: String, isExternal: Bool) -> FileChooserRouteData {
-        let routeData = MyFilesRouteData(resourceURI: resourceUri, displayName: displayName)
+        let routeData = MyFilesRouteData(resourceUri: resourceUri, displayName: displayName)
         let result: FileChooserRouteData
         if isExternal {
             result = FileChooserRouteData.externalStorage(routeData)

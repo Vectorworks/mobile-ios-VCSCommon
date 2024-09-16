@@ -8,16 +8,15 @@
 import Foundation
 
 enum FileChooserRouteData: Hashable {
-    case sharedWithMe(SharedWithMeRouteData)
+    case sharedWithMe(MyFilesRouteData)
     case s3(MyFilesRouteData)
     case externalStorage(MyFilesRouteData)
     case sharedWithMeRoot
+    case sharedLink(MyFilesRouteData)
     
     var displayName: String {
         switch self {
-        case .sharedWithMe(let routeData):
-            routeData.displayName
-        case .s3(let routeData), .externalStorage(let routeData):
+        case .s3(let routeData), .externalStorage(let routeData), .sharedWithMe(let routeData), .sharedLink(let routeData):
             routeData.displayName
         case .sharedWithMeRoot:
             "Shared with me".vcsLocalized
@@ -26,9 +25,7 @@ enum FileChooserRouteData: Hashable {
     
     var resourceUri: String {
         switch self {
-        case .sharedWithMe(let routeData):
-            routeData.resourceUri
-        case .s3(let routeData), .externalStorage(let routeData):
+        case .s3(let routeData), .externalStorage(let routeData), .sharedWithMe(let routeData), .sharedLink(let routeData):
             routeData.resourceUri
         case .sharedWithMeRoot:
             fatalError("Shared with me root resourceUri is nil.")
@@ -36,7 +33,7 @@ enum FileChooserRouteData: Hashable {
     }
 }
 
-public struct SharedWithMeRouteData: Hashable, Identifiable {
+public struct MyFilesRouteData: Hashable, Identifiable {
     public let id = UUID()
     let resourceUri: String
     let displayName: String
@@ -47,17 +44,6 @@ public struct SharedWithMeRouteData: Hashable, Identifiable {
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-    }
-}
-
-public struct MyFilesRouteData: Hashable, Identifiable {
-    public let id = UUID()
-    let resourceUri: String
-    let displayName: String
-    
-    init(resourceURI: String, displayName: String) {
-        self.resourceUri = resourceURI
-        self.displayName = displayName
     }
 }
 

@@ -25,6 +25,10 @@ struct SharedWithMeFileChooser: View {
     
     @Binding var rootRoute: FileChooserRouteData
     
+    private var isGuest: Bool {
+        users.count > 0
+    }
+    
     init(fileTypeFilter: FileTypeFilter,
          itemPickedCompletion: ((FileChooserModel) -> Void)?,
          onDismiss: @escaping (() -> Void),
@@ -56,7 +60,10 @@ struct SharedWithMeFileChooser: View {
                 case .loaded:
                     Group {
                         let models = viewModel.mapToModels(
-                            sharedItems: sharedItemsRawData.map {$0.entity}
+                            sharedItems: sharedItemsRawData.map{ $0.entity },
+                            sampleFiles: sampleLinksRawData.compactMap {$0.entity.sharedAsset },
+                            sharedLinks: sharedLinksRawData.compactMap { $0.entity.sharedAsset },
+                            isGuest: isGuest
                         )
                         
                         switch viewsLayoutSetting.layout.asListLayoutCriteria {
@@ -66,7 +73,8 @@ struct SharedWithMeFileChooser: View {
                                 currentRouteData: $viewModel.currentRoute,
                                 itemPickedCompletion: viewModel.itemPickedCompletion,
                                 onDismiss: viewModel.onDismiss,
-                                isInRoot: viewModel.isInRoot
+                                isInRoot: viewModel.isInRoot,
+                                isGuest: isGuest
                             )
                         case .grid :
                             GridView(
@@ -74,7 +82,8 @@ struct SharedWithMeFileChooser: View {
                                 currentRouteData: $viewModel.currentRoute,
                                 itemPickedCompletion: viewModel.itemPickedCompletion,
                                 onDismiss: viewModel.onDismiss,
-                                isInRoot: viewModel.isInRoot
+                                isInRoot: viewModel.isInRoot,
+                                isGuest: isGuest
                             )
                         }
                     }
@@ -85,20 +94,11 @@ struct SharedWithMeFileChooser: View {
                 case .loading:
                     ProgressView()
                         .onAppear {
-                            let resourceUri: String?
-                            if case .sharedWithMeRoot = viewModel.currentRoute {
-                                resourceUri = nil
-                            } else {
-                                resourceUri = viewModel.currentRoute.resourceUri
-                            }
-                            viewModel.loadFolder(resourceUri: resourceUri)
+                            viewModel.loadFolder(route: viewModel.currentRoute, isGuest: isGuest)
                         }
                 }
             }
             .frame(maxWidth: .infinity)
-            .onChange(of: rootRoute) { oldValue, newValue in
-                viewModel.loadFolder(resourceUri: newValue.resourceUri)
-            }
         }
     }
 }

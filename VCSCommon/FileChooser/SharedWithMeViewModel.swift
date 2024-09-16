@@ -29,6 +29,8 @@ class SharedWithMeViewModel: ObservableObject {
         return predicate
     }
     
+    private var sampleFilesLink: String { return VCSServer.default.serverURLString.stringByAppendingPath(path: "/links/:samples/:metadata/") }
+    
     @Published var viewState: ViewState = .loading
     
     @Published var sortedFolders: [RealmFolder] = []
@@ -66,17 +68,29 @@ class SharedWithMeViewModel: ObservableObject {
             self.onDismiss = onDismiss
         }
     
-    func calculateRoute(resourceUri: String, displayName: String) -> FileChooserRouteData {
-        return FileChooserRouteData.sharedWithMe(SharedWithMeRouteData(resourceUri: resourceUri, displayName: displayName))
+    func calculateRoute(resourceUri: String, displayName: String, isSharedLink: Bool) -> FileChooserRouteData {
+        let result: FileChooserRouteData
+        let routeData = MyFilesRouteData(resourceUri: resourceUri, displayName: displayName)
+        if isSharedLink {
+            result = FileChooserRouteData.sharedLink(routeData)
+        } else {
+            result = FileChooserRouteData.sharedWithMe(routeData)
+        }
+        return result
     }
     
-    func mapToModels(sharedItems: [VCSSharedWithMeAsset]) -> [FileChooserModel] {
+    func mapToModels(
+        sharedItems: [VCSSharedWithMeAsset],
+        sampleFiles: [VCSShareableLinkResponse],
+        sharedLinks: [VCSShareableLinkResponse],
+        isGuest: Bool
+    ) -> [FileChooserModel] {
         let models: [FileChooserModel]
         
         switch currentRoute {
             
         case .sharedWithMeRoot :
-            models = sharedItems.compactMap {
+            let sharedItems = sharedItems.compactMap {
                 FileChooserModel(
                     resourceUri: $0.resourceURI,
                     resourceId: nil,
@@ -84,10 +98,31 @@ class SharedWithMeViewModel: ObservableObject {
                     name: $0.name,
                     thumbnailUrl: $0.thumbnailURL,
                     isFolder: $0.isFolder,
-                    route: calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name))
+                    route: calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isSharedLink: false))
             }
             
-        case .sharedWithMe(_) :
+            let sharedLinksModels = (sampleFiles + sharedLinks)
+                .map { sampleFile in
+                    let route: FileChooserRouteData?
+                    if sampleFile.assetType == .folder {
+                        route = calculateRoute(resourceUri: sampleFile.resourceURI, displayName: sampleFile.asset.name, isSharedLink: true)
+                    } else {
+                        route = nil
+                    }
+                    return FileChooserModel(
+                        resourceUri: sampleFile.resourceURI,
+                        resourceId: sampleFile.asset.resourceID,
+                        flags: sampleFile.asset.flags,
+                        name: sampleFile.asset.name,
+                        thumbnailUrl: sampleFile.cellFileData?.thumbnailURL,
+                        isFolder: sampleFile.assetType == .folder,
+                        route: route
+                    )
+                }
+            
+            models = sharedLinksModels + sharedItems
+            
+        case .sharedWithMe(_), .sharedLink(_) :
             models = self.models
             
         case .s3(_), .externalStorage(_):
@@ -97,28 +132,27 @@ class SharedWithMeViewModel: ObservableObject {
         return models
     }
     
-    func loadFolder(resourceUri: String?) {
+    func loadFolder(route: FileChooserRouteData, isGuest: Bool) {
         self.viewState = .loading
         
-        if let unwrappedResourceUri = resourceUri {
-            APIClient.sharedWithMeAsset(assetURI: unwrappedResourceUri, related: true).execute { (result: Result<VCSSharedWithMeAsset, Error>) in
-                switch result {
-                case .success(let success):
-                    VCSCache.addToCache(item: success)
-                    success.asset.loadLocalFiles()
-                    
-                    self.viewState = .loaded
-                    
-                    do {
-                        let folder = try VCSFolderResponse.realmStorage.getModelById(id: result.get().rID)
-                        self.populateViewWithData(loadedFolder: folder)
-                    } catch {
-                        print("Error retrieving the value: \(error)")
-                    }
-                case .failure(let error):
-                    self.viewState = .error(error.localizedDescription)
-                }
-            }
+        switch route {
+        case .sharedWithMeRoot :
+            loadSharedWithMeRoot(isGuest: isGuest)
+            
+        case .sharedWithMe(let data) :
+            loadSharedWithMeFolder(resourceUri: data.resourceUri)
+            
+        case .sharedLink(let data) :
+            loadSharedLink(resourceUri: data.resourceUri)
+            
+        default:
+            fatalError("Incorrect route in Shared with me.")
+        }
+    }
+    
+    private func loadSharedWithMeRoot(isGuest: Bool) {
+        if isGuest {
+            loadSampleFiles()
         } else {
             APIClient.listSharedWithMe().execute(completion: { (result: Result<VCSSharedWithMeResponse, Error>) in
                 switch result {
@@ -145,7 +179,74 @@ class SharedWithMeViewModel: ObservableObject {
         }
     }
     
-    private func populateViewWithData(loadedFolder: VCSFolderResponse.RealmModel?) {
+    private func loadSharedWithMeFolder(resourceUri: String) {
+        APIClient.sharedWithMeAsset(assetURI: resourceUri, related: true).execute { (result: Result<VCSSharedWithMeAsset, Error>) in
+            switch result {
+            case .success(let success):
+                VCSCache.addToCache(item: success)
+                success.asset.loadLocalFiles()
+                
+                self.viewState = .loaded
+                
+                do {
+                    let folder = try VCSFolderResponse.realmStorage.getModelById(id: result.get().rID)
+                    self.populateViewWithData(loadedFolder: folder, isSharedLink: false)
+                } catch {
+                    self.viewState = .error(error.localizedDescription)
+                }
+            case .failure(let error):
+                self.viewState = .error(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func loadSampleFiles() {
+        let predicate = NSPredicate(format: "RealmID = %@", sampleFilesLink)
+        let cachedSampleFilesLink = SharedLink.realmStorage.getAll(predicate: predicate).first
+        
+        let owner = VCSUser.savedUser
+        let sampleFilesLink = SharedLink(link: sampleFilesLink, isSampleFiles: true, sharedAsset: cachedSampleFilesLink?.sharedAsset, owner: owner)
+        VCSCache.addToCache(item: sampleFilesLink, forceNilValuesUpdate: true)
+        guard let folderURI = sampleFilesLink.metadataURLSuffixForRequest else {
+            self.viewState = .error("Error parsing sample files link \(sampleFilesLink.link)")
+            return
+        }
+        
+        APIClient.linkSharedAsset(assetURI: folderURI).execute(completion: { (result: Result<VCSShareableLinkResponse, Error>) in
+            switch result {
+            case .success(let success):
+                success.asset.loadLocalFiles()
+                let updatedSampleFilesLink = SharedLink(link: self.sampleFilesLink, isSampleFiles: true, sharedAsset: success, owner: owner)
+                VCSCache.addToCache(item: updatedSampleFilesLink, forceNilValuesUpdate: true)
+                self.viewState = .loaded
+            case .failure(let error):
+                self.viewState = .error(error.localizedDescription)
+            }
+        })
+    }
+    
+    private func loadSharedLink(resourceUri: String) {
+        APIClient.linkSharedAsset(assetURI: resourceUri).execute(completion: { (result: Result<VCSShareableLinkResponse, Error>) in
+            switch result {
+            case .success(let success):
+                success.asset.loadLocalFiles()
+                VCSCache.addToCache(item: success)
+                
+                self.viewState = .loaded
+                
+                do {
+                    let folder = try VCSFolderResponse.realmStorage.getModelById(id: result.get().asset.rID)
+                    self.populateViewWithData(loadedFolder: folder, isSharedLink: true)
+                } catch {
+                    self.viewState = .error(error.localizedDescription)
+                }
+            case .failure(let error):
+                self.viewState = .error(error.localizedDescription)
+            }
+        })
+    }
+    
+    private func populateViewWithData(loadedFolder: VCSFolderResponse.RealmModel?, isSharedLink: Bool) {
         let files = loadedFolder?.files.map {
             FileChooserModel(
                 resourceUri: $0.resourceURI,
@@ -165,7 +266,7 @@ class SharedWithMeViewModel: ObservableObject {
                 name: $0.name,
                 thumbnailUrl: nil,
                 isFolder: true,
-                route: self.calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name))
+                route: self.calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isSharedLink: isSharedLink))
         } ?? []
         
         self.models = folders + files
