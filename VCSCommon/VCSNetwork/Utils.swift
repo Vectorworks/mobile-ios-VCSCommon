@@ -46,10 +46,16 @@ public extension Encodable {
         var result: String = "{}"
         let encoder = JSONEncoder()
         encoder.outputFormatting = .withoutEscapingSlashes
-        guard let jsonData = try? encoder.encode(self) else { return result }
-        guard let jsonString = String(data: jsonData, encoding: .utf8) else { return result }
-        result = jsonString
-        return result
+        do {
+            let jsonData = try JSONEncoder().encode(self)
+            guard let jsonString = String(data: jsonData, encoding: .utf8) else { return result }
+            result = jsonString
+            DDLogVerbose("Encodable-asJSON data json string: \(result)")
+            return result
+        } catch {
+            DDLogError("Encodable-asJSON error: \(error)")
+            return result
+        }        
     }
 }
 
