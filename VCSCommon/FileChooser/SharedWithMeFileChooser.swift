@@ -26,7 +26,7 @@ struct SharedWithMeFileChooser: View {
     @Binding var rootRoute: FileChooserRouteData
     
     private var isGuest: Bool {
-        users.count > 0
+        users.count == 0
     }
     
     init(fileTypeFilter: FileTypeFilter,
@@ -54,13 +54,12 @@ struct SharedWithMeFileChooser: View {
                         ActiveFilterView(fileTypeFilter: viewModel.fileTypeFilter)
                     }
                 )
-                .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? geometry.size.width * 0.2 : geometry.size.width * 0.4)
                 
                 switch viewModel.viewState {
                 case .loaded:
                     Group {
                         let models = viewModel.mapToModels(
-                            sharedItems: sharedItemsRawData.map{ $0.entity },
+                            sharedItems: sharedItemsRawData.map { $0.entity },
                             sampleFiles: sampleLinksRawData.compactMap {$0.entity.sharedAsset },
                             sharedLinks: sharedLinksRawData.compactMap { $0.entity.sharedAsset },
                             isGuest: isGuest

@@ -48,7 +48,6 @@ struct CloudStorageFileChooser: View {
                         ActiveFilterView(fileTypeFilter: viewModel.fileTypeFilter)
                     }
                 )
-                .frame(width: UIDevice.current.userInterfaceIdiom == .pad ? geometry.size.width * 0.2 : geometry.size.width * 0.4)
 
                 switch viewModel.viewState {
                 case .loaded:

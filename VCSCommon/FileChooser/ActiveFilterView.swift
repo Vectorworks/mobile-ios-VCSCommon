@@ -30,6 +30,7 @@ struct ActiveFilterView: View {
         }
         .background(colorScheme == .light ? Color.black.opacity(0.1) : Color.white.opacity(0.1))
         .cornerRadius(10)
+        .fixedSize()
     }
     
 }

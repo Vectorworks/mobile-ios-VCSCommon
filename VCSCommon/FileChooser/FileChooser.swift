@@ -190,6 +190,7 @@ struct NavigationConfigurationModifier: ViewModifier {
                     }
                 }
             )
+            .onChange(of: path, { showDropdown = false })
             .frame(maxWidth: .infinity)
             .tint(.VCSTeal)
     }
