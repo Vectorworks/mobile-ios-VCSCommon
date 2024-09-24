@@ -24,30 +24,29 @@ class CloudStorageViewModel: ObservableObject {
         self.fileTypeFilter = fileTypeFilter
     }
     
-    func loadFolder(route: FileChooserRouteData) {
+    func loadFolder(route: FileChooserRouteData, isConnectionAvailable: Bool) {
         self.viewState = .loading
         
-        APIClient.folderAsset(assetURI: route.resourceUri).execute { (result: Result<VCSFolderResponse, Error>) in
-            switch result {
-                
-            case .success(let success):
-                success.loadLocalFiles()
-                VCSCache.addToCache(item: success)
-                
-                self.viewState = .loaded
-                
-                do {
-                    let loadedFolderResponse = try result.get()
-                    let folder = VCSFolderResponse.realmStorage.getModelById(id: loadedFolderResponse.rID)
-                    self.populateViewWithData(loadedFolder: folder, isExternal: loadedFolderResponse.storageType.isExternal)
-                } catch {
-                    print("Error retrieving the value: \(error)")
+        if isConnectionAvailable {
+            APIClient.folderAsset(assetURI: route.resourceUri).execute { (result: Result<VCSFolderResponse, Error>) in
+                switch result {
+                    
+                case .success(let success):
+                    success.loadLocalFiles()
+                    VCSCache.addToCache(item: success)
+                    
+                    self.viewState = .loaded
+                    
+                    let folder = VCSFolderResponse.realmStorage.getModelById(id: success.rID)
+                    self.populateViewWithData(loadedFolder: folder, isExternal: success.storageType.isExternal)
+                    
+                case .failure(let error):
+                    self.viewState = .error(error.localizedDescription)
+                    break
                 }
-                
-            case .failure(let error):
-                self.viewState = .error(error.localizedDescription)
-                break
             }
+        } else {
+            self.viewState = .loaded
         }
     }
     
@@ -79,11 +78,6 @@ class CloudStorageViewModel: ObservableObject {
         
         let fileModels : [FileChooserModel] = loadedFolder?.files
             .sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
-            .filter { file in
-                self.fileTypeFilter.extensions.map { filterExtension in
-                    filterExtension.isInFileName(file.name)
-                }.contains(true)
-            }
             .map {
                 FileChooserModel(
                     resourceUri: $0.resourceURI,
@@ -94,7 +88,8 @@ class CloudStorageViewModel: ObservableObject {
                     isFolder: false,
                     route: nil
                 )
-            } ?? []
+            }
+            .matchesFilter(fileTypeFilter) ?? []
         
         self.models = fileModels + folderModels
     }

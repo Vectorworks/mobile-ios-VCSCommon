@@ -46,13 +46,9 @@ struct SharedWithMeFileChooser: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .center) {
-                Button(
-                    action: {
-                        viewModel.onDismiss()
-                    },
-                    label : {
-                        ActiveFilterView(fileTypeFilter: viewModel.fileTypeFilter)
-                    }
+                CurrentFilterView(
+                    onDismiss: viewModel.onDismiss,
+                    fileTypeFilter: viewModel.fileTypeFilter
                 )
                 
                 switch viewModel.viewState {

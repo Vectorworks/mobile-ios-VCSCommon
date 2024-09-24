@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Veneta Todorova on 4.09.24.
 //
@@ -15,4 +15,18 @@ struct FileChooserModel {
     let thumbnailUrl: URL?
     let isFolder: Bool
     let route: FileChooserRouteData?
+}
+
+extension Array where Element == FileChooserModel {
+    func matchesFilter(_ fileTypeFilter: FileTypeFilter) -> [FileChooserModel] {
+        return self.filter { fileChooserModel in
+            if fileChooserModel.isFolder {
+                return true
+            } else {
+                return fileTypeFilter.extensions.map { filterExtension in
+                    filterExtension.isInFileName(fileChooserModel.name)
+                }.contains(true)
+            }
+        }
+    }
 }

@@ -69,14 +69,12 @@ class SharedWithMeViewModel: ObservableObject {
         }
     
     func calculateRoute(resourceUri: String, displayName: String, isSharedLink: Bool) -> FileChooserRouteData {
-        let result: FileChooserRouteData
         let routeData = MyFilesRouteData(resourceUri: resourceUri, displayName: displayName)
         if isSharedLink {
-            result = FileChooserRouteData.sharedLink(routeData)
+            return FileChooserRouteData.sharedLink(routeData)
         } else {
-            result = FileChooserRouteData.sharedWithMe(routeData)
+            return FileChooserRouteData.sharedWithMe(routeData)
         }
-        return result
     }
     
     func mapToModels(
@@ -90,16 +88,17 @@ class SharedWithMeViewModel: ObservableObject {
         switch currentRoute {
             
         case .sharedWithMeRoot :
-            let sharedItems = sharedItems.compactMap {
-                FileChooserModel(
-                    resourceUri: $0.resourceURI,
-                    resourceId: nil,
-                    flags: $0.asset.flags,
-                    name: $0.name,
-                    thumbnailUrl: $0.thumbnailURL,
-                    isFolder: $0.isFolder,
-                    route: calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isSharedLink: false))
-            }
+            let sharedItems = sharedItems
+                .compactMap {
+                    FileChooserModel(
+                        resourceUri: $0.resourceURI,
+                        resourceId: nil,
+                        flags: $0.asset.flags,
+                        name: $0.name,
+                        thumbnailUrl: $0.thumbnailURL,
+                        isFolder: $0.isFolder,
+                        route: calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isSharedLink: false))
+                }
             
             let sharedLinksModels = (sampleFiles + sharedLinks)
                 .map { sampleFile in
@@ -130,6 +129,7 @@ class SharedWithMeViewModel: ObservableObject {
         }
         
         return models
+            .matchesFilter(fileTypeFilter)
     }
     
     func loadFolder(route: FileChooserRouteData, isGuest: Bool) {
@@ -188,12 +188,9 @@ class SharedWithMeViewModel: ObservableObject {
                 
                 self.viewState = .loaded
                 
-                do {
-                    let folder = try VCSFolderResponse.realmStorage.getModelById(id: result.get().rID)
-                    self.populateViewWithData(loadedFolder: folder, isSharedLink: false)
-                } catch {
-                    self.viewState = .error(error.localizedDescription)
-                }
+                let folder = VCSFolderResponse.realmStorage.getModelById(id: success.asset.rID)
+                self.populateViewWithData(loadedFolder: folder, isSharedLink: false)
+                
             case .failure(let error):
                 self.viewState = .error(error.localizedDescription)
             }
@@ -234,12 +231,8 @@ class SharedWithMeViewModel: ObservableObject {
                 
                 self.viewState = .loaded
                 
-                do {
-                    let folder = try VCSFolderResponse.realmStorage.getModelById(id: result.get().asset.rID)
-                    self.populateViewWithData(loadedFolder: folder, isSharedLink: true)
-                } catch {
-                    self.viewState = .error(error.localizedDescription)
-                }
+                let folder = VCSFolderResponse.realmStorage.getModelById(id: success.asset.rID)
+                self.populateViewWithData(loadedFolder: folder, isSharedLink: true)
             case .failure(let error):
                 self.viewState = .error(error.localizedDescription)
             }

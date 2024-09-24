@@ -6,6 +6,8 @@ import RealmSwift
 struct CloudStorageFileChooser: View {
     @ObservedObject private var viewsLayoutSetting: ViewsLayoutSetting = ViewsLayoutSetting.listDefault
     
+    @ObservedObject private var VCSReachabilityMonitor = VCSReachability.default
+    
     @ObservedResults(VCSUser.RealmModel.self, where: { $0.isLoggedIn == true }) var users
     
     @StateObject private var viewModel: CloudStorageViewModel
@@ -16,7 +18,7 @@ struct CloudStorageFileChooser: View {
     
     var itemPickedCompletion: ((FileChooserModel) -> Void)?
     
-    var onDismiss: (() -> Void)
+    var onDismiss: () -> Void
     
     private var isInRoot: Bool
     
@@ -40,15 +42,11 @@ struct CloudStorageFileChooser: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .center) {
-                Button(
-                    action: {
-                        onDismiss()
-                    },
-                    label : {
-                        ActiveFilterView(fileTypeFilter: viewModel.fileTypeFilter)
-                    }
+                CurrentFilterView(
+                    onDismiss: onDismiss,
+                    fileTypeFilter: viewModel.fileTypeFilter
                 )
-
+                
                 switch viewModel.viewState {
                 case .loaded:
                     Group {
@@ -80,7 +78,7 @@ struct CloudStorageFileChooser: View {
                 case .loading:
                     ProgressView()
                         .onAppear {
-                            viewModel.loadFolder(route: currentRoute)
+                            viewModel.loadFolder(route: currentRoute, isConnectionAvailable: VCSReachabilityMonitor.isConnected)
                         }
                 }
             }
@@ -88,7 +86,7 @@ struct CloudStorageFileChooser: View {
             .onChange(of: rootRoute) { oldValue, newValue in
                 if isInRoot {
                     currentRoute = newValue
-                    viewModel.loadFolder(route: currentRoute)
+                    viewModel.loadFolder(route: currentRoute, isConnectionAvailable: VCSReachabilityMonitor.isConnected)
                 }
             }
         }
