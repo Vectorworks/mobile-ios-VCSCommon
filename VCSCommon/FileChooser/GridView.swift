@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Veneta Todorova on 29.07.24.
 //
@@ -10,11 +10,11 @@ import SwiftUI
 
 struct GridView: View {
     @Environment(\.colorScheme) var colorScheme
-
+    
     var models: [FileChooserModel]
     
     @Binding var currentRouteData: FileChooserRouteData
-
+    
     var itemPickedCompletion: ((FileChooserModel) -> Void)?
     
     var onDismiss: (() -> Void)
@@ -37,7 +37,7 @@ struct GridView: View {
     
     var body: some View {
         ScrollView {
-            if case .s3(_) = currentRouteData {
+            if case .s3 = currentRouteData {
                 if !isGuest && isInRoot {
                     NavigationLink(value: FileChooserRouteData.sharedWithMeRoot) {
                         VStack {
@@ -100,7 +100,8 @@ struct GridView: View {
                             thumbnailURL: file.thumbnailUrl,
                             flags: file.flags,
                             name: file.name,
-                            isFolder: false
+                            isFolder: false,
+                            lastDateModified: file.lastDateModified
                         )
                         .padding(8)
                         .background(adaptiveBackgroundColor)
@@ -112,4 +113,3 @@ struct GridView: View {
         .background(Color(UIColor.systemGroupedBackground))
     }
 }
-

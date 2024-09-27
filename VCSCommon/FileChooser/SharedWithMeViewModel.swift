@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 class SharedWithMeViewModel: ObservableObject {
     static var rootSharedWithMePredicate: NSPredicate {
         NSPredicate(format: "sharedParentFolder = %@ AND sharedWithLogin == %@", "", VCSUser.savedUser?.login ?? "nil")
@@ -87,7 +86,7 @@ class SharedWithMeViewModel: ObservableObject {
         
         switch currentRoute {
             
-        case .sharedWithMeRoot :
+        case .sharedWithMeRoot:
             let sharedItems = sharedItems
                 .compactMap {
                     FileChooserModel(
@@ -97,34 +96,37 @@ class SharedWithMeViewModel: ObservableObject {
                         name: $0.name,
                         thumbnailUrl: $0.thumbnailURL,
                         isFolder: $0.isFolder,
-                        route: calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isSharedLink: false))
+                        route: calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isSharedLink: false),
+                        lastDateModified: $0.isFolder ? nil : $0.lastModifiedString.toDate()
+                    )
                 }
             
             let sharedLinksModels = (sampleFiles + sharedLinks)
-                .map { sampleFile in
+                .map { sharedFile in
                     let route: FileChooserRouteData?
-                    if sampleFile.assetType == .folder {
-                        route = calculateRoute(resourceUri: sampleFile.resourceURI, displayName: sampleFile.asset.name, isSharedLink: true)
+                    if sharedFile.assetType == .folder {
+                        route = calculateRoute(resourceUri: sharedFile.resourceURI, displayName: sharedFile.asset.name, isSharedLink: true)
                     } else {
                         route = nil
                     }
                     return FileChooserModel(
-                        resourceUri: sampleFile.resourceURI,
-                        resourceId: sampleFile.asset.resourceID,
-                        flags: sampleFile.asset.flags,
-                        name: sampleFile.asset.name,
-                        thumbnailUrl: sampleFile.cellFileData?.thumbnailURL,
-                        isFolder: sampleFile.assetType == .folder,
-                        route: route
+                        resourceUri: sharedFile.resourceURI,
+                        resourceId: sharedFile.asset.resourceID,
+                        flags: sharedFile.asset.flags,
+                        name: sharedFile.asset.name,
+                        thumbnailUrl: sharedFile.cellFileData?.thumbnailURL,
+                        isFolder: sharedFile.assetType == .folder,
+                        route: route,
+                        lastDateModified: nil
                     )
                 }
             
             models = sharedLinksModels + sharedItems
             
-        case .sharedWithMe(_), .sharedLink(_) :
+        case .sharedWithMe, .sharedLink:
             models = self.models
             
-        case .s3(_), .externalStorage(_):
+        case .s3, .externalStorage:
             models = []
         }
         
@@ -136,13 +138,13 @@ class SharedWithMeViewModel: ObservableObject {
         self.viewState = .loading
         
         switch route {
-        case .sharedWithMeRoot :
+        case .sharedWithMeRoot:
             loadSharedWithMeRoot(isGuest: isGuest)
             
-        case .sharedWithMe(let data) :
+        case .sharedWithMe(let data):
             loadSharedWithMeFolder(resourceUri: data.resourceUri)
             
-        case .sharedLink(let data) :
+        case .sharedLink(let data):
             loadSharedLink(resourceUri: data.resourceUri)
             
         default:
@@ -248,7 +250,9 @@ class SharedWithMeViewModel: ObservableObject {
                 name: $0.name,
                 thumbnailUrl: $0.thumbnailURL,
                 isFolder: false,
-                route: nil)
+                route: nil,
+                lastDateModified: nil
+            )
         } ?? []
         
         let folders = loadedFolder?.subfolders.map {
@@ -259,7 +263,9 @@ class SharedWithMeViewModel: ObservableObject {
                 name: $0.name,
                 thumbnailUrl: nil,
                 isFolder: true,
-                route: self.calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isSharedLink: isSharedLink))
+                route: self.calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isSharedLink: isSharedLink),
+                lastDateModified: nil
+            )
         } ?? []
         
         self.models = folders + files

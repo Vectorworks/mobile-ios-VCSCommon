@@ -22,7 +22,7 @@ struct DropdownView: View {
             VStack {
                 ForEach(path.dropLast(), id: \.self) { route in
                     VStack {
-                        HStack{
+                        HStack {
                             Text(route.displayName)
                                 .padding()
                                 .truncationMode(.middle)
@@ -33,6 +33,7 @@ struct DropdownView: View {
                                 .frame(width: 10, height: 10)
                                 .padding()
                         }
+                        .contentShape(Rectangle())
                         .onTapGesture {
                             if let index = path.firstIndex(of: route) {
                                 path = Array(path.prefix(upTo: index + 1))
@@ -44,6 +45,7 @@ struct DropdownView: View {
                         }
                     }
                     .frame(width: 200)
+                    .contentShape(Rectangle())
                 }
             }
             .background(colorScheme == .light ? Color.white : Color(.systemGray6))
@@ -64,6 +66,7 @@ struct DropdownView: View {
                         Divider()
                     }
                     .frame(width: 200)
+                    .contentShape(Rectangle())
                     .onTapGesture {
                         showDropdown.toggle()
                         onStorageChange(currentStorage)
@@ -75,7 +78,7 @@ struct DropdownView: View {
         .onTapGesture {
             showDropdown = false
         }
-        .background(colorScheme == .light ? Color.systemBackground : Color.black)
+        .background(colorScheme == .light ? Color(UIColor.systemGroupedBackground) : Color.black)
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.3), radius: 50, x: 0, y: 5)
         .padding(4)

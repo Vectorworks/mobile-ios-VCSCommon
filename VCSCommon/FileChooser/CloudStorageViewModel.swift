@@ -39,10 +39,8 @@ class CloudStorageViewModel: ObservableObject {
                     
                     let folder = VCSFolderResponse.realmStorage.getModelById(id: success.rID)
                     self.populateViewWithData(loadedFolder: folder, isExternal: success.storageType.isExternal)
-                    
                 case .failure(let error):
                     self.viewState = .error(error.localizedDescription)
-                    break
                 }
             }
         } else {
@@ -62,7 +60,7 @@ class CloudStorageViewModel: ObservableObject {
     }
     
     private func populateViewWithData(loadedFolder: RealmFolder?, isExternal: Bool) {
-        let folderModels : [FileChooserModel] = loadedFolder?.subfolders
+        let folderModels: [FileChooserModel] = loadedFolder?.subfolders
             .sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
             .map {
                 FileChooserModel(
@@ -72,11 +70,12 @@ class CloudStorageViewModel: ObservableObject {
                     name: $0.name,
                     thumbnailUrl: nil,
                     isFolder: true,
-                    route: calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isExternal: isExternal)
+                    route: calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isExternal: isExternal),
+                    lastDateModified: nil
                 )
             } ?? []
         
-        let fileModels : [FileChooserModel] = loadedFolder?.files
+        let fileModels: [FileChooserModel] = loadedFolder?.files
             .sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
             .map {
                 FileChooserModel(
@@ -86,7 +85,8 @@ class CloudStorageViewModel: ObservableObject {
                     name: $0.name,
                     thumbnailUrl: $0.thumbnailURL,
                     isFolder: false,
-                    route: nil
+                    route: nil,
+                    lastDateModified: $0.lastModified.toDate()
                 )
             }
             .matchesFilter(fileTypeFilter) ?? []

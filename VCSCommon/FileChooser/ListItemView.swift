@@ -1,14 +1,14 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Veneta Todorova on 24.07.24.
 //
 
 import Foundation
-import SwiftUI
 import SDWebImage
 import SDWebImageSwiftUI
+import SwiftUI
 
 struct ListItemView: View {
     @State var thumbnailURL: URL?
@@ -16,6 +16,7 @@ struct ListItemView: View {
     @State var name: String
     @State var isFolder: Bool
     @State var isSharedWithMeFolder: Bool = false
+    @State var lastDateModified: Date?
     
     var placeholderImageIconString: String {
         if isFolder {
@@ -57,6 +58,9 @@ struct ListItemView: View {
                     Text(name)
                         .listCellTextModifier()
                 }
+                Text(lastDateModified?.formatted() ?? "")
+                    .font(.subheadline)
+                    .foregroundColor(Color(.systemGray))
             }
             .padding(.leading)
         }

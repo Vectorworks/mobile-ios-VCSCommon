@@ -31,7 +31,7 @@ struct ListView: View {
     
     var body: some View {
         List {
-            if case .s3(_) = currentRouteData {
+            if case .s3 = currentRouteData {
                 if !isGuest && isInRoot {
                     Section {
                         NavigationLink(value: FileChooserRouteData.sharedWithMeRoot) {
@@ -70,7 +70,8 @@ struct ListView: View {
                             thumbnailURL: file.thumbnailUrl,
                             flags: file.flags,
                             name: file.name,
-                            isFolder: false
+                            isFolder: false,
+                            lastDateModified: file.lastDateModified
                         )
                     }
                 }

@@ -13,7 +13,7 @@ extension Text {
         self
             .font(.headline)
             .fontWeight(.regular)
-            .lineLimit(2)
+            .lineLimit(1)
             .frame(height: K.Sizes.gridTextFrameSize)
             .truncationMode(.middle)
             .tint(Color.label)

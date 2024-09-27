@@ -15,6 +15,7 @@ struct FileChooserModel {
     let thumbnailUrl: URL?
     let isFolder: Bool
     let route: FileChooserRouteData?
+    let lastDateModified: Date?
 }
 
 extension Array where Element == FileChooserModel {

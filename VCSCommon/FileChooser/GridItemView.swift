@@ -16,6 +16,7 @@ struct GridItemView: View {
     @State var name: String
     @State var isFolder: Bool
     @State var isSharedWithMeFolder: Bool = false
+    @State var lastDateModified: Date?
     
     var placeholderImageIconString: String {
         if isFolder {
@@ -26,7 +27,7 @@ struct GridItemView: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             WebImage(url: thumbnailURL) { image in
                 image.resizable()
                     .frame(width: K.Sizes.gridCellImageBackgroundSize, height: K.Sizes.gridCellImageBackgroundSize)
@@ -51,8 +52,8 @@ struct GridItemView: View {
             .scaledToFit()
             .cornerRadius(5)
             
-            VStack() {
-                HStack(spacing: 5) {
+            VStack(alignment: .leading) {
+                HStack {
                     if flags?.hasWarning == true {
                         Image(K.VCSIconStrings.status_warning)
                             .resizable()
@@ -60,11 +61,17 @@ struct GridItemView: View {
                     }
                     Text(name)
                         .gridCellTextModifier()
+                    Spacer()
+                }
+                HStack {
+                    Text(lastDateModified?.formatted() ?? "")
+                        .font(.subheadline)
+                        .foregroundColor(Color(.systemGray))
+                    Spacer()
                 }
             }
-            
-            Spacer()
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .padding(.bottom, 10)
     }
 }
-
