@@ -91,7 +91,7 @@ public class FileUploadViewModel: ObservableObject {
                 } else {
                     self.projectFolder = success
                 }
-                self.pickerProjectsBrowseOption = .Existing
+                self.pickerProjectsBrowseOption = .New
             case .failure(let failure):
                 DDLogError("FileUploadViewModel - loadHomeUserFolder - error: \(failure)")
             }

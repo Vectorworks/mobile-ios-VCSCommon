@@ -6,8 +6,8 @@ public struct FileUploadView: View, KeyboardReadable {
     
     @ObservedObject public var model: FileUploadViewModel
     
-    @State public var isFolderChooserPresented = false
-    @State public var isKeyboardVisible = false
+    @State var isFolderChooserPresented = false
+    @State var isKeyboardVisible = false
     
     @State var projectLocationName = ""
     
@@ -50,11 +50,8 @@ public struct FileUploadView: View, KeyboardReadable {
                             } label: {
                                 Text("Discard".vcsLocalized)
                             }
+                            .buttonStyle(.realityCaptureVisualEffectRoundedCornerStyle)
                             
-                            Spacer()
-                            Text("Save Room Plan")
-                                .font(.headline)
-                                .padding(.bottom)
                             Spacer()
                             
                             Button {
@@ -63,7 +60,7 @@ public struct FileUploadView: View, KeyboardReadable {
                             } label: {
                                 Text("Upload".vcsLocalized)
                             }
-                            .buttonStyle(.borderedProminent)
+                            .buttonStyle(.realityCaptureVisualEffectRoundedCornerStyle)
                             .disabled(areNamesValid == false || model.isUploading == true)
                         }
                         .padding()
@@ -228,3 +225,17 @@ public struct FileUploadView: View, KeyboardReadable {
         return image!
     }
 }
+
+//#Preview {
+////    let testFolder = VCSFolderResponse.testVCSFolder!
+//    let model = FileUploadViewModel(itemsLocalNameAndPath: [
+//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/artefino-gredi.pdf")),
+//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/clean-architecture-swiftui-master.txt")),
+//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/GB Stairs_20230331093005_20230331093133_95270001V6E48PU0_0.MP4")),
+//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/Kushti_G_Bania__13_2_3_Ivailo_Fasadi_Izpulnenie.pdf")),
+//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/zUI.vwx")),
+//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/изискваня за издаване на констативен протокол за въвеждане в експлоатация.docx"))
+//    ])
+//    FileUploadView(model: model)
+//        .environment(\.realmConfiguration, VCSRealmDB.realm.configuration)
+//}
