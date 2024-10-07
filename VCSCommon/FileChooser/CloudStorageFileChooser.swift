@@ -10,11 +10,11 @@ struct CloudStorageFileChooser: View {
     
     @ObservedResults(VCSUser.RealmModel.self, where: { $0.isLoggedIn == true }) var users
     
+    @ObservedResults(VCSFolderResponse.RealmModel.self) var currentFolderRawData
+    
     @StateObject private var viewModel: CloudStorageViewModel
     
     @Binding var rootRoute: FileChooserRouteData
-    
-    @State var currentRoute: FileChooserRouteData
     
     var itemPickedCompletion: ((FileChooserModel) -> Void)?
     
@@ -31,16 +31,15 @@ struct CloudStorageFileChooser: View {
          onDismiss: @escaping (() -> Void),
          rootRoute: Binding<FileChooserRouteData>,
          currentRoute: FileChooserRouteData) {
-        _viewModel = StateObject(wrappedValue: CloudStorageViewModel(fileTypeFilter: fileTypeFilter))
+        _viewModel = StateObject(wrappedValue: CloudStorageViewModel(fileTypeFilter: fileTypeFilter, currentRoute: currentRoute))
         self.itemPickedCompletion = itemPickedCompletion
         self.onDismiss = onDismiss
         self._rootRoute = rootRoute
-        self.currentRoute = currentRoute
         self.isInRoot = currentRoute == rootRoute.wrappedValue
     }
     
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { _ in
             VStack(alignment: .center) {
                 CurrentFilterView(
                     onDismiss: onDismiss,
@@ -48,22 +47,26 @@ struct CloudStorageFileChooser: View {
                 )
                 
                 switch viewModel.viewState {
-                case .loaded:
+                case .loaded, .offline:
+                    let models = viewModel.mapToModels(
+                        currentFolderResults: currentFolderRawData
+                    )
+                    
                     Group {
                         switch viewsLayoutSetting.layout.asListLayoutCriteria {
-                        case .list :
+                        case .list:
                             ListView(
-                                models: viewModel.models,
-                                currentRouteData: $currentRoute,
+                                models: models,
+                                currentRouteData: $viewModel.currentRoute,
                                 itemPickedCompletion: itemPickedCompletion,
                                 onDismiss: onDismiss,
                                 isInRoot: isInRoot,
                                 isGuest: isGuest
                             )
-                        case .grid :
+                        case .grid:
                             GridView(
-                                models: viewModel.models,
-                                currentRouteData: $currentRoute,
+                                models: models,
+                                currentRouteData: $viewModel.currentRoute,
                                 itemPickedCompletion: itemPickedCompletion,
                                 onDismiss: onDismiss,
                                 isInRoot: isInRoot,
@@ -78,16 +81,24 @@ struct CloudStorageFileChooser: View {
                 case .loading:
                     ProgressView()
                         .onAppear {
-                            viewModel.loadFolder(route: currentRoute, isConnectionAvailable: VCSReachabilityMonitor.isConnected)
+                            viewModel.loadFolder()
                         }
                 }
             }
             .frame(maxWidth: .infinity)
-            .onChange(of: rootRoute) { oldValue, newValue in
+            .onChange(of: rootRoute) { _, newValue in
                 if isInRoot {
-                    currentRoute = newValue
-                    viewModel.loadFolder(route: currentRoute, isConnectionAvailable: VCSReachabilityMonitor.isConnected)
+                    viewModel.currentRoute = newValue
+                    viewModel.loadFolder()
                 }
+            }
+            .onChange(of: VCSReachabilityMonitor.isConnected) { _, isConnected in
+                if isConnected {
+                    viewModel.loadFolder()
+                } else {
+                    viewModel.viewState = .offline
+                }
+                
             }
         }
     }

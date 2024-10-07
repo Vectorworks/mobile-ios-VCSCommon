@@ -15,11 +15,15 @@ struct SharedWithMeFileChooser: View {
     
     @ObservedResults(VCSUser.RealmModel.self, where: { $0.isLoggedIn == true }) var users
     
-    @ObservedResults(VCSSharedWithMeAsset.RealmModel.self, filter: SharedWithMeViewModel.rootSharedWithMePredicate) var sharedItemsRawData
+    @ObservedResults(VCSSharedWithMeAsset.RealmModel.self, where: { $0.sharedParentFolder == "" && $0.sharedWithLogin == VCSUser.savedUser?.login ?? nil }) var sharedItemsRawData
     
     @ObservedResults(SharedLink.RealmModel.self, filter: SharedWithMeViewModel.sampleLinkPredicate) var sampleLinksRawData
     
     @ObservedResults(SharedLink.RealmModel.self, filter: SharedWithMeViewModel.linksPredicate) var sharedLinksRawData
+    
+    @ObservedResults(VCSFolderResponse.RealmModel.self) var currentFolderRawData
+    
+    @ObservedObject private var VCSReachabilityMonitor = VCSReachability.default
     
     @StateObject private var viewModel: SharedWithMeViewModel
     
@@ -44,7 +48,7 @@ struct SharedWithMeFileChooser: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { _ in
             VStack(alignment: .center) {
                 CurrentFilterView(
                     onDismiss: viewModel.onDismiss,
@@ -52,17 +56,18 @@ struct SharedWithMeFileChooser: View {
                 )
                 
                 switch viewModel.viewState {
-                case .loaded:
+                case .loaded, .offline:
                     Group {
                         let models = viewModel.mapToModels(
                             sharedItems: sharedItemsRawData.map { $0.entity },
                             sampleFiles: sampleLinksRawData.compactMap {$0.entity.sharedAsset },
                             sharedLinks: sharedLinksRawData.compactMap { $0.entity.sharedAsset },
+                            currentFolderResults: currentFolderRawData,
                             isGuest: isGuest
                         )
                         
                         switch viewsLayoutSetting.layout.asListLayoutCriteria {
-                        case .list :
+                        case .list:
                             ListView(
                                 models: models,
                                 currentRouteData: $viewModel.currentRoute,
@@ -71,7 +76,7 @@ struct SharedWithMeFileChooser: View {
                                 isInRoot: viewModel.isInRoot,
                                 isGuest: isGuest
                             )
-                        case .grid :
+                        case .grid:
                             GridView(
                                 models: models,
                                 currentRouteData: $viewModel.currentRoute,
@@ -89,11 +94,18 @@ struct SharedWithMeFileChooser: View {
                 case .loading:
                     ProgressView()
                         .onAppear {
-                            viewModel.loadFolder(route: viewModel.currentRoute, isGuest: isGuest)
+                            viewModel.loadFolder(isGuest: isGuest)
                         }
                 }
             }
             .frame(maxWidth: .infinity)
+            .onChange(of: VCSReachabilityMonitor.isConnected) { _, isConnected in
+                if isConnected {
+                    viewModel.loadFolder(isGuest: isGuest)
+                } else {
+                    viewModel.viewState = .offline
+                }
+            }
         }
     }
 }

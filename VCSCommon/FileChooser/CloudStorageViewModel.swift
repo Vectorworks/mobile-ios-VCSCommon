@@ -6,46 +6,103 @@
 //
 
 import Foundation
+import RealmSwift
 
-enum ViewState {
+enum ViewState: Equatable {
     case loading
     case error(String)
     case loaded
+    case offline
 }
 
 class CloudStorageViewModel: ObservableObject {
     @Published var viewState: ViewState = .loading
     
-    @Published var models: [FileChooserModel] = []
-    
     @Published var fileTypeFilter: FileTypeFilter
     
-    init(fileTypeFilter: FileTypeFilter) {
+    @Published var currentRoute: FileChooserRouteData
+    
+    init(fileTypeFilter: FileTypeFilter, currentRoute: FileChooserRouteData) {
         self.fileTypeFilter = fileTypeFilter
+        self.currentRoute = currentRoute
     }
     
-    func loadFolder(route: FileChooserRouteData, isConnectionAvailable: Bool) {
+    func loadFolder() {
         self.viewState = .loading
         
-        if isConnectionAvailable {
-            APIClient.folderAsset(assetURI: route.resourceUri).execute { (result: Result<VCSFolderResponse, Error>) in
-                switch result {
-                    
-                case .success(let success):
-                    success.loadLocalFiles()
-                    VCSCache.addToCache(item: success)
-                    
-                    self.viewState = .loaded
-                    
-                    let folder = VCSFolderResponse.realmStorage.getModelById(id: success.rID)
-                    self.populateViewWithData(loadedFolder: folder, isExternal: success.storageType.isExternal)
-                case .failure(let error):
+        APIClient.folderAsset(assetURI: currentRoute.resourceUri).execute { (result: Result<VCSFolderResponse, Error>) in
+            switch result {
+                
+            case .success(let success):
+                success.loadLocalFiles()
+                VCSCache.addToCache(item: success)
+                self.viewState = .loaded
+                
+            case .failure(let error):
+                if error.responseCode == VCSNetworkErrorCode.noInternet.rawValue {
+                    self.viewState = .offline
+                } else {
                     self.viewState = .error(error.localizedDescription)
                 }
             }
-        } else {
-            self.viewState = .loaded
         }
+    }
+    
+    func mapToModels(
+        currentFolderResults: Results<VCSFolderResponse.RealmModel>
+    ) -> [FileChooserModel] {
+        let currentFolder = currentFolderResults.filter("resourceURI == %@", currentRoute.resourceUri).first
+        
+        let folderModels: [FileChooserModel] = currentFolder?.subfolders
+            .sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
+            .map(mapFolderToModel) ?? []
+        
+        let fileModels: [FileChooserModel] = currentFolder?.files
+            .sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
+            .map {
+                FileChooserModel(
+                    resourceUri: $0.resourceURI,
+                    resourceId: $0.resourceID,
+                    flags: $0.flags?.entityFlat,
+                    name: $0.name,
+                    thumbnailUrl: $0.thumbnailURL,
+                    isFolder: false,
+                    route: nil,
+                    lastDateModified: $0.lastModified.toDate(),
+                    isAvailableOnDevice: $0.isAvailableOnDevice
+                )
+            }
+            .matchesFilter(fileTypeFilter, isOffline: viewState == .offline) ?? []
+        
+        return fileModels + folderModels
+    }
+    
+    private func mapFolderToModel(folderModel: VCSFolderResponse.RealmModel) -> FileChooserModel {
+        let isExternal: Bool
+        switch currentRoute {
+        case .externalStorage:
+            isExternal = true
+        default:
+            isExternal = false
+        }
+        
+        let route = calculateRoute(
+            resourceUri: folderModel.resourceURI,
+            displayName: folderModel.name,
+            isExternal: isExternal
+        )
+        
+        return FileChooserModel(
+            resourceUri: folderModel.resourceURI,
+            resourceId: nil,
+            flags: folderModel.flags?.entityFlat,
+            name: folderModel.name,
+            thumbnailUrl: nil,
+            isFolder: true,
+            route: route,
+            lastDateModified: nil,
+            isAvailableOnDevice: true
+        )
     }
     
     private func calculateRoute(resourceUri: String, displayName: String, isExternal: Bool) -> FileChooserRouteData {
@@ -57,40 +114,5 @@ class CloudStorageViewModel: ObservableObject {
             result = FileChooserRouteData.s3(routeData)
         }
         return result
-    }
-    
-    private func populateViewWithData(loadedFolder: RealmFolder?, isExternal: Bool) {
-        let folderModels: [FileChooserModel] = loadedFolder?.subfolders
-            .sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
-            .map {
-                FileChooserModel(
-                    resourceUri: $0.resourceURI,
-                    resourceId: nil,
-                    flags: $0.flags?.entityFlat,
-                    name: $0.name,
-                    thumbnailUrl: nil,
-                    isFolder: true,
-                    route: calculateRoute(resourceUri: $0.resourceURI, displayName: $0.name, isExternal: isExternal),
-                    lastDateModified: nil
-                )
-            } ?? []
-        
-        let fileModels: [FileChooserModel] = loadedFolder?.files
-            .sorted(by: { $0.name.lowercased() < $1.name.lowercased() })
-            .map {
-                FileChooserModel(
-                    resourceUri: $0.resourceURI,
-                    resourceId: $0.resourceID,
-                    flags: $0.flags?.entityFlat,
-                    name: $0.name,
-                    thumbnailUrl: $0.thumbnailURL,
-                    isFolder: false,
-                    route: nil,
-                    lastDateModified: $0.lastModified.toDate()
-                )
-            }
-            .matchesFilter(fileTypeFilter) ?? []
-        
-        self.models = fileModels + folderModels
     }
 }

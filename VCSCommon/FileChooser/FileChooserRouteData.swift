@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum FileChooserRouteData: Hashable {
+enum FileChooserRouteData: Hashable, Equatable {
     case sharedWithMe(MyFilesRouteData)
     case s3(MyFilesRouteData)
     case externalStorage(MyFilesRouteData)

@@ -16,17 +16,24 @@ struct FileChooserModel {
     let isFolder: Bool
     let route: FileChooserRouteData?
     let lastDateModified: Date?
+    let isAvailableOnDevice: Bool
 }
 
 extension Array where Element == FileChooserModel {
-    func matchesFilter(_ fileTypeFilter: FileTypeFilter) -> [FileChooserModel] {
+    func matchesFilter(_ fileTypeFilter: FileTypeFilter, isOffline: Bool) -> [FileChooserModel] {
         return self.filter { fileChooserModel in
             if fileChooserModel.isFolder {
                 return true
             } else {
-                return fileTypeFilter.extensions.map { filterExtension in
+                let matchesExtension = fileTypeFilter.extensions.map { filterExtension in
                     filterExtension.isInFileName(fileChooserModel.name)
                 }.contains(true)
+
+                if isOffline {
+                    return matchesExtension && fileChooserModel.isAvailableOnDevice
+                } else {
+                    return matchesExtension
+                }
             }
         }
     }
