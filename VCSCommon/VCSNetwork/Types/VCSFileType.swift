@@ -42,6 +42,7 @@ public enum VCSFileType: String
     case HTML
     case VCDOC
     case SAVEDVIEWS
+    case REALITY
     
     case VWX_EXTENDED
     
