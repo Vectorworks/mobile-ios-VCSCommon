@@ -23,11 +23,12 @@ public struct RealityCaptureVisualEffectRoundedCorner: ViewModifier {
 }
 
 public extension Image {
-    func realityCaptureImageModifier(padding: CGFloat = 20.0,frameWidth: CGFloat = 22.0, frameHeight: CGFloat = 22.0, aspectRation: ContentMode = .fit, foregroundColor: Color = .white, hasDarkModeAppearance: Bool = false) -> some View {
+    func realityCaptureImageModifier(padding: CGFloat = 20.0,frameWidth: CGFloat = 22.0, frameHeight: CGFloat = 22.0, aspectRation: ContentMode = .fit, foregroundColor: Color = .white, hasDarkModeAppearance: Bool = false, font: Font? = nil) -> some View {
         self.resizable()
             .aspectRatio(contentMode: aspectRation)
             .frame(width: frameWidth, height: frameHeight, alignment: .center)
             .foregroundColor(hasDarkModeAppearance ? nil : foregroundColor)
+            .font(font != nil ? font : nil)
             .padding(padding)
             .contentShape(.rect)
     }
