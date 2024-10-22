@@ -10,32 +10,37 @@ struct CloudStorageFileChooser: View {
     
     @ObservedResults(VCSUser.RealmModel.self, where: { $0.isLoggedIn == true }) var users
     
-    @ObservedResults(VCSFolderResponse.RealmModel.self) var currentFolderRawData
+    @ObservedResults(VCSFileResponse.RealmModel.self, where: { $0.ownerLogin == VCSUser.savedUser?.login ?? "nil" }) var allFiles
     
     @StateObject private var viewModel: CloudStorageViewModel
     
-    @Binding var rootRoute: FileChooserRouteData
-    
+    @Binding var route: FileChooserRouteData
+          
     var itemPickedCompletion: ((FileChooserModel) -> Void)?
     
     var onDismiss: () -> Void
-    
-    private var isInRoot: Bool
     
     private var isGuest: Bool {
         users.first?.entity == nil
     }
     
+    private var shouldShowSharedWithMe: Bool {
+        switch route {
+        case .s3(_) :
+            return true
+        default:
+            return false
+        }
+    }
+    
     init(fileTypeFilter: FileTypeFilter,
          itemPickedCompletion: ((FileChooserModel) -> Void)?,
          onDismiss: @escaping (() -> Void),
-         rootRoute: Binding<FileChooserRouteData>,
-         currentRoute: FileChooserRouteData) {
-        _viewModel = StateObject(wrappedValue: CloudStorageViewModel(fileTypeFilter: fileTypeFilter, currentRoute: currentRoute))
+         route: Binding<FileChooserRouteData>) {
+        _viewModel = StateObject(wrappedValue: CloudStorageViewModel(fileTypeFilter: fileTypeFilter))
         self.itemPickedCompletion = itemPickedCompletion
         self.onDismiss = onDismiss
-        self._rootRoute = rootRoute
-        self.isInRoot = currentRoute == rootRoute.wrappedValue
+        self._route = route
     }
     
     var body: some View {
@@ -48,28 +53,27 @@ struct CloudStorageFileChooser: View {
                 
                 switch viewModel.viewState {
                 case .loaded, .offline:
-                    let models = viewModel.mapToModels(
-                        currentFolderResults: currentFolderRawData
+                    let models = viewModel.filterAndMapToModels(
+                        allFiles: allFiles,
+                        storageType: route.storageType.rawValue
                     )
                     
                     Group {
                         switch viewsLayoutSetting.layout.asListLayoutCriteria {
                         case .list:
                             ListView(
+                                shouldShowSharedWithMe: shouldShowSharedWithMe,
                                 models: models,
-                                currentRouteData: $viewModel.currentRoute,
                                 itemPickedCompletion: itemPickedCompletion,
                                 onDismiss: onDismiss,
-                                isInRoot: isInRoot,
                                 isGuest: isGuest
                             )
                         case .grid:
                             GridView(
+                                shouldShowSharedWithMe: shouldShowSharedWithMe,
                                 models: models,
-                                currentRouteData: $viewModel.currentRoute,
                                 itemPickedCompletion: itemPickedCompletion,
                                 onDismiss: onDismiss,
-                                isInRoot: isInRoot,
                                 isGuest: isGuest
                             )
                         }
@@ -81,20 +85,29 @@ struct CloudStorageFileChooser: View {
                 case .loading:
                     ProgressView()
                         .onAppear {
-                            viewModel.loadFolder()
+                            if VCSReachabilityMonitor.isConnected {
+                                Task {
+                                    await viewModel.loadFilesWithCurrentFilter(storageType: route.storageType.rawValue)
+                                }
+                            } else {
+                                viewModel.viewState = .offline
+                            }
                         }
                 }
             }
             .frame(maxWidth: .infinity)
-            .onChange(of: rootRoute) { _, newValue in
-                if isInRoot {
-                    viewModel.currentRoute = newValue
-                    viewModel.loadFolder()
+            .onChange(of: route) { _, _ in
+                if viewModel.viewState != .offline {
+                    Task {
+                        await viewModel.loadFilesWithCurrentFilter(storageType: route.storageType.rawValue)
+                    }
                 }
             }
             .onChange(of: VCSReachabilityMonitor.isConnected) { _, isConnected in
                 if isConnected {
-                    viewModel.loadFolder()
+                    Task {
+                        await viewModel.loadFilesWithCurrentFilter(storageType: route.storageType.rawValue)
+                    }
                 } else {
                     viewModel.viewState = .offline
                 }

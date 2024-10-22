@@ -59,7 +59,7 @@ public class APIClient {
     }
     
     internal class func updateOAuthClient(loginSettings: VCSLoginSettingsResponse, redirectURI: String? = nil, sharedGroup: String? = nil) {
-        //Dev option to debug frameworks easier
+        // Dev option to debug frameworks easier
         var redirectURIs = loginSettings.nomadRedirectURLs
         if let rURI = redirectURI {
             redirectURIs = [rURI]
@@ -106,28 +106,30 @@ public class APIClient {
     }
     
     public static func clearCookies() {
-        HTTPCookieStorage.shared.cookies?.forEach() { HTTPCookieStorage.shared.deleteCookie($0) }
+        HTTPCookieStorage.shared.cookies?.forEach { HTTPCookieStorage.shared.deleteCookie($0) }
     }
     
     @discardableResult
-    private static func performRequest<S:Decodable, E:Error>(route: APIRouter, decoder: DataDecoder = JSONDecoder()) -> Future<S, E> {
+    private static func performRequest<S: Decodable, E: Error>(route: APIRouter, decoder: DataDecoder = JSONDecoder()) -> Future<S, E> {
         return Future(operation: { completion in
             AF.request(route, interceptor: APIClient.oauth2RetryHandler).responseDecodable(decoder: decoder, completionHandler: { (dataResponse: DataResponse<S, AFError>) in
-                //DEBUG: put a breakpoint here to debug response -GKK
+                // DEBUG: put a breakpoint here to debug response -GKK
                 APIClient.lastErrorData = nil
                 switch dataResponse.result {
                 case .success(let value):
+                    DDLogDebug("##### VCSNetwork success:\t\(dataResponse)")
+                    DDLogInfo("##### VCSNetwork data:\(value)")
                     completion(.success(value))
                 case .failure(let error):
-                    //HACK THIS!!!
+                    // HACK THIS!!!
                     if error.responseCode == 5,
-                        let emptyData = "{}".data(using: .utf8),
-                        let res = try? decoder.decode(S.self, from: emptyData) {
+                       let emptyData = "{}".data(using: .utf8),
+                       let res = try? decoder.decode(S.self, from: emptyData) {
                         completion(.success(res))
                         return
                     } else if error.isResponseSerializationError,
-                        let emptyData = "{}".data(using: .utf8),
-                        let res = try? decoder.decode(S.self, from: emptyData) {
+                              let emptyData = "{}".data(using: .utf8),
+                              let res = try? decoder.decode(S.self, from: emptyData) {
                         completion(.success(res))
                         return
                     }
@@ -148,24 +150,24 @@ public class APIClient {
     }
     
     @discardableResult
-    private static func performAsyncRequest<S:Decodable>(route: APIRouter, decoder: DataDecoder = JSONDecoder()) async throws -> S {
+    private static func performAsyncRequest<S: Decodable>(route: APIRouter, decoder: DataDecoder = JSONDecoder()) async throws -> S {
         return try await withCheckedThrowingContinuation { continuation in
             AF.request(route, interceptor: APIClient.oauth2RetryHandler).responseDecodable(decoder: decoder, completionHandler: { (dataResponse: DataResponse<S, AFError>) in
-                //DEBUG: put a breakpoint here to debug response -GKK
+                // DEBUG: put a breakpoint here to debug response -GKK
                 APIClient.lastErrorData = nil
                 switch dataResponse.result {
                 case .success(let value):
                     continuation.resume(returning: value)
                 case .failure(let error):
-                    //HACK THIS!!!
+                    // HACK THIS!!!
                     if error.responseCode == 5,
-                        let emptyData = "{}".data(using: .utf8),
-                        let res = try? decoder.decode(S.self, from: emptyData) {
+                       let emptyData = "{}".data(using: .utf8),
+                       let res = try? decoder.decode(S.self, from: emptyData) {
                         continuation.resume(returning: res)
                         return
                     } else if error.isResponseSerializationError,
-                        let emptyData = "{}".data(using: .utf8),
-                        let res = try? decoder.decode(S.self, from: emptyData) {
+                              let emptyData = "{}".data(using: .utf8),
+                              let res = try? decoder.decode(S.self, from: emptyData) {
                         continuation.resume(returning: res)
                         return
                     }
@@ -300,7 +302,7 @@ public class APIClient {
         return performRequest(route: APIRouter.processPhotogram(jobData: jobData))
     }
     
-    //MARK: - NEW API CALLS
+    // MARK: - NEW API CALLS
     public static func sharedWithMeAsset(assetURI: String, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileTypes: Bool = VCSFlagStates.fileType, sharingInfo: Bool = VCSFlagStates.sharingInfo, related: Bool = VCSFlagStates.related, branding: Bool = true) -> Future<VCSSharedWithMeAsset, Error> {
         return performRequest(route: APIRouter.sharedWithMeAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding))
     }
@@ -404,10 +406,18 @@ public class APIClient {
         return performRequest(route: APIRouter.addVCDOCComment(commentData: commentData))
     }
     
-    //MARK: - DOWNLOAD
+    public static func search(query: String, storageType: String) async throws -> VCSSearchResponse {
+        return try await performAsyncRequest(route: APIRouter.search(query: query, storageType: storageType, sharedWithMe: false))
+    }
+    
+    public static func searchSharedWithMe(query: String) async throws -> VCSSearchResponseSharedWithMe {
+        return try await performAsyncRequest(route: APIRouter.search(query: query, storageType: nil, sharedWithMe: true))
+    }
+    
+    // MARK: - DOWNLOAD
     // key here is file.id. The files that we compare are not actually the same object for some reason
-    public static var downloads = [String : Download]()
-    public static var uploads = [String : DataRequest]()
+    public static var downloads = [String: Download]()
+    public static var uploads = [String: DataRequest]()
     
     /** Progress delegate calls are handled internally.
      */
@@ -431,7 +441,7 @@ public class APIClient {
                     return
                 }
                 
-                if (!download.hasStarted) {
+                if !download.hasStarted {
                     NotificationCenter.postDownloadNotification(model: file, progress: ProgressValues.Started.rawValue)
                     download.hasStarted = true
                 }
@@ -445,7 +455,7 @@ public class APIClient {
                 let downloadRequest = Alamofire.AF.download(
                     downloadURL,
                     method: .get,
-                    parameters: ["download" : "on"],
+                    parameters: ["download": "on"],
                     encoding: URLEncoding.default,
                     headers: alamofireDownloadHeaders,
                     to: destination)
@@ -464,7 +474,7 @@ public class APIClient {
                             download.update(progress: 1, forFile: downloadFile)
                             NotificationCenter.postDownloadNotification(model: file, progress: download.totalProgress)
                             
-                            if (download.isFinished) {
+                            if download.isFinished {
                                 downloadFile.loadLocalFiles()
                                 completion(.success(file))
                                 NotificationCenter.postDownloadNotification(model: file, progress: ProgressValues.Finished.rawValue)
@@ -483,7 +493,7 @@ public class APIClient {
                         NotificationCenter.postDownloadNotification(model: file, progress: download.totalProgress)
                         download.cancel()
                         
-                        if (download.isFinished) {
+                        if download.isFinished {
                             completion(.failure(error))
                             NotificationCenter.postDownloadNotification(model: file, progress: ProgressValues.Finished.rawValue)
                         }
@@ -498,23 +508,7 @@ public class APIClient {
         }
     }
     
-    //END - NEW API CALLS
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    // END - NEW API CALLS
     
     public static func getDateFromUploadResponse(_ response: HTTPURLResponse?, data: Data?) -> Date {
         var result = Date()
@@ -524,15 +518,15 @@ public class APIClient {
         }
         
         if let data: Data = data,
-            let json: [String : Any] = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String : Any],
-            let dateString = json["server_modified"] as? String,
-            let resultDate = dateString.dateFromISO8601 {
+           let json: [String: Any] = (try? JSONSerialization.jsonObject(with: data, options: [])) as? [String: Any],
+           let dateString = json["server_modified"] as? String,
+           let resultDate = dateString.dateFromISO8601 {
             result = resultDate
         }
         
-        //s3 && Google
+        // s3 && Google
         if let dateString = response?.allHeaderFields["Date"] as? String,
-            let resultDate = dateString.dateFromRFC1123 {
+           let resultDate = dateString.dateFromRFC1123 {
             result = resultDate
         }
         
@@ -543,10 +537,10 @@ public class APIClient {
 public class Download {
     
     public let files: [VCSFileResponse]
-    private var progress = [VCSFileResponse : Double]()
+    private var progress = [VCSFileResponse: Double]()
     public let parent: FileAsset
     var hasStarted = false
-    private var requests = [VCSFileResponse : DownloadRequest]()
+    private var requests = [VCSFileResponse: DownloadRequest]()
     
     var totalProgress: Double { return progress.values.reduce(0.0, +) / Double(self.files.count) }
     

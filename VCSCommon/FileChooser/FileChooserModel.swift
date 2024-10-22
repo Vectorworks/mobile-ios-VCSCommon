@@ -13,8 +13,6 @@ struct FileChooserModel {
     let flags: VCSFlagsResponse?
     let name: String
     let thumbnailUrl: URL?
-    let isFolder: Bool
-    let route: FileChooserRouteData?
     let lastDateModified: Date?
     let isAvailableOnDevice: Bool
 }
@@ -22,18 +20,14 @@ struct FileChooserModel {
 extension Array where Element == FileChooserModel {
     func matchesFilter(_ fileTypeFilter: FileTypeFilter, isOffline: Bool) -> [FileChooserModel] {
         return self.filter { fileChooserModel in
-            if fileChooserModel.isFolder {
-                return true
+            let matchesExtension = fileTypeFilter.extensions.map { filterExtension in
+                filterExtension.isInFileName(fileChooserModel.name)
+            }.contains(true)
+            
+            if isOffline {
+                return matchesExtension && fileChooserModel.isAvailableOnDevice
             } else {
-                let matchesExtension = fileTypeFilter.extensions.map { filterExtension in
-                    filterExtension.isInFileName(fileChooserModel.name)
-                }.contains(true)
-
-                if isOffline {
-                    return matchesExtension && fileChooserModel.isAvailableOnDevice
-                } else {
-                    return matchesExtension
-                }
+                return matchesExtension
             }
         }
     }

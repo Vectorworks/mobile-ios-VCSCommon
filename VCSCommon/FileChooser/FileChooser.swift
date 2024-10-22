@@ -30,10 +30,22 @@ public struct FileChooser: View {
     
     private func onStorageChange(selectedStorage: VCSStorageResponse) {
         path.removeAll()
-        if selectedStorage.storageType.isExternal {
-            self.rootRoute = .externalStorage(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
-        } else {
+        switch selectedStorage.storageType {
+            
+        case .S3:
             self.rootRoute = .s3(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+            
+        case .DROPBOX:
+            self.rootRoute = .dropbox(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+            
+        case .GOOGLE_DRIVE:
+            self.rootRoute = .googleDrive(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+            
+        case .ONE_DRIVE:
+            self.rootRoute = .oneDrive(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+            
+        default:
+            fatalError("Unsupported storage type.")
         }
     }
     
@@ -66,21 +78,19 @@ public struct FileChooser: View {
     @MainActor @ViewBuilder
     func buildView(for routeValue: FileChooserRouteData) -> some View {
         switch routeValue {
-        case .s3(_), .externalStorage(_):
+        case .s3, .dropbox, .googleDrive, .oneDrive:
             CloudStorageFileChooser(
                 fileTypeFilter: fileTypeFilter,
                 itemPickedCompletion: onItemPicked,
                 onDismiss: onDismiss,
-                rootRoute: $rootRoute,
-                currentRoute: routeValue
+                route: $rootRoute
             )
-        case .sharedWithMe(_), .sharedWithMeRoot, .sharedLink(_) :
+        case .sharedWithMe, .sharedWithMeRoot, .sharedLink:
             SharedWithMeFileChooser(
                 fileTypeFilter: fileTypeFilter,
                 itemPickedCompletion: onItemPicked,
                 onDismiss: onDismiss,
-                rootRoute: $rootRoute,
-                currentRoute: routeValue
+                route: $rootRoute
             )
         }
     }
@@ -157,7 +167,7 @@ struct NavigationConfigurationModifier: ViewModifier {
                     DropdownButton(
                         currentFolderName: Binding(
                             get: { path.last?.displayName ?? rootRoute.displayName },
-                            set: { newValue in
+                            set: { _ in
                             }
                         ),
                         showDropdown: $showDropdown,

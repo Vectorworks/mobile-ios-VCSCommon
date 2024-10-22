@@ -4,17 +4,17 @@ import WebKit
 import CocoaLumberjackSwift
 
 public enum APIRouter: URLRequestConvertible {
-    
+
     case loginSettings
     case vcsUser
     case currentAccount
-    case listFolder(folderURI: String) //delete
-    
+    case listFolder(folderURI: String) // delete
+
     case createFolder(storage: StorageType, folderURI: String)
     case folderStats(owner: String, folderURI: String)
     case listStorage
     case getStoragePagesList(storagePagesURI: String)
-    
+
     case sendFeedback(feedbackData: FeedbackRequest)
     case listSharedWithMe
     case listSharedFolder
@@ -32,8 +32,8 @@ public enum APIRouter: URLRequestConvertible {
     case unssenNotificationsIDs
     case clearNotifications(IDsHolder: ClearNotificationHolder)
     case genericJob(data: GenericJobRequest)
-    
-    //NEW API CALLS
+
+    // NEW API CALLS
     case sharedWithMeAsset(assetURI: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool, related: Bool, branding: Bool)
     case sharedWithMeFileInfo(rID: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool, related: Bool, branding: Bool)
     case sharedWithMeFolderInfo(rID: String, flags: Bool, ownerInfo: Bool, thumbnail3D: Bool, fileTypes: Bool, sharingInfo: Bool, related: Bool, branding: Bool)
@@ -56,7 +56,8 @@ public enum APIRouter: URLRequestConvertible {
     case sendVCDOCReply(replyData: VCSVWViewerReplyRequest)
     case getTrustedAccounts
     case addVCDOCComment(commentData: VCSVWViewerAddCommentRequest)
-    
+    case search(query: String, storageType: String?, sharedWithMe: Bool)
+
     // MARK: - requestURL
     private var requestURL: VCSRequestURL {
         switch self {
@@ -110,8 +111,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .genericJob:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
-            
-            //NEW API CALLS
+
+            // NEW API CALLS
         case .sharedWithMeAsset:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.none)
         case .sharedWithMeFileInfo:
@@ -145,21 +146,23 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .socketPreSignedUri:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
-        case .listPresentations(_, _):
+        case .listPresentations:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .presentationDownload:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .listVCDOCComments:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
-        case .sendVCDOCReply(_):
+        case .sendVCDOCReply:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .getTrustedAccounts:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
-        case .addVCDOCComment(_):
+        case .addVCDOCComment:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .search:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         }
     }
-    
+
     // MARK: - HTTPMethod
     private var method: HTTPMethod {
         switch self {
@@ -207,7 +210,7 @@ public enum APIRouter: URLRequestConvertible {
             return .get
         }
     }
-    
+
     // MARK: - Path
     private var path: String {
         switch self {
@@ -280,7 +283,7 @@ public enum APIRouter: URLRequestConvertible {
         case .deleteResource(let resourceURL):
             var itemResourceURL = resourceURL
             if let regex = try? NSRegularExpression(pattern: "/v:.*\\/", options: .caseInsensitive) {
-                itemResourceURL = regex.stringByReplacingMatches(in: itemResourceURL, options: .reportCompletion, range: NSMakeRange(0, itemResourceURL.count), withTemplate: "")
+                itemResourceURL = regex.stringByReplacingMatches(in: itemResourceURL, options: .reportCompletion, range: NSRange(location: 0, length: itemResourceURL.count), withTemplate: "")
             }
             return itemResourceURL.VCSNormalizedURLString()
         case .deleteAsset(let asset):
@@ -298,8 +301,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/clear_unseen/"
         case .genericJob:
             return "/jobs/"
-            
-            //NEW API CALLS
+
+            // NEW API CALLS
         case .sharedWithMeAsset(let assetURI, _, _, _, _, _, _, _):
             return assetURI
         case .sharedWithMeFileInfo(let rID, _, _, _, _, _, _, _):
@@ -320,7 +323,7 @@ public enum APIRouter: URLRequestConvertible {
             return "/_/file/id:\(rID)/"
         case .sharedFileAsset(let assetURI, _, _, _, _, _, _, _):
             return assetURI.replacingOccurrences(of: "/restapi/public/v2/s3/file", with: "/restapi/public/v2/s3/shared_file")
-        case .ssoTempUserToken(_):
+        case .ssoTempUserToken:
             return "/api/v2/public/users/@current/api-token/@temp/"
         case .linkDetailsData:
             return "/link-summary/"
@@ -332,7 +335,7 @@ public enum APIRouter: URLRequestConvertible {
             return "/branding/"
         case .socketPreSignedUri:
             return "/messenger/presigned-uri/"
-        case .listPresentations(_, _):
+        case .listPresentations:
             return "/iboards/"
         case .presentationDownload(let presentationUIID):
             return "/iboards/\(presentationUIID)/download/"
@@ -344,9 +347,15 @@ public enum APIRouter: URLRequestConvertible {
             return "/trusted-accounts/"
         case .addVCDOCComment:
             return "/comment/"
+        case .search(_, let storageType, let sharedWithMe):
+            if sharedWithMe {
+                return "__all__/search/"
+            } else {
+                return "\(storageType!)/search/"
+            }
         }
     }
-    
+
     private func modStatsFolderURI(owner: String, folderURI: String) -> String {
         let components = folderURI.components(separatedBy: "/o:")
         guard let pathPrefix = components.first else { return folderURI }
@@ -357,10 +366,10 @@ public enum APIRouter: URLRequestConvertible {
         } else {
             result = result.stringByAppendingPath(path: "/o:\(owner)/")
         }
-        
+
         return result
     }
-    
+
     // MARK: - Parameters
     private var bodyParameters: Parameters? {
         switch self {
@@ -391,7 +400,7 @@ public enum APIRouter: URLRequestConvertible {
             return nil
         }
     }
-    
+
     private var bodyData: Data? {
         switch self {
         case .patchFile(_, _, _, _, let data, _, _):
@@ -402,7 +411,7 @@ public enum APIRouter: URLRequestConvertible {
             return nil
         }
     }
-    
+
     private var queryParameters: [URLQueryItem]? {
         switch self {
         case .getStoragePagesList:
@@ -411,13 +420,13 @@ public enum APIRouter: URLRequestConvertible {
         case .listSharedWithMe:
             let queryItemRelated = URLQueryItem(name: "related", value: "on")
             let queryItemLimit = URLQueryItem(name: "limit", value: "300")
-            
+
             var result: [URLQueryItem] = [queryItemRelated, queryItemLimit]
-            
+
             if let queryItemFields = APIRouter.sharedWithMeAsset(assetURI: "shared_with_me/folder/o:", flags: true, ownerInfo: true, thumbnail3D: true, fileTypes: true, sharingInfo: true, related: true, branding: true).queryParameters {
                 result.append(contentsOf: queryItemFields)
             }
-            
+
             return result
         case .listSharedFolder:
             let queryItemRelated = URLQueryItem(name: "related", value: "on")
@@ -435,7 +444,7 @@ public enum APIRouter: URLRequestConvertible {
             let queryItemUpdate = URLQueryItem(name: "update_from_storage", value: "true")
             let result = updateFromStorage ? [queryItemUpdate] : []
             return result
-        case .job(_):
+        case .job:
             let queryItemFields = URLQueryItem(name: "fields", value: "(output_location_owner,options.src_file_info,-options.ref_file_versions)")
             return [queryItemFields]
         case .listJobs(let initialRequest):
@@ -453,34 +462,34 @@ public enum APIRouter: URLRequestConvertible {
         case .clearNotifications:
             let queryItemClient = URLQueryItem(name: "client", value: "ios")
             return [queryItemClient]
-            
-        //NEW API CALLS
+
+            // NEW API CALLS
         case .linkSharedAsset(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo, let related, let versioning):
-            var result:[URLQueryItem] = []
+            var result: [URLQueryItem] = []
             var fields: [String] = []
-            
+
             if flags {
                 fields.append("asset.flags")
                 fields.append("asset.files.flags")
                 fields.append("asset.subfolders.flags")
             }
-            
+
             if ownerInfo {
                 fields.append("asset.owner_info.mount_point")
                 fields.append("asset.files.owner_info.mount_point")
                 fields.append("asset.subfolders.owner_info.mount_point")
             }
-            
+
             if thumbnail3D {
                 fields.append("asset.thumbnail_3d")
                 fields.append("asset.files.thumbnail_3d")
             }
-            
+
             if fileTypes {
                 fields.append("asset.file_type")
                 fields.append("asset.files.file_type")
             }
-            
+
             if sharingInfo {
                 fields.append("asset.sharing_info")
                 fields.append("asset.sharing_info.link_visits_count")
@@ -498,49 +507,49 @@ public enum APIRouter: URLRequestConvertible {
                 fields.append("asset.subfolders.sharing_info.last_share_date")
                 fields.append("asset.subfolders.sharing_info.allow_comments")
             }
-            
+
             if fields.count > 0 {
                 let value = "(" + fields.joined(separator: ",") + ")"
                 let queryItemFields = URLQueryItem(name: "fields", value: value)
                 result.append(queryItemFields)
             }
-            
+
             if related {
                 let queryItemRelated = URLQueryItem(name: "related", value: "on")
                 result.append(queryItemRelated)
             }
-            
+
             if versioning {
                 let queryItemVersioning = URLQueryItem(name: "versioning", value: "on")
                 result.append(queryItemVersioning)
             }
-            
+
             return result
         case .folderAsset(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo),
                 .folderInfo(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo):
-            var result:[URLQueryItem] = []
+            var result: [URLQueryItem] = []
             var fields: [String] = []
-            
+
             if flags {
                 fields.append("flags")
                 fields.append("files.flags")
                 fields.append("subfolders.flags")
             }
-            
+
             if ownerInfo {
                 fields.append("owner_info.mount_point")
                 fields.append("files.owner_info.mount_point")
                 fields.append("subfolders.owner_info.mount_point")
             }
-            
+
             if thumbnail3D {
                 fields.append("files.thumbnail_3d")
             }
-            
+
             if fileTypes {
                 fields.append("files.file_type")
             }
-            
+
             if sharingInfo {
                 fields.append("sharing_info")
                 fields.append("sharing_info.link_visits_count")
@@ -558,47 +567,47 @@ public enum APIRouter: URLRequestConvertible {
                 fields.append("subfolders.sharing_info.last_share_date")
                 fields.append("subfolders.sharing_info.allow_comments")
             }
-            
+
             if fields.count > 0 {
                 let value = "(" + fields.joined(separator: ",") + ")"
                 let queryItemFields = URLQueryItem(name: "fields", value: value)
                 result.append(queryItemFields)
             }
-            
+
             return result
         case .fileAsset(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo),
-             .sharedFileAsset(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo),
-             .fileInfo(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo):
-            var result:[URLQueryItem] = []
-            
+                .sharedFileAsset(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo),
+                .fileInfo(_, let related, let flags, let ownerInfo, let thumbnail3D, let fileType, let versioning, let sharingInfo):
+            var result: [URLQueryItem] = []
+
             if related {
                 let queryItemRelated = URLQueryItem(name: "related", value: "on")
                 result.append(queryItemRelated)
             }
-            
+
             if versioning {
                 let queryItemVersioning = URLQueryItem(name: "versioning", value: "on")
                 result.append(queryItemVersioning)
             }
-            
+
             var fields: [String] = []
-            
+
             if flags {
                 fields.append("flags")
             }
-            
+
             if ownerInfo {
                 fields.append("owner_info.mount_point")
             }
-            
+
             if thumbnail3D {
                 fields.append("thumbnail_3d")
             }
-            
+
             if fileType {
                 fields.append("file_type")
             }
-            
+
             if sharingInfo {
                 fields.append("sharing_info")
                 fields.append("sharing_info.link_visits_count")
@@ -606,43 +615,43 @@ public enum APIRouter: URLRequestConvertible {
                 fields.append("sharing_info.last_share_date")
                 fields.append("sharing_info.allow_comments")
             }
-            
+
             if fields.count > 0 {
                 let value = "(" + fields.joined(separator: ",") + ")"
                 let queryItemFields = URLQueryItem(name: "fields", value: value)
                 result.append(queryItemFields)
             }
-            
+
             return result
         case .sharedWithMeAsset(let assetURI, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo, let related, let branding):
             let isFolder = assetURI.contains("shared_with_me/folder/o:")
-            
-            var result:[URLQueryItem] = []
+
+            var result: [URLQueryItem] = []
             var fields: [String] = []
-            
+
             if related {
                 let queryItemRelated = URLQueryItem(name: "related", value: "on")
                 result.append(queryItemRelated)
             }
-            
+
             if flags {
                 fields.append("asset.flags")
-                
+
                 if isFolder {
                     fields.append("asset.files.flags")
                     fields.append("asset.subfolders.flags")
                 }
             }
-            
+
             if ownerInfo {
                 fields.append("asset.owner_info.mount_point")
-                
+
                 if isFolder {
                     fields.append("asset.files.owner_info.mount_point")
                     fields.append("asset.subfolders.owner_info.mount_point")
                 }
             }
-            
+
             if thumbnail3D {
                 if isFolder {
                     fields.append("asset.files.thumbnail_3d")
@@ -650,7 +659,7 @@ public enum APIRouter: URLRequestConvertible {
                     fields.append("asset.thumbnail_3d")
                 }
             }
-            
+
             if fileTypes {
                 if isFolder {
                     fields.append("asset.files.file_type")
@@ -658,14 +667,14 @@ public enum APIRouter: URLRequestConvertible {
                     fields.append("asset.file_type")
                 }
             }
-            
+
             if sharingInfo {
                 fields.append("asset.sharing_info")
                 fields.append("asset.sharing_info.link_visits_count")
                 fields.append("asset.sharing_info.shared_with")
                 fields.append("asset.sharing_info.last_share_date")
                 fields.append("asset.sharing_info.allow_comments")
-                
+
                 if isFolder {
                     fields.append("asset.files.sharing_info")
                     fields.append("asset.files.sharing_info.link_visits_count")
@@ -679,34 +688,34 @@ public enum APIRouter: URLRequestConvertible {
                     fields.append("asset.subfolders.sharing_info.allow_comments")
                 }
             }
-            
+
             if branding {
                 fields.append("branding")
             }
-            
+
             if fields.count > 0 {
                 let value = "(" + fields.joined(separator: ",") + ")"
                 let queryItemFields = URLQueryItem(name: "fields", value: value)
                 result.append(queryItemFields)
             }
-            
+
             return result
         case .sharedWithMeFileInfo(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo, let related, let branding):
-             return APIRouter.sharedWithMeAsset(assetURI: "shared_with_me", flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding).queryParameters
+            return APIRouter.sharedWithMeAsset(assetURI: "shared_with_me", flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding).queryParameters
         case .sharedWithMeFolderInfo(_, let flags, let ownerInfo, let thumbnail3D, let fileTypes, let sharingInfo, let related, let branding):
-             return APIRouter.sharedWithMeAsset(assetURI: "shared_with_me/folder/o:", flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding).queryParameters
+            return APIRouter.sharedWithMeAsset(assetURI: "shared_with_me/folder/o:", flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding).queryParameters
         case .ssoTempUserToken:
-            var result:[URLQueryItem] = []
+            var result: [URLQueryItem] = []
             let queryItemRelated = URLQueryItem(name: "system", value: "iOSNomad")
             result.append(queryItemRelated)
             return result
         case .socketPreSignedUri:
-            var result:[URLQueryItem] = []
+            var result: [URLQueryItem] = []
             let queryItemAppName = URLQueryItem(name: "app_name", value: "nomad")
             result.append(queryItemAppName)
             return result
         case .listPresentations(let limit, let offset):
-            var result:[URLQueryItem] = []
+            var result: [URLQueryItem] = []
             let queryItemLimit = URLQueryItem(name: "limit", value: "\(limit)")
             result.append(queryItemLimit)
             if offset != .zero {
@@ -714,34 +723,45 @@ public enum APIRouter: URLRequestConvertible {
                 result.append(queryItemOffset)
             }
             return result
-        case .presentationDownload(_):
-            var result:[URLQueryItem] = []
+        case .presentationDownload:
+            var result: [URLQueryItem] = []
             let queryItemOsMac = URLQueryItem(name: "os", value: "mac")
             result.append(queryItemOsMac)
+            return result
+        case .search(let query, _, let sharedWithMe):
+            var result: [URLQueryItem] = []
+            let queryItemQ = URLQueryItem(name: "q", value: query)
+            if sharedWithMe {
+                let queryItemSharedWithMe = URLQueryItem(name: "sharedWithMe", value: "true")
+                result.append(queryItemSharedWithMe)
+                let queryItemFields: URLQueryItem = URLQueryItem(name: "fields", value: "(branding)")
+                result.append(queryItemFields)
+            }
+            result.append(queryItemQ)
             return result
         default:
             return nil
         }
     }
-    
+
     func changeHeaders(_ urlRequest: inout URLRequest) {
         switch self {
         case .uploadData(let uploadURL, _):
             urlRequest.setValue(uploadURL.contentType, forHTTPHeaderField: HTTPHeaderField.contentType.rawValue)
             urlRequest.setValue("\(uploadURL.contentLength)", forHTTPHeaderField: HTTPHeaderField.contentLength.rawValue)
-            
+
             if let dropboxAPIPathRoot = uploadURL.headers.dropboxAPIPathRoot {
                 urlRequest.setValue(dropboxAPIPathRoot, forHTTPHeaderField: Headers.CodingKeys.dropboxAPIPathRoot.rawValue)
             }
-            
+
             if let dropboxAPIArg = uploadURL.headers.dropboxAPIArg {
                 urlRequest.setValue(dropboxAPIArg, forHTTPHeaderField: Headers.CodingKeys.dropboxAPIArg.rawValue)
             }
-            
+
             if let authorization = uploadURL.headers.authorization {
                 urlRequest.setValue(authorization, forHTTPHeaderField: Headers.CodingKeys.authorization.rawValue)
             }
-            
+
             if let contentLength = uploadURL.headers.contentLength {
                 urlRequest.setValue("\(contentLength)", forHTTPHeaderField: Headers.CodingKeys.contentLength.rawValue)
             }
@@ -750,24 +770,24 @@ public enum APIRouter: URLRequestConvertible {
             }
             if let contentRange = uploadURL.headers.contentRange {
                 urlRequest.setValue(contentRange, forHTTPHeaderField: Headers.CodingKeys.contentRange.rawValue)
-                
+
             }
         case .uploadFileURL(let uploadURL):
             urlRequest.setValue(uploadURL.contentType, forHTTPHeaderField: HTTPHeaderField.contentType.rawValue)
             urlRequest.setValue("\(uploadURL.contentLength)", forHTTPHeaderField: HTTPHeaderField.contentLength.rawValue)
-            
+
             if let dropboxAPIPathRoot = uploadURL.headers.dropboxAPIPathRoot {
                 urlRequest.setValue(dropboxAPIPathRoot, forHTTPHeaderField: Headers.CodingKeys.dropboxAPIPathRoot.rawValue)
             }
-            
+
             if let dropboxAPIArg = uploadURL.headers.dropboxAPIArg {
                 urlRequest.setValue(dropboxAPIArg, forHTTPHeaderField: Headers.CodingKeys.dropboxAPIArg.rawValue)
             }
-            
+
             if let authorization = uploadURL.headers.authorization {
                 urlRequest.setValue(authorization, forHTTPHeaderField: Headers.CodingKeys.authorization.rawValue)
             }
-            
+
             if let contentLength = uploadURL.headers.contentLength {
                 urlRequest.setValue("\(contentLength)", forHTTPHeaderField: Headers.CodingKeys.contentLength.rawValue)
             }
@@ -776,11 +796,11 @@ public enum APIRouter: URLRequestConvertible {
             }
             if let contentRange = uploadURL.headers.contentRange {
                 urlRequest.setValue(contentRange, forHTTPHeaderField: Headers.CodingKeys.contentRange.rawValue)
-                
+
             }
         case .sendFeedback:
             urlRequest.setValue(VCSServer.default.serverURLString, forHTTPHeaderField: HTTPHeaderField.referer.rawValue)
-        case .ssoTempUserToken(_):
+        case .ssoTempUserToken:
             urlRequest.setValue(VCSServer.default.serverURLString, forHTTPHeaderField: HTTPHeaderField.referer.rawValue)
         case .sendVCDOCReply:
             urlRequest.setValue(VCSServer.default.serverURLString, forHTTPHeaderField: HTTPHeaderField.referer.rawValue)
@@ -788,7 +808,7 @@ public enum APIRouter: URLRequestConvertible {
             break
         }
     }
-    
+
     func addDefaultHeaders(_ urlRequest: inout URLRequest) {
         switch self {
         case .uploadData:
@@ -799,27 +819,27 @@ public enum APIRouter: URLRequestConvertible {
             APIRouter.addDefaultHeaderTo(request: &urlRequest)
         }
     }
-    
+
     // MARK: - URLRequestConvertible
     public func asURLRequest() throws -> URLRequest {
         let urlString = self.requestURL.urlString().stringByAppendingPath(path: self.path)
         var url = try urlString.asURL()
-        
+
         if let queryParametersToAdd = self.queryParameters {
             if var components = URLComponents(string: urlString) {
                 components.queryItems = queryParametersToAdd
                 url = try components.asURL()
             } else { throw VCSNetworkError.GenericException("Cannot parse url: \(urlString)") }
         }
-        
+
         var urlRequest = URLRequest(url: url)
-        
+
         // HTTP Method
         urlRequest.httpMethod = self.method.rawValue
-        
+
         self.addDefaultHeaders(&urlRequest)
         self.changeHeaders(&urlRequest)
-        
+
         // Parameters
         if let bodyParameters = self.bodyParameters {
             do {
@@ -830,10 +850,10 @@ public enum APIRouter: URLRequestConvertible {
         } else if let bodyData = self.bodyData {
             urlRequest.httpBody = bodyData
         }
-        
+
         return urlRequest
     }
-    
+
     public static func addDefaultHeaderTo(request: inout URLRequest) {
         // Common Headers
         request.setValue(ContentType.json.rawValue, forHTTPHeaderField: HTTPHeaderField.acceptType.rawValue)
@@ -842,16 +862,16 @@ public enum APIRouter: URLRequestConvertible {
         request.setValue(ClientVersion.default.verValue, forHTTPHeaderField: HTTPHeaderField.version.rawValue)
         request.setValue(ClientVersion.default.userAgent, forHTTPHeaderField: HTTPHeaderField.userAgent.rawValue)
     }
-    
+
     public static func getCSRFToken(key: String) -> String? {
         let CSRFTokenCookie = HTTPCookieStorage.shared.cookies?.first(where: { $0.name == key })
         return CSRFTokenCookie?.value
     }
-    
+
     public static func changeLanguageCookie() {
         guard let oldLangCookie = HTTPCookieStorage.shared.cookies?.first(where: { (cookie: HTTPCookie) -> Bool in cookie.name.contains("vwlanguage") }) else { return }
         guard var newCookieProperties = oldLangCookie.properties else { return }
-        
+
         newCookieProperties[HTTPCookiePropertyKey.value] = Localization.default.preferredLanguage
         if let newLangCookie = HTTPCookie(properties: newCookieProperties) {
             HTTPCookieStorage.shared.deleteCookie(oldLangCookie)
@@ -859,4 +879,3 @@ public enum APIRouter: URLRequestConvertible {
         }
     }
 }
-

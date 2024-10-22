@@ -14,20 +14,17 @@ struct SharedWithMeFileChooser: View {
     @ObservedObject private var viewsLayoutSetting: ViewsLayoutSetting = ViewsLayoutSetting.listDefault
     
     @ObservedResults(VCSUser.RealmModel.self, where: { $0.isLoggedIn == true }) var users
+            
+    @ObservedResults(SharedLink.RealmModel.self, where: { $0.RealmID == VCSServer.default.serverURLString.stringByAppendingPath(
+        path: "/links/:samples/:metadata/")}) var sampleFiles
     
-    @ObservedResults(VCSSharedWithMeAsset.RealmModel.self, where: { $0.sharedParentFolder == "" && $0.sharedWithLogin == VCSUser.savedUser?.login ?? nil }) var sharedItemsRawData
-    
-    @ObservedResults(SharedLink.RealmModel.self, filter: SharedWithMeViewModel.sampleLinkPredicate) var sampleLinksRawData
-    
-    @ObservedResults(SharedLink.RealmModel.self, filter: SharedWithMeViewModel.linksPredicate) var sharedLinksRawData
-    
-    @ObservedResults(VCSFolderResponse.RealmModel.self) var currentFolderRawData
+    @ObservedResults(VCSSharedWithMeAsset.RealmModel.self, where: { $0.sharedWithLogin == VCSUser.savedUser?.login ?? nil }) var availableFiles
     
     @ObservedObject private var VCSReachabilityMonitor = VCSReachability.default
     
     @StateObject private var viewModel: SharedWithMeViewModel
     
-    @Binding var rootRoute: FileChooserRouteData
+    @Binding var route: FileChooserRouteData
     
     private var isGuest: Bool {
         users.count == 0
@@ -36,15 +33,26 @@ struct SharedWithMeFileChooser: View {
     init(fileTypeFilter: FileTypeFilter,
          itemPickedCompletion: ((FileChooserModel) -> Void)?,
          onDismiss: @escaping (() -> Void),
-         rootRoute: Binding<FileChooserRouteData>,
-         currentRoute: FileChooserRouteData) {
+         route: Binding<FileChooserRouteData>) {
         let viewModel = SharedWithMeViewModel(
             fileTypeFilter: fileTypeFilter,
-            currentRoute: currentRoute,
             itemPickedCompletion: itemPickedCompletion,
             onDismiss: onDismiss)
         _viewModel = StateObject(wrappedValue: viewModel)
-        self._rootRoute = rootRoute
+        self._route = route
+    }
+    
+    func loadFilesForCurrentState(isConnected: Bool) {
+        if isConnected && !isGuest {
+            Task {
+                await viewModel.loadFilesWithCurrentFilter(storageType: nil)
+            }
+        } else {
+            viewModel.viewState = isGuest ? .loading : .offline
+            if isGuest {
+                viewModel.loadSampleFiles()
+            }
+        }
     }
     
     var body: some View {
@@ -57,32 +65,28 @@ struct SharedWithMeFileChooser: View {
                 
                 switch viewModel.viewState {
                 case .loaded, .offline:
+                    let models = viewModel.filterAndMapToModels(
+                        allSharedItems: availableFiles,
+                        sampleFiles: Array(sampleFiles),
+                        isGuest: isGuest
+                    )
+                    
                     Group {
-                        let models = viewModel.mapToModels(
-                            sharedItems: sharedItemsRawData.map { $0.entity },
-                            sampleFiles: sampleLinksRawData.compactMap {$0.entity.sharedAsset },
-                            sharedLinks: sharedLinksRawData.compactMap { $0.entity.sharedAsset },
-                            currentFolderResults: currentFolderRawData,
-                            isGuest: isGuest
-                        )
-                        
                         switch viewsLayoutSetting.layout.asListLayoutCriteria {
                         case .list:
                             ListView(
+                                shouldShowSharedWithMe: false,
                                 models: models,
-                                currentRouteData: $viewModel.currentRoute,
                                 itemPickedCompletion: viewModel.itemPickedCompletion,
                                 onDismiss: viewModel.onDismiss,
-                                isInRoot: viewModel.isInRoot,
                                 isGuest: isGuest
                             )
                         case .grid:
                             GridView(
+                                shouldShowSharedWithMe: false,
                                 models: models,
-                                currentRouteData: $viewModel.currentRoute,
                                 itemPickedCompletion: viewModel.itemPickedCompletion,
                                 onDismiss: viewModel.onDismiss,
-                                isInRoot: viewModel.isInRoot,
                                 isGuest: isGuest
                             )
                         }
@@ -94,17 +98,14 @@ struct SharedWithMeFileChooser: View {
                 case .loading:
                     ProgressView()
                         .onAppear {
-                            viewModel.loadFolder(isGuest: isGuest)
+                            let isConnected = VCSReachabilityMonitor.isConnected
+                            loadFilesForCurrentState(isConnected : isConnected)
                         }
                 }
             }
             .frame(maxWidth: .infinity)
             .onChange(of: VCSReachabilityMonitor.isConnected) { _, isConnected in
-                if isConnected {
-                    viewModel.loadFolder(isGuest: isGuest)
-                } else {
-                    viewModel.viewState = .offline
-                }
+                loadFilesForCurrentState(isConnected: isConnected)
             }
         }
     }
