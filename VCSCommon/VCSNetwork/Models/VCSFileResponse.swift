@@ -1,6 +1,6 @@
 import Foundation
 
-public class VCSFileResponse: Codable {
+public class VCSFileResponse: Codable, Equatable {
     private(set) public var isFolder = false
     private(set) public var isFile = true
     

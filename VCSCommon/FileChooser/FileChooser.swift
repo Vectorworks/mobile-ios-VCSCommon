@@ -60,11 +60,7 @@ public struct FileChooser: View {
     }
     
     private func onItemPicked(pickedModel: FileChooserModel) {
-        guard let id = pickedModel.resourceId else {
-            fatalError("ResourceId is nil.")
-        }
-        
-        guard let filePicked = VCSFileResponse.realmStorage.getModelById(id: id) else {
+        guard let filePicked = VCSFileResponse.realmStorage.getModelById(id: pickedModel.resourceId) else {
             fatalError("Picked file not found.")
         }
         
@@ -85,12 +81,12 @@ public struct FileChooser: View {
                 onDismiss: onDismiss,
                 route: $rootRoute
             )
-        case .sharedWithMe, .sharedWithMeRoot, .sharedLink:
+        case .sharedWithMeRoot:
             SharedWithMeFileChooser(
                 fileTypeFilter: fileTypeFilter,
                 itemPickedCompletion: onItemPicked,
                 onDismiss: onDismiss,
-                route: $rootRoute
+                route: routeValue
             )
         }
     }

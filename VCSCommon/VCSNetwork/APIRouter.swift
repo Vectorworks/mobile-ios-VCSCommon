@@ -56,7 +56,7 @@ public enum APIRouter: URLRequestConvertible {
     case sendVCDOCReply(replyData: VCSVWViewerReplyRequest)
     case getTrustedAccounts
     case addVCDOCComment(commentData: VCSVWViewerAddCommentRequest)
-    case search(query: String, storageType: String?, sharedWithMe: Bool)
+    case search(query: String, storageType: String?, sharedWithMe: Bool, page: Int)
 
     // MARK: - requestURL
     private var requestURL: VCSRequestURL {
@@ -347,7 +347,7 @@ public enum APIRouter: URLRequestConvertible {
             return "/trusted-accounts/"
         case .addVCDOCComment:
             return "/comment/"
-        case .search(_, let storageType, let sharedWithMe):
+        case .search(_, let storageType, let sharedWithMe, _):
             if sharedWithMe {
                 return "__all__/search/"
             } else {
@@ -728,7 +728,7 @@ public enum APIRouter: URLRequestConvertible {
             let queryItemOsMac = URLQueryItem(name: "os", value: "mac")
             result.append(queryItemOsMac)
             return result
-        case .search(let query, _, let sharedWithMe):
+        case .search(let query, _, let sharedWithMe, let page):
             var result: [URLQueryItem] = []
             let queryItemQ = URLQueryItem(name: "q", value: query)
             if sharedWithMe {
@@ -736,6 +736,10 @@ public enum APIRouter: URLRequestConvertible {
                 result.append(queryItemSharedWithMe)
                 let queryItemFields: URLQueryItem = URLQueryItem(name: "fields", value: "(branding)")
                 result.append(queryItemFields)
+            }
+            if page > 0 {
+                let queryItemPage = URLQueryItem(name: "page", value: String(page))
+                result.append(queryItemPage)
             }
             result.append(queryItemQ)
             return result

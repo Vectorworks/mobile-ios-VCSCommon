@@ -12,6 +12,13 @@ public struct VCSSearchResponse: Codable {
     public let previous: String?
     public let results: [VCSSearchResult]
 
+    private enum CodingKeys: String, CodingKey {
+        case count
+        case next
+        case previous
+        case results
+    }
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.count = try container.decode(Int.self, forKey: CodingKeys.count)
@@ -20,11 +27,12 @@ public struct VCSSearchResponse: Codable {
         self.results = try container.decode([VCSSearchResult].self, forKey: CodingKeys.results)
     }
 
-    private enum CodingKeys: String, CodingKey {
-        case count
-        case next
-        case previous
-        case results
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.count, forKey: CodingKeys.count)
+        try container.encode(self.next, forKey: CodingKeys.next)
+        try container.encode(self.previous, forKey: CodingKeys.previous)
+        try container.encode(self.results, forKey: CodingKeys.results)
     }
 }
 
@@ -34,6 +42,13 @@ public struct VCSSearchResponseSharedWithMe: Codable {
     public let previous: String?
     public let results: [VCSSharedWithMeAsset]
 
+    private enum CodingKeys: String, CodingKey {
+        case count
+        case next
+        case previous
+        case results
+    }
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.count = try container.decode(Int.self, forKey: CodingKeys.count)
@@ -42,11 +57,12 @@ public struct VCSSearchResponseSharedWithMe: Codable {
         self.results = try container.decode([VCSSharedWithMeAsset].self, forKey: CodingKeys.results)
     }
 
-    private enum CodingKeys: String, CodingKey {
-        case count
-        case next
-        case previous
-        case results
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.count, forKey: CodingKeys.count)
+        try container.encode(self.next, forKey: CodingKeys.next)
+        try container.encode(self.previous, forKey: CodingKeys.previous)
+        try container.encode(self.results, forKey: CodingKeys.results)
     }
 }
 

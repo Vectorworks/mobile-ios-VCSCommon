@@ -7,34 +7,47 @@
 
 import Foundation
 import RealmSwift
+import SwiftUI
 
-class SharedWithMeViewModel: ObservableObject, FileLoadable {    
+class SharedWithMeViewModel: ObservableObject, FileLoadable {
+    @Binding var route: FileChooserRouteData
+    
+    @Published var paginationState: PaginationState = .hasNextPage
+    
+    @Published var viewState: FileChooserViewState = .loading
+
+    @Published var fileTypeFilter: FileTypeFilter
+    
+    var hasMorePages: [String: Bool] = [:]
+    
+    var nextPage: [String: Int] = [:]
+
     var sharedWithMe: Bool {
         true
     }
 
-    @Published var viewState: ViewState = .loading
-
-    @Published var fileTypeFilter: FileTypeFilter
-
-    var itemPickedCompletion: ((FileChooserModel) -> Void)?
+    var itemPickedCompletion: (FileChooserModel) -> Void
 
     var onDismiss: (() -> Void)
 
     init(
         fileTypeFilter: FileTypeFilter,
-        itemPickedCompletion: ((FileChooserModel) -> Void)?,
+        route: Binding<FileChooserRouteData>,
+        itemPickedCompletion: @escaping (FileChooserModel) -> Void,
         onDismiss: @escaping (() -> Void)
     ) {
         self.fileTypeFilter = fileTypeFilter
+        self._route = route
         self.itemPickedCompletion = itemPickedCompletion
         self.onDismiss = onDismiss
+        setupPagination()
     }
 
     func filterAndMapToModels(
         allSharedItems: Results<VCSSharedWithMeAsset.RealmModel>,
         sampleFiles: [SharedLink.RealmModel],
-        isGuest: Bool
+        isGuest: Bool,
+        isConnected: Bool
     ) -> [FileChooserModel] {
         var models: [FileChooserModel] = []
         
@@ -68,6 +81,10 @@ class SharedWithMeViewModel: ObservableObject, FileLoadable {
             } ?? [])
         }
 
-        return models.matchesFilter(fileTypeFilter, isOffline: viewState == .offline)
+        let result = models.matchesFilter(fileTypeFilter, isConnected: isConnected)
+        
+        updatePaginationWithLoadedFiles(models: result)
+        
+        return result
     }
 }

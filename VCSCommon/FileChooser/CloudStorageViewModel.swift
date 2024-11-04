@@ -7,34 +7,38 @@
 
 import Foundation
 import RealmSwift
+import SwiftUI
 
-enum ViewState: Equatable {
-    case loading
-    case error(String)
-    case loaded
-    case offline
-}
-
-class CloudStorageViewModel: ObservableObject, FileLoadable {
-    @Published var viewState: ViewState = .loading
+class CloudStorageViewModel: ObservableObject, FileLoadable {    
+    @Binding var route: FileChooserRouteData
+    
+    @Published var paginationState: PaginationState = .hasNextPage
+    
+    @Published var viewState: FileChooserViewState = .loading
     
     @Published var fileTypeFilter: FileTypeFilter
+    
+    var hasMorePages: [String: Bool] = [:]
+    
+    var nextPage: [String: Int] = [:]
     
     var sharedWithMe: Bool {
         false
     }
     
-    init(fileTypeFilter: FileTypeFilter) {
+    init(fileTypeFilter: FileTypeFilter, route: Binding<FileChooserRouteData>) {
         self.fileTypeFilter = fileTypeFilter
+        self._route = route
+        setupPagination()
     }
     
     func filterAndMapToModels(
         allFiles: Results<VCSFileResponse.RealmModel>,
-        storageType: String
+        isConnected: Bool
     ) -> [FileChooserModel] {
-        return allFiles
+        let storageType = route.storageType.rawValue
+        let result = allFiles
             .filter { $0.storageType == storageType }
-            .sorted(by: { $0.lastModified > $1.lastModified })
             .map {
                 FileChooserModel(
                     resourceUri: $0.resourceURI,
@@ -46,6 +50,10 @@ class CloudStorageViewModel: ObservableObject, FileLoadable {
                     isAvailableOnDevice: $0.isAvailableOnDevice
                 )
             }
-            .matchesFilter(fileTypeFilter, isOffline: viewState == .offline)
+            .matchesFilter(fileTypeFilter, isConnected: isConnected)
+        
+        updatePaginationWithLoadedFiles(models: result)
+        
+        return result
     }
 }

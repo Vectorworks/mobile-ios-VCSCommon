@@ -406,12 +406,12 @@ public class APIClient {
         return performRequest(route: APIRouter.addVCDOCComment(commentData: commentData))
     }
     
-    public static func search(query: String, storageType: String) async throws -> VCSSearchResponse {
-        return try await performAsyncRequest(route: APIRouter.search(query: query, storageType: storageType, sharedWithMe: false))
+    public static func search(query: String, storageType: String, page: Int) async throws -> VCSSearchResponse {
+        return try await performAsyncRequest(route: APIRouter.search(query: query, storageType: storageType, sharedWithMe: false, page: page))
     }
     
-    public static func searchSharedWithMe(query: String) async throws -> VCSSearchResponseSharedWithMe {
-        return try await performAsyncRequest(route: APIRouter.search(query: query, storageType: nil, sharedWithMe: true))
+    public static func searchSharedWithMe(query: String, page: Int) async throws -> VCSSearchResponseSharedWithMe {
+        return try await performAsyncRequest(route: APIRouter.search(query: query, storageType: nil, sharedWithMe: true, page: page))
     }
     
     // MARK: - DOWNLOAD

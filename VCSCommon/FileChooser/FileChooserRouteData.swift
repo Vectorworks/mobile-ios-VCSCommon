@@ -8,17 +8,15 @@
 import Foundation
 
 enum FileChooserRouteData: Hashable, Equatable {
-    case sharedWithMe(MyFilesRouteData)
     case s3(MyFilesRouteData)
     case dropbox(MyFilesRouteData)
     case oneDrive(MyFilesRouteData)
     case googleDrive(MyFilesRouteData)
     case sharedWithMeRoot
-    case sharedLink(MyFilesRouteData)
     
     var displayName: String {
         switch self {
-        case .s3(let routeData), .dropbox(let routeData), .oneDrive(let routeData), .googleDrive(let routeData), .sharedWithMe(let routeData), .sharedLink(let routeData):
+        case .s3(let routeData), .dropbox(let routeData), .oneDrive(let routeData), .googleDrive(let routeData):
             routeData.displayName
         case .sharedWithMeRoot:
             "Shared with me".vcsLocalized
@@ -27,7 +25,7 @@ enum FileChooserRouteData: Hashable, Equatable {
     
     var resourceUri: String {
         switch self {
-        case .s3(let routeData), .dropbox(let routeData), .oneDrive(let routeData), .googleDrive(let routeData), .sharedWithMe(let routeData), .sharedLink(let routeData):
+        case .s3(let routeData), .dropbox(let routeData), .oneDrive(let routeData), .googleDrive(let routeData):
             routeData.resourceUri
         case .sharedWithMeRoot:
             fatalError("Shared with me root resourceUri is nil.")
