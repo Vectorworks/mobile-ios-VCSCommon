@@ -1,5 +1,6 @@
 import SwiftUI
 import CocoaLumberjackSwift
+import Realm
 
 public struct FileChooser: View {
     @State var path: [FileChooserRouteData] = []
@@ -21,7 +22,7 @@ public struct FileChooser: View {
         if s3Storage == nil {
             self.rootRoute = .sharedWithMeRoot
         } else {
-            self.rootRoute = .s3(MyFilesRouteData(resourceUri: s3Storage!.folderURI, displayName: s3Storage!.storageType.displayName))
+            self.rootRoute = .s3(MyFilesRouteData(displayName: s3Storage!.storageType.displayName))
         }
         self.fileTypeFilter = fileTypeFilter
         self.itemPickedCompletion = itemPickedCompletion
@@ -33,16 +34,16 @@ public struct FileChooser: View {
         switch selectedStorage.storageType {
             
         case .S3:
-            self.rootRoute = .s3(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+            self.rootRoute = .s3(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
             
         case .DROPBOX:
-            self.rootRoute = .dropbox(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+            self.rootRoute = .dropbox(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
             
         case .GOOGLE_DRIVE:
-            self.rootRoute = .googleDrive(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+            self.rootRoute = .googleDrive(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
             
         case .ONE_DRIVE:
-            self.rootRoute = .oneDrive(MyFilesRouteData(resourceUri: selectedStorage.folderURI, displayName: selectedStorage.storageType.displayName))
+            self.rootRoute = .oneDrive(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
             
         default:
             fatalError("Unsupported storage type.")

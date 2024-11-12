@@ -9,7 +9,7 @@ import Foundation
 import RealmSwift
 import SwiftUI
 
-class CloudStorageViewModel: ObservableObject, FileLoadable {    
+class CloudStorageViewModel: ObservableObject, FileLoadable {
     @Binding var route: FileChooserRouteData
     
     @Published var paginationState: PaginationState = .hasNextPage
@@ -36,9 +36,10 @@ class CloudStorageViewModel: ObservableObject, FileLoadable {
         allFiles: Results<VCSFileResponse.RealmModel>,
         isConnected: Bool
     ) -> [FileChooserModel] {
-        let storageType = route.storageType.rawValue
-        let result = allFiles
-            .filter { $0.storageType == storageType }
+        var models: [FileChooserModel] = []
+        
+        let currentStorageFiles = allFiles
+            .filter { $0.storageType == self.route.storageType.rawValue }
             .map {
                 FileChooserModel(
                     resourceUri: $0.resourceURI,
@@ -50,10 +51,9 @@ class CloudStorageViewModel: ObservableObject, FileLoadable {
                     isAvailableOnDevice: $0.isAvailableOnDevice
                 )
             }
-            .matchesFilter(fileTypeFilter, isConnected: isConnected)
         
-        updatePaginationWithLoadedFiles(models: result)
+        models.append(contentsOf: currentStorageFiles)
         
-        return result
+        return models.matchesFilter(fileTypeFilter, isConnected: isConnected)
     }
 }

@@ -33,8 +33,6 @@ struct CloudStorageFileChooser: View {
         )
         FileChooserListView(
             viewModel: viewModel,
-            viewState: $viewModel.viewState,
-            fileTypeFilter: viewModel.fileTypeFilter,
             models: models,
             itemPickedCompletion: itemPickedCompletion,
             onDismiss: onDismiss)

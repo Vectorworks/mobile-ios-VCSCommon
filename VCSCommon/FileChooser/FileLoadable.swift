@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import RealmSwift
 
 protocol FileLoadable: ObservableObject, AnyObject {
     var paginationState: PaginationState { get set }
@@ -18,22 +19,44 @@ protocol FileLoadable: ObservableObject, AnyObject {
     
     func loadNextPage(silentRefresh: Bool) async
     
-    func loadSampleFiles()
-    
-    func setupPagination()
+    func loadFilesForGuestMode() async
     
     func updatePaginationWithLoadedFiles(models: [FileChooserModel])
+    
+    func changeViewState(to viewState: FileChooserViewState)
+    
+    func changePaginationState(to paginationState: PaginationState)
 }
 
 extension FileLoadable {
     
-    func loadNextPage(silentRefresh: Bool) async {
+    func changeViewState(to viewState: FileChooserViewState) {
         DispatchQueue.main.async { [self] in
-            paginationState = .loadingNextPage
-            if silentRefresh {
-                viewState = .loadingNextPage
-            } else {
-                viewState = .loading
+            self.viewState = viewState
+        }
+    }
+    
+    func changePaginationState(to paginationState: PaginationState) {
+        DispatchQueue.main.async { [self] in
+            self.paginationState = paginationState
+        }
+    }
+    
+    func loadNextPage(silentRefresh: Bool) async {
+        changePaginationState(to: .loadingNextPage)
+        if silentRefresh {
+            changeViewState(to: .loadingNextPage)
+        } else {
+            changeViewState(to: .loading)
+        }
+        
+        let isFirstPage = nextPage.filter { $0.value > 0 }.isEmpty
+        
+        if isFirstPage && sharedWithMe {
+            do {
+                try await loadAndSaveSharedLinksContents()
+            } catch {
+                handleError(error)
             }
         }
         
@@ -44,8 +67,8 @@ extension FileLoadable {
         for ext in filterExtensionsWithMorePages {
             let query = ".\(ext)"
             
-            if sharedWithMe {
-                do {
+            do {
+                if sharedWithMe {
                     let response = try await APIClient.searchSharedWithMe(query: query, page: nextPage[ext]!)
                     
                     updatePaginationState(hasMorePages: response.next != nil, fileType: ext)
@@ -55,15 +78,7 @@ extension FileLoadable {
                             $0.asset.loadLocalFiles()
                             VCSCache.addToCache(item: $0)
                         }
-                    
-                    DispatchQueue.main.async { [self] in
-                        viewState = .loaded
-                    }
-                } catch {
-                    handleError(error)
-                }
-            } else {
-                do {
+                } else {
                     let response = try await APIClient.search(query: query, storageType: route.storageType.rawValue, page: nextPage[ext]!)
                     
                     updatePaginationState(hasMorePages: response.next != nil, fileType: ext)
@@ -74,13 +89,10 @@ extension FileLoadable {
                             $0.loadLocalFiles()
                             VCSCache.addToCache(item: $0)
                         }
-                    
-                    DispatchQueue.main.async { [self] in
-                        viewState = .loaded
-                    }
-                } catch {
-                    handleError(error)
                 }
+                changeViewState(to: .loaded)
+            } catch {
+                handleError(error)
             }
         }
     }
@@ -124,58 +136,87 @@ extension FileLoadable {
             
             let anyTypeHasMorePages = self.hasMorePages.values.contains(true)
             if anyTypeHasMorePages {
-                paginationState = .hasNextPage
+                changePaginationState(to: .hasNextPage)
             }
         }
     }
     
-    func loadSampleFiles() {
-        viewState = .loading
+    func loadFilesForGuestMode() async {
+        changeViewState(to: .loading)
         
-        let sampleFilesLink = VCSServer.default.serverURLString.stringByAppendingPath(
-            path: "/links/:samples/:metadata/")
+        do {
+            try await loadAndSaveSharedLinksContents()
+            try await loadAndSaveSampleFilesContents()
+            
+            changeViewState(to: .loaded)
+        } catch (let error) {
+            self.handleError(error)
+        }
+    }
+    
+    func loadAndSaveSharedLinksContents() async throws {
+        let cachedSharedLinks = SharedLink.realmStorage.getAll(predicate: SharedWithMeViewModel.linksPredicate)
+        
+        for link in cachedSharedLinks {
+            if let folder = link.sharedAsset?.asset as? VCSFolderResponse {
+                for subfolder in folder.subfolders {
+                    try await self.fetchAndSaveFolder(resourceUri: subfolder.resourceURI, isSampleFiles: false)
+                }
+            }
+        }
+    }
+    
+    func loadAndSaveSampleFilesContents() async throws {
+        let folderURI = "/links/:samples/:metadata/"
+        
+        let sampleFilesLink = VCSServer.default.serverURLString.stringByAppendingPath(path: folderURI)
+        
+        let owner = VCSUser.savedUser
+        
         let predicate = NSPredicate(format: "RealmID = %@", sampleFilesLink)
         let cachedSampleFilesLink = SharedLink.realmStorage.getAll(predicate: predicate).first
         
-        let folderAsset = cachedSampleFilesLink?.sharedAsset?.asset
+        let shouldLoadSampleFilesSubfolders = (cachedSampleFilesLink?.sharedAsset?.asset as? VCSFolderResponse)?.subfolders.filter { !$0.subfolders.isEmpty }.count == 0
         
-        if cachedSampleFilesLink == nil {
-            let owner = VCSUser.savedUser
-            let sampleFilesSharedLink = SharedLink(
-                link: sampleFilesLink, isSampleFiles: true,
-                sharedAsset: cachedSampleFilesLink?.sharedAsset, owner: owner)
-            VCSCache.addToCache(item: sampleFilesSharedLink, forceNilValuesUpdate: true)
-            guard let folderURI = sampleFilesSharedLink.metadataURLSuffixForRequest else {
-                self.viewState = .error("Error parsing sample files link \(sampleFilesSharedLink.link)")
-                return
+        if shouldLoadSampleFilesSubfolders {
+            let sampleFolderResponse = try await APIClient.linkSharedAssetAsync(assetURI: folderURI)
+            
+            sampleFolderResponse.asset.loadLocalFiles()
+            
+            let updatedSampleFilesLink = SharedLink(link: sampleFilesLink, isSampleFiles: true, sharedAsset: sampleFolderResponse, owner: owner)
+            
+            VCSCache.addToCache(item: updatedSampleFilesLink, forceNilValuesUpdate: true)
+            
+            if let folder = sampleFolderResponse.asset as? VCSFolderResponse {
+                for subfolder in folder.subfolders {
+                    try await self.fetchAndSaveFolder(resourceUri: subfolder.resourceURI, isSampleFiles: true)
+                }
+            }
+        }
+    }
+    
+    func fetchAndSaveFolder(resourceUri: String, isSampleFiles: Bool) async throws {
+        do {
+            let response = try await APIClient.linkSharedAssetAsync(assetURI: resourceUri)
+            response.asset.loadLocalFiles()
+            VCSCache.addToCache(item: response)
+            
+            if let folder = response.asset as? VCSFolderResponse {
+                for subfolder in folder.subfolders {
+                    try await self.fetchAndSaveFolder(resourceUri: subfolder.resourceURI, isSampleFiles: isSampleFiles)
+                }
             }
             
-            APIClient.linkSharedAsset(assetURI: folderURI).execute(completion: {
-                (result: Result<VCSShareableLinkResponse, Error>) in
-                switch result {
-                case .success(let success):
-                    success.asset.loadLocalFiles()
-                    let updatedSampleFilesLink = SharedLink(
-                        link: sampleFilesLink, isSampleFiles: true, sharedAsset: success,
-                        owner: owner)
-                    VCSCache.addToCache(item: updatedSampleFilesLink, forceNilValuesUpdate: true)
-                    self.viewState = .loaded
-                case .failure(let error):
-                    self.handleError(error)
-                }
-            })
-        } else {
-            self.viewState = .loaded
+        } catch (let error) {
+            throw error
         }
     }
     
     private func handleError(_ error: Error) {
-        DispatchQueue.main.async { [self] in
-            if error.responseCode != VCSNetworkErrorCode.noInternet.rawValue {
-                viewState = .error(error.localizedDescription)
-            } else {
-                viewState = .loaded //offline
-            }
+        if error.responseCode != VCSNetworkErrorCode.noInternet.rawValue {
+            changeViewState(to: .error(error.localizedDescription))
+        } else {
+            changeViewState(to: .loaded)
         }
     }
 }

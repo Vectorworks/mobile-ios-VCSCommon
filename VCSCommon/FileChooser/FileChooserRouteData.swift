@@ -22,15 +22,6 @@ enum FileChooserRouteData: Hashable, Equatable {
             "Shared with me".vcsLocalized
         }
     }
-    
-    var resourceUri: String {
-        switch self {
-        case .s3(let routeData), .dropbox(let routeData), .oneDrive(let routeData), .googleDrive(let routeData):
-            routeData.resourceUri
-        case .sharedWithMeRoot:
-            fatalError("Shared with me root resourceUri is nil.")
-        }
-    }
 
     var storageType: StorageType {
         switch self {
@@ -50,7 +41,7 @@ enum FileChooserRouteData: Hashable, Equatable {
 
 public struct MyFilesRouteData: Hashable, Identifiable {
     public let id = UUID()
-    let resourceUri: String
+    
     let displayName: String
     
     public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -61,6 +52,3 @@ public struct MyFilesRouteData: Hashable, Identifiable {
         hasher.combine(id)
     }
 }
-
-
-

@@ -19,11 +19,7 @@ struct FileChooserListView<ViewModel: FileLoadable>: View {
     @ObservedObject private var viewModel: ViewModel
     
     @ObservedResults(VCSUser.RealmModel.self, where: { $0.isLoggedIn == true }) var users
-    
-    @Binding var viewState: FileChooserViewState
-    
-    var fileTypeFilter: FileTypeFilter
-    
+            
     var models: [FileChooserModel]
     
     var itemPickedCompletion: (FileChooserModel) -> Void
@@ -32,15 +28,11 @@ struct FileChooserListView<ViewModel: FileLoadable>: View {
     
     init(
         viewModel: ViewModel,
-        viewState: Binding<FileChooserViewState>,
-        fileTypeFilter: FileTypeFilter,
         models: [FileChooserModel],
         itemPickedCompletion: @escaping (FileChooserModel) -> Void,
         onDismiss: @escaping () -> Void
     ) {
         self.viewModel = viewModel
-        self._viewState = viewState
-        self.fileTypeFilter = fileTypeFilter
         self.models = models
         self.itemPickedCompletion = itemPickedCompletion
         self.onDismiss = onDismiss
@@ -71,29 +63,27 @@ struct FileChooserListView<ViewModel: FileLoadable>: View {
         hasMorePages && VCSReachabilityMonitor.isConnected
     }
     
-    private func loadFilesForCurrentState() {
+    private func loadFilesForCurrentState() async {
         if viewModel.paginationState == .loadingNextPage {
             return
         }
         
         if VCSReachabilityMonitor.isConnected && !isGuest {
-            Task {
-                await viewModel.loadNextPage(silentRefresh: false)
-            }
+            await viewModel.loadNextPage(silentRefresh: false)
         } else if isGuest {
-            viewModel.loadSampleFiles()
+            await viewModel.loadFilesForGuestMode()
         } else {
-            viewModel.viewState = .loaded
+            viewModel.changeViewState(to: .loaded)
         }
     }
     
-    func onListEndReached() {
+    func onListEndReached() async {
         if !hasMorePages {
-            viewModel.paginationState = .noMorePages
-        } else if VCSReachabilityMonitor.isConnected {
-            Task {
-                await viewModel.loadNextPage(silentRefresh: true)
-            }
+            viewModel.changePaginationState(to: .noMorePages)
+        } else if VCSReachabilityMonitor.isConnected && !isGuest {
+            await viewModel.loadNextPage(silentRefresh: true)
+        } else if isGuest {
+            viewModel.changePaginationState(to: .noMorePages)
         }
     }
     
@@ -102,24 +92,28 @@ struct FileChooserListView<ViewModel: FileLoadable>: View {
             VStack(alignment: .center) {
                 CurrentFilterView(
                     onDismiss: onDismiss,
-                    fileTypeFilter: fileTypeFilter
+                    fileTypeFilter: viewModel.fileTypeFilter
                 )
                 
-                switch viewState {
+                switch viewModel.viewState {
                 case .error(let error):
                     ErrorView(error: error, onDismiss: onDismiss)
                     
                 case .loading:
                     ProgressView()
                         .onAppear {
-                            loadFilesForCurrentState()
+                            Task {
+                                await loadFilesForCurrentState()
+                            }
                         }
                     
                 default:
-                    if !VCSReachabilityMonitor.isConnected && models.isEmpty {
-                        OfflineEmptyView()
-                    } else if models.isEmpty {
-                        FilteredEmptyView()
+                    if models.isEmpty && viewModel.sharedWithMe {
+                        if !VCSReachabilityMonitor.isConnected {
+                            OfflineEmptyView()
+                        } else {
+                            FilteredEmptyView()
+                        }
                     } else {
                         contentView
                     }
@@ -134,7 +128,9 @@ struct FileChooserListView<ViewModel: FileLoadable>: View {
                 }
             }
             .onChange(of: VCSReachabilityMonitor.isConnected) { _, _ in
-                loadFilesForCurrentState()
+                Task {
+                    await loadFilesForCurrentState()
+                }
             }
         }
     }
@@ -147,6 +143,9 @@ struct FileChooserListView<ViewModel: FileLoadable>: View {
             case .grid:
                 gridView
             }
+        }
+        .onAppear {
+            viewModel.updatePaginationWithLoadedFiles(models: models)
         }
     }
     
@@ -274,7 +273,9 @@ struct FileChooserListView<ViewModel: FileLoadable>: View {
             case .hasNextPage:
                 progressView
                     .onAppear {
-                        onListEndReached()
+                        Task {
+                            await onListEndReached()
+                        }
                     }
             case .loadingNextPage:
                 progressView

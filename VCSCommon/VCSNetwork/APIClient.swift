@@ -330,6 +330,10 @@ public class APIClient {
         return performRequest(route: APIRouter.linkSharedAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, versioning: versioning))
     }
     
+    public static func linkSharedAssetAsync(assetURI: String, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileTypes: Bool = VCSFlagStates.fileType, sharingInfo: Bool = VCSFlagStates.sharingInfo, related: Bool = VCSFlagStates.related, versioning: Bool = VCSFlagStates.versioning) async throws -> VCSShareableLinkResponse {
+        return try await performAsyncRequest(route: APIRouter.linkSharedAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, versioning: versioning))
+    }
+    
     public static func markLinkAsVisited(assetURI: String?) -> Future<VCSEmptyResponse, Error> {
         guard let aURI = assetURI else { return Future(error: VCSNetworkError.parsingError("assetURI is nil")) }
         return performRequest(route: APIRouter.markLinkAsVisited(assetURI: aURI))

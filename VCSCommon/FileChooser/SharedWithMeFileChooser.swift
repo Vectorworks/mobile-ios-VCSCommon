@@ -1,10 +1,3 @@
-//
-//  File.swift
-//
-//
-//  Created by Veneta Todorova on 3.09.24.
-//
-
 import SwiftUI
 import CocoaLumberjackSwift
 import UIKit
@@ -13,9 +6,8 @@ import RealmSwift
 struct SharedWithMeFileChooser: View {
     @ObservedResults(VCSUser.RealmModel.self, where: { $0.isLoggedIn == true }) var users
     
-    @ObservedResults(SharedLink.RealmModel.self, where: { $0.RealmID == VCSServer.default.serverURLString.stringByAppendingPath(
-        path: "/links/:samples/:metadata/")}) var sampleFiles
-    
+    @ObservedResults(SharedLink.RealmModel.self, filter: SharedWithMeViewModel.linksPredicate) var sharedLinksRawData
+
     @ObservedResults(VCSSharedWithMeAsset.RealmModel.self, where: { $0.sharedWithLogin == VCSUser.savedUser?.login ?? nil }) var availableFiles
     
     @ObservedObject private var VCSReachabilityMonitor = VCSReachability.default
@@ -41,15 +33,13 @@ struct SharedWithMeFileChooser: View {
     var body: some View {
         let models = viewModel.filterAndMapToModels(
             allSharedItems: availableFiles,
-            sampleFiles: Array(sampleFiles),
+            sharedLinks: sharedLinksRawData,
             isGuest: isGuest,
             isConnected: VCSReachabilityMonitor.isConnected
         )
         
         FileChooserListView(
             viewModel: viewModel,
-            viewState: $viewModel.viewState,
-            fileTypeFilter: viewModel.fileTypeFilter,
             models: models,
             itemPickedCompletion: viewModel.itemPickedCompletion,
             onDismiss: viewModel.onDismiss)
