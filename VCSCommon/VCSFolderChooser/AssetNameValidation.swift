@@ -1,7 +1,7 @@
 import Foundation
 
 public enum FilenameValidationError: Error {
-    case empty, containsInvalidCharacters, exists
+    case empty, containsInvalidCharacters, exists, lengthy, invalidUser
     
     public var localizedErrorText: String {
         switch self {
@@ -11,19 +11,10 @@ public enum FilenameValidationError: Error {
             return "Unsupported characters".vcsLocalized
         case .exists:
             return "File with the same name already exists".vcsLocalized
-        }
-    }
-}
-
-public enum FolderNameValidationError: Error {
-    case lengthy, containsInvalidChaaracters
-    
-    public var localizedErrorText: String {
-        switch self {
         case .lengthy:
             return "The maximum length is 255 characters.".vcsLocalized
-        case .containsInvalidChaaracters:
-            return "\("The following characters are invalid:".vcsLocalized)\(VCSCommonConstants.invalidCharacterListStringFormat)"
+        case .invalidUser:
+            return "Invalid User error".vcsLocalized
         }
     }
 }
@@ -83,11 +74,11 @@ public struct FolderNameValidator {
         return name.rangeOfCharacter(from: VCSCommonConstants.invalidCharacterSet) != nil
     }
     
-    public static func validate(_ name: String) -> Result<String, FolderNameValidationError> {
+    public static func validate(_ name: String) -> Result<String, FilenameValidationError> {
         if name.count > 255 {
-            return .failure(FolderNameValidationError.lengthy)
+            return .failure(FilenameValidationError.lengthy)
         } else if doesAssetNameContainsIllegalSymbols(name) {
-            return .failure(FolderNameValidationError.containsInvalidChaaracters)
+            return .failure(FilenameValidationError.containsInvalidCharacters)
         }
         return .success(name)
     }

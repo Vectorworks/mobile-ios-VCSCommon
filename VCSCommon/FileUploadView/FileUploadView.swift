@@ -1,175 +1,41 @@
 import SwiftUI
 import SceneKit
+import RealmSwift
+import Realm
 
 public struct FileUploadView: View, KeyboardReadable {
     @Environment(\.dismiss) var dismiss
-    
     @ObservedObject public var model: FileUploadViewModel
     
-    @State var isFolderChooserPresented = false
     @State var isKeyboardVisible = false
     
-    @State var projectLocationName = ""
-    
-    public init(model: FileUploadViewModel, isFolderChooserPresented: Bool = false, isKeyboardVisible: Bool = false) {
+    public init(model: FileUploadViewModel) {
         self.model = model
-        self.isFolderChooserPresented = isFolderChooserPresented
-        self.isKeyboardVisible = isKeyboardVisible
-    }
-    
-    var generatedMessage: String {
-        return "Upload Files".vcsLocalized
-    }
-    
-    var areNamesValid: Bool {
-        let result = model.areNamesValid(newProjectName: projectLocationName)
-        return result.allSatisfy { $0.isSuccess }
-    }
-    
-    var namesValidationError: FilenameValidationError? {
-        let result = model.areNamesValid(newProjectName: projectLocationName)
-        let error = result.filter({ $0.isError }).first
-        switch error {
-        case .failure(let failure):
-            return failure
-        default:
-            return nil
-        }
     }
     
     public var body: some View {
         if let parentFolderResult = model.rootFolderResult {
             switch parentFolderResult {
             case .success(let modelParentFolder):
-                VStack {
-                    VStack(spacing: 0) {
-                        HStack{
+                NavigationStack {
+                    VStack {
+                        UploadViewUploadProgressSection(model: model)
+                        UploadViewFileName(model: model)
+                        UploadViewLocationSection(model: model, modelParentFolder: modelParentFolder)
+                    }
+                    .navigationTitle("Save".vcsLocalized)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
                             Button {
                                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                                 dismiss()
                             } label: {
                                 Text("Discard".vcsLocalized)
-                            }
-                            .buttonStyle(.realityCaptureVisualEffectRoundedCornerStyle)
-                            
-                            Spacer()
-                            
-                            Button {
-                                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                                model.uploadAction(newProjectName: projectLocationName, dismiss: dismiss)
-                            } label: {
-                                Text("Upload".vcsLocalized)
-                            }
-                            .buttonStyle(.realityCaptureVisualEffectRoundedCornerStyle)
-                            .disabled(areNamesValid == false || model.isUploading == true)
-                        }
-                        .padding()
-                        
-                        if model.isUploading {
-                            ProgressView(value: model.totalProgress, total: model.totalUploadsCount)
-                            Divider()
-                        }
-                        
-                        ScrollView {
-                            VStack {
-                                Text("Project Location:")
-                                    .font(.subheadline)
-                                
-                                Picker("", selection: $model.pickerProjectsBrowseOption) {
-                                    ForEach(ProjectsBrowseOptions.allCases) { option in
-                                        Text(String(describing: option)).tag(option)
-                                    }
-                                }
-                                .pickerStyle(.segmented)
-                                
-                                Group {
-                                    if model.pickerProjectsBrowseOption == .New {
-                                        HStack {
-                                            Text("Name")
-                                                .font(.subheadline)
-                                            TextField("Enter project name", text: $projectLocationName)
-                                                .textFieldStyle(.roundedBorder)
-                                        }
-                                        .padding(.top)
-                                    } else {
-                                        Picker("", selection: model.projectFolderID) {
-                                            ForEach(modelParentFolder.subfolders, id: \.rID) { subfolder in
-                                                Text(subfolder.name).tag(Optional(subfolder.rID))
-                                            }
-                                        }
-                                        .truncationMode(.tail)
-                                    }
-                                }
-                            }
-                            .padding()
-                            
-                            Divider()
-                            
-                            VStack {
-                                Text("File:")
-                                    .font(.subheadline)
-                                HStack {
-                                    Text("Name")
-                                        .font(.subheadline)
-                                    VStack{
-                                        HStack {
-                                            if let firstFile = model.itemsLocalNameAndPath.first {
-                                                Image(uiImage: FileUploadView.placeholder(fileExtension: firstFile.itemPathExtension))
-                                            }
-                                            TextField("Please enter a filename.".vcsLocalized, text: $model.baseFileName)
-                                                .onSubmit {
-                                                    guard model.baseFileName.count > 0 else { return }
-                                                    print(model.baseFileName)
-                                                }
-                                                .textInputAutocapitalization(.never)
-                                                .disableAutocorrection(true)
-                                                .submitLabel(.done)
-                                                .truncationMode(.middle)
-                                            switch namesValidationError {
-                                            case .empty, .containsInvalidCharacters, .exists:
-                                                Image(systemName: "exclamationmark.triangle")
-                                            case nil:
-                                                EmptyView().frame(width: .zero, height: .zero)
-                                            }
-                                        }
-                                        switch namesValidationError {
-                                        case .empty, .containsInvalidCharacters, .exists:
-                                            Text(namesValidationError?.localizedErrorText ?? "")
-                                                .font(.footnote.weight(.bold))
-                                                .foregroundStyle(.gray)
-                                                .lineLimit(1)
-                                                .truncationMode(.tail)
-                                                .frame(maxWidth: .infinity, alignment: .leading)
-                                        case nil:
-                                            EmptyView().frame(width: .zero, height: .zero)
-                                        }
-                                    }
-                                }
-                            }
-                            .padding()
-                            
-                            if model.itemsLocalNameAndPath.count == 1 {
-                                if let singleFile = model.itemsLocalNameAndPath.first, VCSFileType.USDZ.pathExt == singleFile.itemPathExtension, let scene = try? SCNScene(url: singleFile.itemURL, options: [.checkConsistency: true]), isKeyboardVisible == false {
-                                    
-                                    Divider()
-                                    
-                                    VStack {
-                                        Text("Preview:")
-                                            .font(.subheadline)
-                                        SceneView(scene: { scene.background.contents = UIColor.systemBackground; return scene }(), options: [.autoenablesDefaultLighting, .allowsCameraControl])
-                                            .scaledToFit()
-    //                                            .frame(height: g.size.height*0.66)
-                                    }
-                                }
+                                    .underline()
                             }
                         }
                     }
                 }
-                .sheet(isPresented: $isFolderChooserPresented, content: {
-                    FolderChooser(routeData: FCRouteData(folder: modelParentFolder), folderResult: $model.rootFolderResult) {
-                        isFolderChooserPresented = false
-                    }
-                })
                 .onTapGesture {
                     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                 }
@@ -194,9 +60,87 @@ public struct FileUploadView: View, KeyboardReadable {
             ProgressView()
                 .controlSize(.extraLarge)
                 .task {
-                    model.loadHomeUserFolder()
+                    model.loadInitialRootFolder()
                 }
         }
+    }
+}
+
+public struct UploadViewUploadProgressSection: View {
+    @ObservedObject public var model: FileUploadViewModel
+    
+    public init(model: FileUploadViewModel) {
+        self.model = model
+    }
+    
+    public var body: some View {
+        VStack {
+            if model.isUploading {
+                ProgressView(value: model.totalProgress, total: model.totalUploadsCount)
+                Divider()
+            }
+        }
+    }
+}
+
+
+public struct UploadViewFileName: View {
+    @ObservedObject public var model: FileUploadViewModel
+    
+    public init(model: FileUploadViewModel) {
+        self.model = model
+    }
+    
+    var namesValidationError: FilenameValidationError? {
+        let result = model.areNamesValid()
+        let error = result.filter({ $0.isError }).first
+        switch error {
+        case .failure(let failure):
+            return failure
+        default:
+            return nil
+        }
+    }
+    
+    public var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text("Name".vcsLocalized.uppercased())
+                    .font(.subheadline)
+                    .foregroundStyle(.gray)
+                HStack {
+                    TextField("Please enter a filename.".vcsLocalized, text: $model.baseFileName)
+                        .onSubmit {
+                            guard model.baseFileName.count > 0 else { return }
+                            print(model.baseFileName)
+                        }
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                        .submitLabel(.done)
+                        .truncationMode(.middle)
+                    switch namesValidationError {
+                    case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                        Image(systemName: "exclamationmark.triangle")
+                    case nil:
+                        EmptyView().frame(width: .zero, height: .zero)
+                    }
+                }
+                .padding(8)
+                .background(RoundedRectangle(cornerRadius: 10).fill(.background.secondary))
+                switch namesValidationError {
+                case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                    Text(namesValidationError?.localizedErrorText ?? "")
+                        .font(.footnote.weight(.bold))
+                        .foregroundStyle(.gray)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                case nil:
+                    EmptyView().frame(width: .zero, height: .zero)
+                }
+            }
+        }
+        .padding()
     }
     
     private static func placeholder(fileExtension: String) -> UIImage {
@@ -226,16 +170,271 @@ public struct FileUploadView: View, KeyboardReadable {
     }
 }
 
-//#Preview {
-////    let testFolder = VCSFolderResponse.testVCSFolder!
-//    let model = FileUploadViewModel(itemsLocalNameAndPath: [
-//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/artefino-gredi.pdf")),
-//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/clean-architecture-swiftui-master.txt")),
-//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/GB Stairs_20230331093005_20230331093133_95270001V6E48PU0_0.MP4")),
-//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/Kushti_G_Bania__13_2_3_Ivailo_Fasadi_Izpulnenie.pdf")),
-//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/zUI.vwx")),
-//        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/изискваня за издаване на констативен протокол за въвеждане в експлоатация.docx"))
-//    ])
-//    FileUploadView(model: model)
-//        .environment(\.realmConfiguration, VCSRealmDB.realm.configuration)
-//}
+public struct UploadViewLocationSection: View {
+    @Environment(\.dismiss) var dismiss
+    @ObservedObject public var model: FileUploadViewModel
+    let modelParentFolder: VCSFolderResponse
+    
+    public init(model: FileUploadViewModel, modelParentFolder: VCSFolderResponse) {
+        self.model = model
+        self.modelParentFolder = modelParentFolder
+    }
+    
+    public var body: some View {
+        VStack(alignment: .leading) {
+            Text("Location".vcsLocalized.uppercased())
+                .font(.subheadline)
+                .foregroundStyle(.gray)
+            switch model.pickerProjectsBrowseOption {
+            case .Simple:
+                UploadViewSimpleLocation(model: model, modelParentFolder: modelParentFolder)
+            case .Custom:
+                UploadViewCustomLocation(model: model)
+            }
+        }
+        .padding()
+        
+        Spacer()
+        
+        Button {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            model.uploadAction(dismiss: dismiss)
+        } label: {
+            HStack {
+                Spacer()
+                Text("Save".vcsLocalized)
+                Spacer()
+            }
+        }
+        .buttonStyle(.realityCaptureVisualEffectRoundedCornerStyle)
+        .disabled(model.isSaveButtonDisabled)
+        .padding()
+    }
+}
+
+public struct UploadViewSimpleLocation: View {
+    @ObservedObject public var model: FileUploadViewModel
+    let modelParentFolder: VCSFolderResponse
+    
+    @State var showSubfoldersList: Bool = false
+    
+    public init(model: FileUploadViewModel, modelParentFolder: VCSFolderResponse) {
+        self.model = model
+        self.modelParentFolder = modelParentFolder
+    }
+    
+    var namesValidationError: FilenameValidationError? {
+        let result = model.isNewLocationNameValid()
+        switch result {
+        case .failure(let failure):
+            return failure
+        default:
+            return nil
+        }
+    }
+    
+    public var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Image(modelParentFolder.storageType.storageImageName)
+                Text(modelParentFolder.displayedPrefix)
+            }
+            if modelParentFolder.subfolders.count > 0 {
+                if let lastProjectFolder = VCSFolderResponse.realmStorage.getById(id: model.lastSelectedFolderID) {
+                    Text(lastProjectFolder.name)
+                } else {
+                    EmptyView().frame(width: 0, height: 0)
+                        .task {
+                            showSubfoldersList = true
+                        }
+                }
+                List(selection: Binding($model.lastSelectedFolderID)) {
+                    Section(isExpanded: $showSubfoldersList) {
+                        ForEach(modelParentFolder.subfolders, id: \.rID) { subfolder in
+                            HStack {
+                                Image(systemName: "folder")
+                                    .foregroundStyle(.secondary)
+                                Text(subfolder.name)
+                                Spacer()
+                            }
+                            .tag(Optional(subfolder.rID))
+                        }
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 10))
+                    } header: {
+                        HStack {
+                            Image(systemName: "folder")
+                            Text("Select another location")
+                        }
+                        .listRowInsets(EdgeInsets(top: 10, leading: 10, bottom: 5, trailing: 0))
+                    }
+                }
+                .contentMargins(.all, EdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10))
+                .listStyle(.sidebar)
+                .cornerRadius(10)
+            } else {
+                HStack {
+                    TextField("Create a new folder for your scan".vcsLocalized, text: $model.newLocationName)
+                        .textFieldStyle(.roundedBorder)
+                        .onSubmit {
+                            guard model.newLocationName.count > 0 else { return }
+                            print(model.newLocationName)
+                        }
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                        .submitLabel(.done)
+                        .truncationMode(.middle)
+                    switch namesValidationError {
+                    case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                        Image(systemName: "exclamationmark.triangle")
+                    case nil:
+                        EmptyView().frame(width: .zero, height: .zero)
+                    }
+                }
+                .padding(8)
+                .background(RoundedRectangle(cornerRadius: 10).fill(.background.secondary))
+                switch namesValidationError {
+                case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                    Text(namesValidationError?.localizedErrorText ?? "")
+                        .font(.footnote.weight(.bold))
+                        .foregroundStyle(.gray)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                case nil:
+                    EmptyView().frame(width: .zero, height: .zero)
+                }
+                
+            }
+            
+            HStack {
+                Spacer()
+                Button {
+                    model.pickerProjectsBrowseOption = .Custom
+                } label: {
+                    Text("Custom".vcsLocalized.appending(" ..."))
+                        .underline()
+                }
+            }
+        }
+    }
+}
+
+public struct UploadViewCustomLocation: View {
+    @ObservedObject public var model: FileUploadViewModel
+    @State var folderResult: Result<VCSFolderResponse, Error>?
+    
+    public init(model: FileUploadViewModel, folderResult: Result<VCSFolderResponse, Error>? = nil) {
+        self.model = model
+        self.folderResult = folderResult
+    }
+    
+    public var body: some View {
+        VStack(alignment: .leading) {
+            List(selection: Binding($model.lastSelectedFolderID)) {
+                UploadViewCustomLocationSection(model: model, folderName: StorageType.S3.displayName, folderRID: StorageType.S3.itemIdentifier, folderPrefix: "", folderResourceURI: nil)
+            }
+            .contentMargins(.all, EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+            .cornerRadius(10)
+            .task {
+                model.loadHomeUserFolder()
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    model.pickerProjectsBrowseOption = .Simple
+                } label: {
+                    HStack {
+                        Image(systemName: "chevron.backward")
+                        Text("Back".vcsLocalized)
+                    }
+                }
+            }
+        }
+    }
+}
+
+public struct UploadViewCustomLocationSection: View {
+    @ObservedObject public var model: FileUploadViewModel
+    @State var folderResult: Result<VCSFolderResponse, Error>?
+    @State var isSectionExpanded: Bool
+    let folderName: String
+    let folderRID: String
+    let folderResourceURI: String?
+    
+    public init(model: FileUploadViewModel, folderName: String, folderRID: String, folderPrefix: String, folderResourceURI: String?) {
+        self.model = model
+        self.folderName = folderName
+        self.folderRID = folderRID
+        self.folderResourceURI = folderResourceURI
+        
+        let selectedFolderPrefix = model.selectedFolder?.prefix ?? ""
+        if folderResourceURI == nil {
+            self.isSectionExpanded = true
+        } else if selectedFolderPrefix.contains(folderPrefix) && selectedFolderPrefix != folderPrefix {
+            self.isSectionExpanded = true
+        } else {
+            self.isSectionExpanded = false
+        }
+    }
+    
+    public var body: some View {
+        DisclosureGroup(isExpanded: $isSectionExpanded) {
+            switch folderResult {
+            case .success(let modelParentFolder):
+                if modelParentFolder.subfolders.count > 0 {
+                    ForEach(modelParentFolder.subfolders, id: \.rID) { subfolder in
+                        UploadViewCustomLocationSection(model: model, folderName: subfolder.name, folderRID: subfolder.rID, folderPrefix: subfolder.prefix, folderResourceURI: subfolder.resourceURI)
+                    }
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 10))
+                }
+            case .failure(let error):
+                HStack {
+                    Text("Error loading folder data".vcsLocalized)
+                    Image(systemName: "exclamationmark.triangle")
+                }
+            case nil:
+                ProgressView()
+                    .task {
+                        if let folderResourceURI {
+                            model.loadFolder(folderURI: folderResourceURI, folderResult: $folderResult)
+                        } else if let userHomeFolderURI = VCSUser.savedUser?.availableStorages.first?.folderURI {
+                            model.loadFolder(folderURI: userHomeFolderURI, folderResult: $folderResult)
+                        } else {
+                            folderResult = .failure(FilenameValidationError.invalidUser)
+                        }
+                    }
+            }
+        } label: {
+            HStack {
+                Image(systemName: "folder")
+                    .foregroundStyle(.secondary)
+                Text(folderName)
+                Spacer()
+            }
+            .tag(Optional(folderRID))
+        }
+    }
+}
+
+#Preview {
+    let testFolder = VCSFolderResponse.testVCSFolder!
+    let model = FileUploadViewModel(itemsLocalNameAndPath: [
+        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/artefino-gredi.pdf")),
+        //        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/clean-architecture-swiftui-master.txt")),
+        //        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/GB Stairs_20230331093005_20230331093133_95270001V6E48PU0_0.MP4")),
+        //        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/Kushti_G_Bania__13_2_3_Ivailo_Fasadi_Izpulnenie.pdf")),
+        //        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/zUI.vwx")),
+        //        LocalFileNameAndPath(itemURL: URL(filePath: "/Users/a-teamiosdevsiosdevs/Downloads/изискваня за издаване на констативен протокол за въвеждане в експлоатация.docx"))
+    ])
+    let _ = model.rootFolderResult = .success(testFolder)
+    Text("ASD")
+        .sheet(isPresented: .constant(true)) {
+            FileUploadView(model: model)
+//                .presentationDetents([.fraction(0.75), .large])
+//                .presentationDetents([.medium, .fraction(0.75), .large])
+            
+        }
+}

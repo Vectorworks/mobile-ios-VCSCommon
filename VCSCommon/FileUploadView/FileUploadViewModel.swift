@@ -10,33 +10,54 @@ public enum ProjectsBrowseOptions: String, CaseIterable, Identifiable, CustomStr
         return self.rawValue.vcsLocalized
     }
     
-    case New
-    case Existing
+    case Simple
+    case Custom
 }
 
 public class FileUploadViewModel: ObservableObject {
-    @Published public var rootFolderResult: Result<VCSFolderResponse, Error>?
-    public var projectFolderID: Binding<String?> {
-        Binding(
-            get: { return self.projectFolder?.rID },
-            set: { value in
-                switch self.rootFolderResult {
-                case .success(let success):
-                    self.projectFolder = success.subfolders.first(where: {
-                        $0.rID == value
-                    })
-                case .failure(_):
-                    self.projectFolder = nil
-                case nil:
-                    self.projectFolder = nil
-                }
-            }
-          )
-    }
-    @Published public var projectFolder: VCSFolderResponse?
-    {
+    static let lastSelectedFolderIDKey = "UploadViewSimpleLocationSect-lastProjectFolderID"
+    @AppStorage(FileUploadViewModel.lastSelectedFolderIDKey) var lastSelectedFolderID: String = "nil" {
         didSet {
-            if oldValue?.rID != projectFolder?.rID {
+            DDLogInfo("FileUploadViewModel - lastSelectedFolderID - didSet: \(lastSelectedFolderID)")
+            setSelectedFolderByID(lastSelectedFolderID)
+        }
+    }
+    @Published public var rootFolderResult: Result<VCSFolderResponse, Error>?
+    
+    func setSelectedFolderByID(_ id: String) {
+        switch self.rootFolderResult {
+        case .success(let success):
+            self.selectedFolder = VCSFolderResponse.realmStorage.getById(id: id)
+        case .failure(_):
+            self.selectedFolder = nil
+        case nil:
+            self.selectedFolder = nil
+        }
+    }
+    
+    public var selectedFolderPrefix: String {
+        switch pickerProjectsBrowseOption {
+        case .Simple:
+            return selectedFolder?.prefix ?? newLocationNameFullPrefix
+        case .Custom:
+            return selectedFolder?.prefix ?? ""
+        }
+    }
+    
+    public var isSaveButtonDisabled: Bool {
+        switch pickerProjectsBrowseOption {
+        case .Simple:
+            return areNamesValidBool == false || isUploading == true || isNewLocationNameValidBool == false
+        case .Custom:
+            return areNamesValidBool == false || isUploading == true
+        }
+    }
+    
+    @Published public var newLocationName = ""
+    @Published public var selectedFolder: VCSFolderResponse? {
+        didSet {
+            DDLogInfo("FileUploadViewModel - selectedFolder - didSet: \(selectedFolder?.rID ?? "nil")")
+            if oldValue?.rID != selectedFolder?.rID {
                 loadProjectFolder()
             }
         }
@@ -49,7 +70,7 @@ public class FileUploadViewModel: ObservableObject {
     @Published public var totalProgress: Double = 0.0
     @Published public var baseFileName: String
     
-    @Published public var pickerProjectsBrowseOption = ProjectsBrowseOptions.New
+    @Published public var pickerProjectsBrowseOption = ProjectsBrowseOptions.Simple
     
     func calculateTotalProgress() {
         var resultProgress = 0.0
@@ -75,38 +96,90 @@ public class FileUploadViewModel: ObservableObject {
         NotificationCenter.default.removeObserver(self)
     }
     
-    public func loadHomeUserFolder() {
+    public func loadInitialRootFolder() {
+        if let lastProjectFolder = VCSFolderResponse.realmStorage.getById(id: lastSelectedFolderID) {
+            firstLoadFolder(folderAssetURI: lastProjectFolder.parent ?? lastProjectFolder.resourceURI)
+        } else if true {//TODO: isRealityCapture {
+            loadRealityCaptureFolder()
+        } else {
+            loadHomeUserFolder()
+        }
+    }
+    
+    func loadFolder(folderURI: String, folderResult: Binding<Result<VCSFolderResponse, Error>?>) {
+        APIClient.folderAsset(assetURI: folderURI).execute(completion: { (result: Result<VCSFolderResponse, Error>) in
+            switch result {
+            case .success(let success):
+                VCSCache.addToCache(item: success)
+                self.setSelectedFolderByID(self.lastSelectedFolderID)
+            case .failure(let failure):
+                DDLogError("FileUploadViewModel - loadFolder(folderURI:) - error: \(failure)")
+            }
+            
+            folderResult.wrappedValue = result
+        })
+    }
+    
+    func firstLoadFolder(folderAssetURI: String) {
+        APIClient.folderAsset(assetURI: folderAssetURI).execute(completion: { (result: Result<VCSFolderResponse, Error>) in
+            DDLogInfo("DONE loading - \(folderAssetURI)")
+            var skipFolderResult = false
+            switch result {
+            case .success(let success):
+                VCSCache.addToCache(item: success)
+                if let lastProjectFolder = VCSFolderResponse.realmStorage.getById(id: self.lastSelectedFolderID), let subfolder = success.subfolders.first(where: { $0.rID == lastProjectFolder.rID }) {
+                    self.setSelectedFolderByID(subfolder.rID)
+                }
+            case .failure(let failure):
+                if failure.responseCode == VCSNetworkErrorCode.notFound.rawValue {
+                    skipFolderResult = true
+                    let storageValue = StorageType.S3
+                    let userValue = VCSUser.savedUser?.login ?? ""
+                    APIClient.createFolder(storage: storageValue, name: "Reality Capture", parentFolderPrefix: nil, owner: userValue).execute { (resultCreation: Result<VCSFolderResponse, Error>) in
+                        switch resultCreation {
+                        case .success(let success):
+                            VCSCache.addToCache(item: success)
+                            self.setSelectedFolderByID(success.rID)
+                        case .failure(let failure):
+                            DDLogError("FileUploadViewModel - firstLoadFolder(folderAssetURI:) - createFolder - error: \(failure)")
+                        }
+                        self.rootFolderResult = resultCreation
+                    }
+                }
+                DDLogError("FileUploadViewModel - firstLoadFolder(folderAssetURI:) - error: \(failure)")
+            }
+            if skipFolderResult == false {
+                self.rootFolderResult = result
+            }
+        })
+    }
+    
+    func loadRealityCaptureFolder() {
         guard let userHomeFolderURI = VCSUser.savedUser?.availableStorages.first?.folderURI else {
             self.rootFolderResult = nil
             return
         }
         
-        APIClient.folderAsset(assetURI: userHomeFolderURI).execute(completion: { (result: Result<VCSFolderResponse, Error>) in
-            DDLogInfo("DONE loading - \(userHomeFolderURI)")
-            switch result {
-            case .success(let success):
-                VCSCache.addToCache(item: success)
-                if let subfolder = success.subfolders.first {
-                    self.projectFolder = subfolder
-                } else {
-                    self.projectFolder = success
-                }
-                self.pickerProjectsBrowseOption = .New
-            case .failure(let failure):
-                DDLogError("FileUploadViewModel - loadHomeUserFolder - error: \(failure)")
-            }
-            self.rootFolderResult = result
-        })
+        firstLoadFolder(folderAssetURI: userHomeFolderURI.appendingPathComponent("p:Reality Capture").VCSNormalizedURLString())
+    }
+    
+    func loadHomeUserFolder() {
+        guard let userHomeFolderURI = VCSUser.savedUser?.availableStorages.first?.folderURI else {
+            self.rootFolderResult = nil
+            return
+        }
+        
+        firstLoadFolder(folderAssetURI: userHomeFolderURI)
     }
     
     public func loadProjectFolder() {
-        guard let projectFolderValue = projectFolder else { return }
-        APIClient.folderAsset(assetURI: projectFolderValue.resourceURI).execute(completion: { (result: Result<VCSFolderResponse, Error>) in
-            DDLogInfo("DONE loading - \(projectFolderValue.resourceURI)")
+        guard let selectedFolderValue = selectedFolder else { return }
+        APIClient.folderAsset(assetURI: selectedFolderValue.resourceURI).execute(completion: { (result: Result<VCSFolderResponse, Error>) in
+            DDLogInfo("DONE loading - \(selectedFolderValue.resourceURI)")
             switch result {
             case .success(let success):
                 VCSCache.addToCache(item: success)
-                self.projectFolder = success
+                self.setSelectedFolderByID(success.rID)
             case .failure(let failure):
                 DDLogError("FileUploadViewModel - loadProjectFolder - error: \(failure)")
             }
@@ -122,29 +195,71 @@ public class FileUploadViewModel: ObservableObject {
         return name
     }
     
-    public func areNamesValid(newProjectName: String) -> Set<Result<String, FilenameValidationError>> {
+    var newLocationNameFullPrefix: String {
+        switch rootFolderResult {
+        case .success(let success):
+            guard success.subfolders.count == 0 else { return "" }
+            guard let ownerLogin = VCSUser.savedUser?.login else { return "" }
+            guard newLocationName.isEmpty == false else { return "" }
+            
+            let fullPrefix = success.prefix.appendingPathComponent(newLocationName)
+            return fullPrefix
+        case .failure(let failure):
+            return ""
+        case nil:
+            return ""
+        }
+    }
+    
+    var isNewLocationNameValidBool: Bool {
+        return isNewLocationNameValid().isSuccess
+    }
+    
+    public func isNewLocationNameValid() -> Result<String, FilenameValidationError> {
+        switch rootFolderResult {
+        case .success(let success):
+            guard success.subfolders.count == 0 else { return .success(newLocationName) }
+            guard let ownerLogin = VCSUser.savedUser?.login else { return .failure(FilenameValidationError.invalidUser) }
+            guard newLocationName.isEmpty == false else { return .failure(FilenameValidationError.empty) }
+            
+            let fullPrefix = success.prefix.appendingPathComponent(newLocationName)
+            let result = FilenameValidator.validateFilename(ownerLogin: ownerLogin, storage: StorageType.S3.storageTypeString, prefix: fullPrefix)
+            return result
+        case .failure(let failure):
+            return .failure(.invalidUser)
+        case nil:
+            return .failure(.invalidUser)
+        }
+    }
+    
+    var areNamesValidBool: Bool {
+        let result = areNamesValid()
+        return result.allSatisfy { $0.isSuccess }
+    }
+    
+    public func areNamesValid() -> Set<Result<String, FilenameValidationError>> {
         guard baseFileName.isEmpty == false else { return [.failure(FilenameValidationError.empty)] }
         var counter = 0
         var allSatisfySet: Set<Result<String, FilenameValidationError>> = []
         itemsLocalNameAndPath.forEach({ item in
             var name = generateNameForItem(baseName: baseFileName, counter: &counter)
             name = name.appendingPathExtension(item.itemPathExtension)
-            allSatisfySet.insert(isNamesValid(namesToCheck: name, newProjectName: newProjectName))
+            allSatisfySet.insert(isNamesValid(namesToCheck: name))
         })
         
         return allSatisfySet
     }
     
-    public func isNamesValid(namesToCheck:String, newProjectName: String) -> Result<String, FilenameValidationError> {
+    public func isNamesValid(namesToCheck:String) -> Result<String, FilenameValidationError> {
         guard baseFileName.isEmpty == false else { return .failure(.empty) }
         
         guard var ownerLogin = VCSUser.savedUser?.login else { return .failure(.empty) }
         var storageTypeString = StorageType.S3.storageTypeString
-        var parentFolderPrefix = newProjectName.isEmpty ? "" : "\(newProjectName)/"
-        if pickerProjectsBrowseOption == .Existing, let parentFolder = projectFolder {
-            ownerLogin = parentFolder.ownerLogin
-            storageTypeString = parentFolder.storageTypeString
-            parentFolderPrefix = parentFolder.prefix
+        var parentFolderPrefix = selectedFolderPrefix.isEmpty ? "" : "\(selectedFolderPrefix)/"
+        if pickerProjectsBrowseOption == .Simple, let selectedFolder {
+            ownerLogin = selectedFolder.ownerLogin
+            storageTypeString = selectedFolder.storageTypeString
+            parentFolderPrefix = selectedFolder.prefix
         }
         
         let fullPrefix = parentFolderPrefix.appendingPathComponent(namesToCheck)
@@ -161,7 +276,7 @@ public class FileUploadViewModel: ObservableObject {
         }
     }
     
-    public func uploadAction(newProjectName: String, dismiss: DismissAction) {
+    public func uploadAction(dismiss: DismissAction) {
         var jobFiles: [UploadJobLocalFile] = []
         
         self.renameItemsBeforeSave()
@@ -169,12 +284,12 @@ public class FileUploadViewModel: ObservableObject {
         guard var ownerLogin = VCSUser.savedUser?.login else { return }
         var storageTypeString = StorageType.S3.storageTypeString
         var storageType = StorageType.S3
-        var parentFolderPrefix = "\(newProjectName)/"
-        if pickerProjectsBrowseOption == .Existing, let parentFolder = projectFolder {
-            ownerLogin = parentFolder.ownerLogin
-            storageTypeString = parentFolder.storageTypeString
-            storageType = parentFolder.storageType
-            parentFolderPrefix = parentFolder.prefix
+        var parentFolderPrefix = selectedFolderPrefix
+        if pickerProjectsBrowseOption == .Custom, let selectedFolder {
+            ownerLogin = selectedFolder.ownerLogin
+            storageTypeString = selectedFolder.storageTypeString
+            storageType = selectedFolder.storageType
+            parentFolderPrefix = selectedFolder.prefix
         }
         
         itemsLocalNameAndPath.forEach { item in
@@ -205,13 +320,16 @@ public class FileUploadViewModel: ObservableObject {
         
         
         self.jobFilesCallback?(jobFiles)
-        let job = UploadJob(localFiles: jobFiles, owner: ownerLogin, parentFolder: projectFolder)
-        AssetUploader.shared.upload(uploadJob: job, multiFileCompletion: { (result: Result<[VCSFileResponse], Error>) in
+        let job = UploadJob(localFiles: jobFiles, owner: ownerLogin, parentFolder: nil)
+        AssetUploader.shared.upload(uploadJob: job, multiFileCompletion: { [unowned self] (result: Result<[VCSFileResponse], Error>) in
             DispatchQueue.main.async {
                 NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
                 switch result {
-                case .success(let successFile):
-                    DDLogInfo("FileUploadViewModel - uploadAction - success upload: \(successFile)")
+                case .success(let successFiles):
+                    DDLogInfo("FileUploadViewModel - uploadAction - success upload: \(successFiles)")
+                    if let successFile = successFiles.first {
+                        self.selectedFolder?.appendFile(successFile)
+                    }
                 case .failure(let failure):
                     DDLogError("FileUploadViewModel - uploadAction - error: \(failure)")
                 }

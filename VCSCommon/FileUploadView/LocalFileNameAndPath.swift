@@ -4,7 +4,7 @@ import CocoaLumberjackSwift
 public typealias FilesSavedResult = Result<[LocalFileNameAndPath], Error>
 public typealias FilesSavedActionResult = (FilesSavedResult) -> Void
 
-public class LocalFileNameAndPath: ObservableObject {
+public class LocalFileNameAndPath: ObservableObject, CustomStringConvertible {
     public enum Types: String {
         case none
         case thumbnail
@@ -68,5 +68,9 @@ public class LocalFileNameAndPath: ObservableObject {
         }
         
         return nil
+    }
+    
+    public var description: String {
+        return "\(itemName) - \(itemPathExtension) - \(itemURL) - \(related)"
     }
 }
