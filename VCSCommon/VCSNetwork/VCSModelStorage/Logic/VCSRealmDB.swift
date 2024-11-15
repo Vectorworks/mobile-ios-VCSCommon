@@ -62,16 +62,6 @@ public class VCSRealmDB {
         
         let _ = VCSRealmDB.realm
     }
-    
-    public static func resetDB() {
-        try! VCSRealmDB.realm.write {
-            VCSRealmDB.realm.deleteAll()
-        }
-    }
-    
-    public var configurationDBFileURL: URL? {
-        return VCSRealmDB.realm.configuration.fileURL
-    }
 }
 
 public class VCSGenericRealmModelStorage<VCSRealmModel: VCSRealmObject>: VCSModelStorage {
