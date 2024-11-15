@@ -35,6 +35,5 @@ class TestHelper {
         VCSServer.setDefaultServer(server: .test)
         ClientVersion.setDefault(version: "9.2")
         VCSRealmDB.runMigrations(appGroup: "tests")
-        
     }
 }
