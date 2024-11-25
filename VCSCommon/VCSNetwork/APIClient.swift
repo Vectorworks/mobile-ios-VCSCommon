@@ -257,6 +257,10 @@ public class APIClient {
         return try await performAsyncRequest(route: APIRouter.listVCDOCComments(fileOwner: fileOwner, storageType: storageType, storagePath: storagePath))
     }
     
+    public static func deleteVCDOCComment(commentID: String) -> Future<VCSEmptyResponse, Error> {
+        return performRequest(route: APIRouter.deleteVCDOCComment(commentID: commentID))
+    }
+    
     public static func fileData(owner: String, storage: String, filePrefix: String, updateFromStorage: Bool = false, googleDriveID: String? = nil, googleDriveVerID: String? = nil) -> Future<VCSFileResponse, Error> {
         return performRequest(route: APIRouter.fileData(owner: owner, storage: storage, filePrefix: filePrefix, updateFromStorage: updateFromStorage, googleDriveID: googleDriveID, googleDriveVerID: googleDriveVerID))
     }

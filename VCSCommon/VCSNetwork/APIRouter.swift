@@ -56,6 +56,7 @@ public enum APIRouter: URLRequestConvertible {
     case sendVCDOCReply(replyData: VCSVWViewerReplyRequest)
     case getTrustedAccounts
     case addVCDOCComment(commentData: VCSVWViewerAddCommentRequest)
+    case deleteVCDOCComment(commentID: String)
     case search(query: String, storageType: String?, sharedWithMe: Bool, page: Int)
 
     // MARK: - requestURL
@@ -158,6 +159,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         case .addVCDOCComment:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .deleteVCDOCComment:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .search:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         }
@@ -206,6 +209,8 @@ public enum APIRouter: URLRequestConvertible {
             return .post
         case .addVCDOCComment:
             return .post
+        case .deleteVCDOCComment:
+            return .delete
         default:
             return .get
         }
@@ -347,6 +352,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/trusted-accounts/"
         case .addVCDOCComment:
             return "/comment/"
+        case .deleteVCDOCComment(let commentID):
+            return "/comment/\(commentID)/"
         case .search(_, let storageType, let sharedWithMe, _):
             if sharedWithMe {
                 return "__all__/search/"
