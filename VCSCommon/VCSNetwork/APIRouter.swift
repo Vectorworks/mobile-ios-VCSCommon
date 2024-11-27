@@ -57,6 +57,7 @@ public enum APIRouter: URLRequestConvertible {
     case getTrustedAccounts
     case addVCDOCComment(commentData: VCSVWViewerAddCommentRequest)
     case deleteVCDOCComment(commentID: String)
+    case editVCDOCComment(editCommentData: VCSVWViewerEditCommentRequest)
     case search(query: String, storageType: String?, sharedWithMe: Bool, page: Int)
 
     // MARK: - requestURL
@@ -159,6 +160,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         case .addVCDOCComment:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .editVCDOCComment:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .deleteVCDOCComment:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .search:
@@ -209,6 +212,8 @@ public enum APIRouter: URLRequestConvertible {
             return .post
         case .addVCDOCComment:
             return .post
+        case .editVCDOCComment:
+            return .patch
         case .deleteVCDOCComment:
             return .delete
         default:
@@ -352,6 +357,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/trusted-accounts/"
         case .addVCDOCComment:
             return "/comment/"
+        case .editVCDOCComment(let editCommentData):
+            return "/comment/\(editCommentData.id)/"
         case .deleteVCDOCComment(let commentID):
             return "/comment/\(commentID)/"
         case .search(_, let storageType, let sharedWithMe, _):
@@ -403,6 +410,8 @@ public enum APIRouter: URLRequestConvertible {
             return replyData.asDictionary()
         case .addVCDOCComment(let commentData):
             return commentData.asDictionary()
+        case .editVCDOCComment(let editCommentData):
+            return editCommentData.asDictionary()
         default:
             return nil
         }
