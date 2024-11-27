@@ -58,6 +58,7 @@ public enum APIRouter: URLRequestConvertible {
     case addVCDOCComment(commentData: VCSVWViewerAddCommentRequest)
     case deleteVCDOCComment(commentID: String)
     case editVCDOCComment(editCommentData: VCSVWViewerEditCommentRequest)
+    case resolveVCDOCComment(resolveCommentData: VCSVWViewerResolveCommentRequest)
     case search(query: String, storageType: String?, sharedWithMe: Bool, page: Int)
 
     // MARK: - requestURL
@@ -162,6 +163,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .editVCDOCComment:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .resolveVCDOCComment:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .deleteVCDOCComment:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .search:
@@ -213,6 +216,8 @@ public enum APIRouter: URLRequestConvertible {
         case .addVCDOCComment:
             return .post
         case .editVCDOCComment:
+            return .patch
+        case .resolveVCDOCComment:
             return .patch
         case .deleteVCDOCComment:
             return .delete
@@ -359,6 +364,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/comment/"
         case .editVCDOCComment(let editCommentData):
             return "/comment/\(editCommentData.id)/"
+        case .resolveVCDOCComment(let resolveCommentdata):
+            return "/comment/\(resolveCommentdata.id)/"
         case .deleteVCDOCComment(let commentID):
             return "/comment/\(commentID)/"
         case .search(_, let storageType, let sharedWithMe, _):
@@ -412,6 +419,8 @@ public enum APIRouter: URLRequestConvertible {
             return commentData.asDictionary()
         case .editVCDOCComment(let editCommentData):
             return editCommentData.asDictionary()
+        case .resolveVCDOCComment(let resolveCommentData):
+            return resolveCommentData.asDictionary()
         default:
             return nil
         }

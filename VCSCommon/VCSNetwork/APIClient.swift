@@ -418,6 +418,10 @@ public class APIClient {
         return performRequest(route: APIRouter.editVCDOCComment(editCommentData: editCommentData))
     }
     
+    public static func resolveVCDOCComment(resolveCommentData: VCSVWViewerResolveCommentRequest) -> Future<VCSVWViewerComment, Error> {
+        return performRequest(route: APIRouter.resolveVCDOCComment(resolveCommentData: resolveCommentData))
+    }
+    
     public static func search(query: String, storageType: String, page: Int) async throws -> VCSSearchResponse {
         return try await performAsyncRequest(route: APIRouter.search(query: query, storageType: storageType, sharedWithMe: false, page: page))
     }
