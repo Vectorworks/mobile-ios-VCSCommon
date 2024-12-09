@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import Toast
+import CocoaLumberjackSwift
 
 public protocol VCSFolderChooserDelegate: AnyObject {
     func didChoose(folderResult: FolderChooserResult)
@@ -274,13 +275,16 @@ public class VCSFolderChooser: UIViewController, UITableViewDelegate {
     }
     
     @IBAction func storageButtonClicked(_ sender: UIButton) {
-        APIClient.listStorage().execute(onSuccess: { (result: StorageList) in
-            VCSUser.savedUser?.setStorageList(storages: result)
-            self.showStorageAlert(homeButton: sender)
-        }, onFailure: { (err: Error) in
-            print(err)
-            self.showStorageAlert(homeButton: sender)
-        })
+        Task {
+            let result = await VCSStorageResponse.loadUserStorages()
+            switch result {
+            case .success:
+                self.showStorageAlert(homeButton: sender)
+            case .failure(let error):
+                DDLogError("VCSFolderChooser - storageButtonClicked - error: \(error)")
+                self.showStorageAlert(homeButton: sender)
+            }
+        }
     }
     
     private func showStorageAlert(homeButton: UIButton) {

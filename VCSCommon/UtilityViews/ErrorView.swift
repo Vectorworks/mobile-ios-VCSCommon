@@ -1,18 +1,11 @@
-//
-//  File.swift
-//  
-//
-//  Created by Veneta Todorova on 23.07.24.
-//
-
 import Foundation
 import SwiftUI
 
-struct ErrorView: View {
-    @State var error: String
-    var onDismiss: (() -> Void)
+public struct VCSErrorView: View {
+    let error: String
+    let onDismiss: (() -> Void)
     
-    var body: some View {
+    public var body: some View {
         VStack {
             Label(title: {
                 Text(error)
@@ -26,5 +19,4 @@ struct ErrorView: View {
             }
         }
     }
-    
 }

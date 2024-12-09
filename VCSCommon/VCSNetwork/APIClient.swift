@@ -229,6 +229,10 @@ public class APIClient {
         return performRequest(route: APIRouter.listStorage)
     }
     
+    public static func listStorage() async throws -> StorageList {
+        return try await performAsyncRequest(route: APIRouter.listStorage)
+    }
+    
     public static func getStoragePagesList(storagePagesURI: String) -> Future<StoragePagesList, Error> {
         return performRequest(route: APIRouter.getStoragePagesList(storagePagesURI: storagePagesURI))
     }

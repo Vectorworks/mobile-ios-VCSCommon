@@ -97,15 +97,14 @@ struct FileChooserListView<ViewModel: FileLoadable>: View {
                 
                 switch viewModel.viewState {
                 case .error(let error):
-                    ErrorView(error: error, onDismiss: onDismiss)
+                    VCSErrorView(error: error, onDismiss: onDismiss)
                     
                 case .loading:
-                    ProgressView()
-                        .onAppear {
-                            Task {
-                                await loadFilesForCurrentState()
-                            }
+                    VCSProgressView {
+                        Task {
+                            await loadFilesForCurrentState()
                         }
+                    }
                     
                 default:
                     if models.isEmpty && viewModel.sharedWithMe {

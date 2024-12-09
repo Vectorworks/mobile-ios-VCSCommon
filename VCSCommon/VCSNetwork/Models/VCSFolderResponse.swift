@@ -138,8 +138,7 @@ public class VCSFolderResponse: Asset, Codable {
         
         self.ownerLogin = self.ownerInfo?.owner ?? VCSUser.savedUser?.login ?? ""
         
-        if self.resourceID == "__invalid__",
-           self.name == "" {
+        if self.resourceID == "__invalid__", self.name == "" {
             self.resourceID = self.storageType.itemIdentifier.appendingPathComponent(self.prefix)
         }
         

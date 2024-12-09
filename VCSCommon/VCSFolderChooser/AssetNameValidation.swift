@@ -1,6 +1,6 @@
 import Foundation
 
-public enum FilenameValidationError: Error {
+public enum FilenameValidationError: Error, Hashable {
     case empty, containsInvalidCharacters, exists, lengthy, invalidUser
     
     public var localizedErrorText: String {
@@ -20,23 +20,26 @@ public enum FilenameValidationError: Error {
 }
 
 public class FilenameValidator {
-    public static func validateFilename(ownerLogin: String, storage: String, prefix: String) ->
-    Result<String, FilenameValidationError> {
+    public static func nameError(ownerLogin: String, storage: String, prefix: String) ->
+    NameAndError? {
         let name = prefix.lastPathComponent
         if name.isEmpty {
-            return .failure(FilenameValidationError.empty)
+            return NameAndError(name, FilenameValidationError.empty)
+        }
+        else if name.count > 255 {
+            return NameAndError(name, FilenameValidationError.lengthy)
         }
         else if FolderNameValidator.doesAssetNameContainsIllegalSymbols(name) {
-            return .failure(FilenameValidationError.containsInvalidCharacters)
+            return NameAndError(name, FilenameValidationError.containsInvalidCharacters)
         }
         else if FilenameValidator.doesExist(ownerLogin: ownerLogin, storage: storage, prefix: prefix) {
-            return .failure(FilenameValidationError.exists)
+            return NameAndError(name, FilenameValidationError.exists)
         }
         
-        return .success(name)
+        return nil
     }
 
-    public static func doesExist(ownerLogin: String, storage: String, prefix: String) -> Bool {
+    static func doesExist(ownerLogin: String, storage: String, prefix: String) -> Bool {
         let predicate = NSPredicate(format: "ownerLogin == %@ && storageType == %@ && prefix == %@", ownerLogin, storage, prefix)
         if VCSGenericRealmModelStorage<VCSFileResponse.RealmModel>().getAll(predicate: predicate).first != nil {
             return true
@@ -48,33 +51,14 @@ public class FilenameValidator {
         
         return false
     }
-    
-    public static func validateMeasureProjectPath(path: String) -> Result<String, FilenameValidationError> {
-        let name = path.lastPathComponent
-        if name.isEmpty {
-            return .failure(FilenameValidationError.empty)
-        }
-        else if FolderNameValidator.doesAssetNameContainsIllegalSymbols(name) {
-            return .failure(FilenameValidationError.containsInvalidCharacters)
-        }
-        else if FilenameValidator.doesMeasureProjectExist(path: path) {
-            return .failure(FilenameValidationError.exists)
-        }
-        
-        return .success(name)
-    }
-    
-    public static func doesMeasureProjectExist(path: String) -> Bool {
-        return FileManager.default.fileExists(atPath: path)
-    }
 }
 
 public struct FolderNameValidator {
-    public static func doesAssetNameContainsIllegalSymbols(_ name: String) -> Bool {
+    static func doesAssetNameContainsIllegalSymbols(_ name: String) -> Bool {
         return name.rangeOfCharacter(from: VCSCommonConstants.invalidCharacterSet) != nil
     }
     
-    public static func validate(_ name: String) -> Result<String, FilenameValidationError> {
+    static func validate(_ name: String) -> Result<String, FilenameValidationError> {
         if name.count > 255 {
             return .failure(FilenameValidationError.lengthy)
         } else if doesAssetNameContainsIllegalSymbols(name) {

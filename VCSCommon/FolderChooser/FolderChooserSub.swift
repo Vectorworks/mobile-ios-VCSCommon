@@ -39,12 +39,15 @@ struct FolderChooserSub: View {
                 ScrollView(.horizontal) {
                     HStack(spacing: 0) {
                         Button {
-                            APIClient.listStorage().execute(onSuccess: { (result: StorageList) in
-                                VCSUser.savedUser?.setStorageList(storages: result)
-                                showStorageChooser = true
-                            }, onFailure: { (err: Error) in
-                                print(err)
-                            })
+                            Task {
+                                let result = await VCSStorageResponse.loadUserStorages()
+                                switch result {
+                                case .success(let storage):
+                                    showStorageChooser = true
+                                case .failure(let error):
+                                    DDLogError("FolderChooserSub - switch loadingFolder - error: \(error)")
+                                }
+                            }
                         } label: {
                             Image(currentFolder.storageType.storageImageName)
                         }

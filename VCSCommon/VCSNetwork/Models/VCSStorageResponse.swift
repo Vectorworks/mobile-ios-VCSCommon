@@ -1,7 +1,9 @@
 import UIKit
 import Foundation
+import CocoaLumberjackSwift
 
-public class VCSStorageResponse: Codable {
+public class VCSStorageResponse: Codable, Identifiable {
+    public var id: String { return storageType.itemIdentifier }
     public let name, folderURI, fileURI: String
     public let storageType: StorageType
     public let resourceURI: String
@@ -75,6 +77,19 @@ public class VCSStorageResponse: Codable {
     
     public func storageImage() -> UIImage? {
         return UIImage(named: self.storageType.storageImageName)
+    }
+}
+
+extension VCSStorageResponse {
+    public static func loadUserStorages() async -> Result<StorageList, Error> {
+        do {
+            let storages = try await APIClient.listStorage()
+            VCSUser.savedUser?.setStorageList(storages: storages)
+            return .success(storages)
+        } catch {
+            DDLogError("VCSStorageResponse - loadUserStorages error: \(error)")
+            return .failure(error)
+        }
     }
 }
 
