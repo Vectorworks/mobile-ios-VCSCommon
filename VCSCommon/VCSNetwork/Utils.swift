@@ -314,6 +314,7 @@ public extension Error {
 
 public enum VCSNetworkErrorCode: Int {
     case noInternet = 13
+    case explicitlyCancelled = 15
     case unauthorised = 401
     case forbidden = 403
     case notFound = 404
