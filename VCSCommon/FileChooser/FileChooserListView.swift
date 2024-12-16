@@ -3,92 +3,83 @@ import CocoaLumberjackSwift
 import UIKit
 import RealmSwift
 
-enum PaginationState {
-    case hasNextPage
-    case loadingNextPage
-    case noMorePages
-}
-
-struct FileChooserListView<ViewModel: FileLoadable>: View {
-    @Environment(\.colorScheme) var colorScheme
-    
+struct FileChooserListView: View {
     @ObservedObject private var viewsLayoutSetting: ViewsLayoutSetting = ViewsLayoutSetting.listDefault
     
     @ObservedObject private var VCSReachabilityMonitor = VCSReachability.default
     
-    @ObservedObject private var viewModel: ViewModel
+    @StateObject private var viewModel: FileChooserViewModel
     
-    @ObservedResults(VCSUser.RealmModel.self, where: { $0.isLoggedIn == true }) var users
-            
-    var models: [FileChooserModel]
+    @State private var isOnline: Bool
     
-    var itemPickedCompletion: (FileChooserModel) -> Void
+    @State private var expandedIndex: Int?
     
-    var onDismiss: () -> Void
+    @Binding private var route: FileChooserRouteData
     
-    init(
-        viewModel: ViewModel,
-        models: [FileChooserModel],
-        itemPickedCompletion: @escaping (FileChooserModel) -> Void,
-        onDismiss: @escaping () -> Void
-    ) {
-        self.viewModel = viewModel
-        self.models = models
+    @ObservedResults(VCSFileResponse.RealmModel.self, where: { $0.ownerLogin == VCSUser.savedUser?.login ?? "nil" }) var allUserFiles
+    
+    @ObservedResults(SharedLink.RealmModel.self, filter: FileChooserViewModel.linksPredicate) var sharedLinksRawData
+    
+    @ObservedResults(VCSSharedWithMeAsset.RealmModel.self, where: { $0.sharedWithLogin == VCSUser.savedUser?.login ?? nil }) var allSharedItems
+    
+    private var itemPickedCompletion: (FileChooserModel) -> Void
+    
+    private var onDismiss: () -> Void
+    
+    init(fileTypeFilter: FileTypeFilter,
+         itemPickedCompletion: @escaping (FileChooserModel) -> Void,
+         onDismiss: @escaping (() -> Void),
+         route: Binding<FileChooserRouteData>,
+         isGuest: Bool,
+         isOnline: Bool) {
+        self._route = route
+        self.isOnline = isOnline
         self.itemPickedCompletion = itemPickedCompletion
         self.onDismiss = onDismiss
+        
+        let viewModel = FileChooserViewModel(
+            fileTypeFilter: fileTypeFilter,
+            mainRoute: route.wrappedValue,
+            isGuest: isGuest)
+        
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
     
-    private var isGuest: Bool {
-        users.first?.entity == nil
-    }
-    
-    private var adaptiveBackgroundColor: Color {
-        colorScheme == .dark ? Color(UIColor.secondarySystemBackground) : Color.white
-    }
-    
-    private var hasMorePages: Bool {
-        viewModel.hasMorePages.values.contains(true)
-    }
-    
-    private var shouldShowSharedWithMe: Bool {
-        switch viewModel.route {
-        case .s3:
-            return true
-        default:
-            return false
+    private func shouldShowPaginationProgressSpinner(section: RouteSection) -> Bool {
+        if viewModel.getState(for: section) == .noMorePages || !isOnline || viewModel.isGuest {
+            false
+        } else {
+            true
         }
     }
     
-    private var shouldShowPaginationProgressSpinner: Bool {
-        hasMorePages && VCSReachabilityMonitor.isConnected
-    }
-    
-    private func loadFilesForCurrentState() async {
-        if viewModel.paginationState == .loadingNextPage {
-            return
+    private func filterDatabaseFiles(section: RouteSection, isOnline: Bool) -> [FileChooserModel] {
+        if (section.shouldRefresh) {
+            switch section.route {
+            case .s3, .dropbox, .googleDrive, .oneDrive:
+                viewModel.filterAndMapToModelsForCurrentStorage(allFiles: allUserFiles,
+                                                                section: section,
+                                                                isOnline: isOnline
+                )
+                
+            case .sharedWithMe:
+                viewModel.filterAndMapToModelsForSharedWithMe(allSharedItems: allSharedItems,
+                                                              sharedLinks: sharedLinksRawData,
+                                                              isOnline: isOnline,
+                                                              sectionIndex: section.index
+                )
+                
+            case .sampleFiles:
+                viewModel.populateSampleFilesSectionForGuest(isOnline: isOnline,
+                                                             sectionIndex: section.index)
+            }
         }
         
-        if VCSReachabilityMonitor.isConnected && !isGuest {
-            await viewModel.loadNextPage(silentRefresh: false)
-        } else if isGuest {
-            await viewModel.loadFilesForGuestMode()
-        } else {
-            viewModel.changeViewState(to: .loaded)
-        }
-    }
-    
-    func onListEndReached() async {
-        if !hasMorePages {
-            viewModel.changePaginationState(to: .noMorePages)
-        } else if VCSReachabilityMonitor.isConnected && !isGuest {
-            await viewModel.loadNextPage(silentRefresh: true)
-        } else if isGuest {
-            viewModel.changePaginationState(to: .noMorePages)
-        }
+        return viewModel.sections[section.index].models
     }
     
     var body: some View {
-        GeometryReader { _ in
+        GeometryReader { geometry in
             VStack(alignment: .center) {
                 CurrentFilterView(
                     onDismiss: onDismiss,
@@ -99,80 +90,132 @@ struct FileChooserListView<ViewModel: FileLoadable>: View {
                 case .error(let error):
                     VCSErrorView(error: error, onDismiss: onDismiss)
                     
-                case .loading:
-                    VCSProgressView {
-                        Task {
-                            await loadFilesForCurrentState()
-                        }
-                    }
-                    
                 default:
-                    if models.isEmpty && viewModel.sharedWithMe {
-                        if !VCSReachabilityMonitor.isConnected {
-                            OfflineEmptyView()
-                        } else {
-                            FilteredEmptyView()
+                    VStack(spacing: 8) {
+                        ForEach(viewModel.sections) { section in
+                            let maxHeight = expandedIndex == section.index ? geometry.size.height * 0.7 : geometry.size.height * 0.1
+                            
+                            collapsibleListView(
+                                section: section,
+                                maxHeight: maxHeight,
+                                isOnline: isOnline
+                            )
                         }
-                    } else {
-                        contentView
                     }
                 }
             }
             .frame(maxWidth: .infinity)
-            .onChange(of: viewModel.route) { _, route in
-                if VCSReachabilityMonitor.isConnected {
-                    Task {
-                        await viewModel.loadNextPage(silentRefresh: false)
-                    }
-                }
-            }
-            .onChange(of: VCSReachabilityMonitor.isConnected) { _, _ in
+            .onChange(of: route) { _, newRoute in
                 Task {
-                    await loadFilesForCurrentState()
+                    await viewModel.updateSections(newMainRoute: newRoute)
+                }
+            }
+            .onChange(of: VCSReachabilityMonitor.isConnected) { _, newValue in
+                isOnline = newValue
+                Task {
+                    viewModel.setSectionsShouldRefresh()
+                }
+            }
+            .onChange(of: viewModel.viewState) { newValue in
+                Task {
+                    viewModel.setSectionsShouldRefresh()
+                }
+            }
+            .onAppear {
+                Task {
+                    await viewModel.loadInitialData()
                 }
             }
         }
     }
     
-    var contentView: some View {
-        Group {
-            switch viewsLayoutSetting.layout.asListLayoutCriteria {
-            case .list:
-                listView
-            case .grid:
-                gridView
+    func collapsibleListView(section: RouteSection, maxHeight: CGFloat, isOnline: Bool) -> some View {
+        VStack(spacing: 0) {
+            Button(action: {
+                if expandedIndex == section.index {
+                    expandedIndex = nil
+                } else {
+                    expandedIndex = section.index
+                }
+            }) {
+                HStack {
+                    Text(section.route.displayName)
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                    
+                    Spacer()
+                    
+                    Image(systemName: expandedIndex == section.index ? "chevron.down" : "chevron.right")
+                        .font(.headline)
+                        .padding()
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(PlainButtonStyle())
+            
+            if self.expandedIndex == section.index {
+                let models = filterDatabaseFiles(section: section, isOnline: isOnline)
+                
+                Group {
+                    Divider()
+                        .padding(.leading)
+                        .padding(.trailing)
+                    if !section.isInitialDataLoaded && isOnline {
+                        ProgressView()
+                    } else if !isOnline && (!section.isInitialDataLoaded || section.models.isEmpty) {
+                        OfflineEmptyView()
+                    } else if section.models.isEmpty {
+                        FilteredEmptyView()
+                    } else {
+                        switch viewsLayoutSetting.layout.asListLayoutCriteria {
+                        case .list:
+                            listView(maxHeight: maxHeight, section: section, models: models, isOnline: isOnline)
+                            
+                        case .grid:
+                            lazyVGridView(maxHeight: maxHeight, section: section, models: models, isOnline: isOnline)
+                        }
+                    }
+                }
             }
         }
-        .onAppear {
-            viewModel.updatePaginationWithLoadedFiles(models: models)
-        }
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color(.systemGray6))
+        )
+        .padding()
     }
     
-    var gridView: some View {
-        ScrollView {
-            if shouldShowSharedWithMe && !isGuest {
-                NavigationLink(value: FileChooserRouteData.sharedWithMeRoot) {
-                    VStack {
-                        HStack {
-                            sharedWithMeItem
-                                .padding()
-                            
-                            Spacer()
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(adaptiveBackgroundColor)
-                        .cornerRadius(10)
-                        .padding(10)
-                        
-                        Divider()
-                            .background(Color.white)
-                            .frame(height: 1)
-                            .padding(EdgeInsets(top: 0, leading: 30, bottom: 0, trailing: 30))
-                    }
+    func listView(maxHeight: CGFloat, section: RouteSection, models: [FileChooserModel], isOnline: Bool) -> some View {
+        List {
+            ForEach(models) { file in
+                Button {
+                    onDismiss()
+                    itemPickedCompletion(file)
+                } label: {
+                    ListItemView(
+                        thumbnailURL: file.thumbnailUrl,
+                        flags: file.flags,
+                        name: file.name,
+                        isFolder: false,
+                        lastDateModified: file.lastDateModified
+                    )
+                    .listRowBackground(Color(.systemGray6))
+                    .id(file.id)
                 }
             }
             
-            LazyVGrid(columns: [.init(.adaptive(minimum: K.Sizes.gridMinCellSize))], spacing: 20) {
+            if shouldShowPaginationProgressSpinner(section: section) {
+                paginationProgressView(section: section, isOnline: isOnline)
+            }
+        }
+        .frame(maxHeight: maxHeight)
+        .scrollContentBackground(.hidden)
+    }
+    
+    func lazyVGridView(maxHeight: CGFloat, section: RouteSection, models: [FileChooserModel], isOnline: Bool) -> some View {
+        ScrollView {
+            LazyVGrid(columns: [.init(.adaptive(minimum: K.Sizes.gridMinCellWidth, maximum: K.Sizes.gridMaxCellWidth))], spacing: 20) {
                 ForEach(models, id: \.resourceUri) { file in
                     Button {
                         onDismiss()
@@ -185,98 +228,46 @@ struct FileChooserListView<ViewModel: FileLoadable>: View {
                             isFolder: false,
                             lastDateModified: file.lastDateModified
                         )
-                        .padding(8)
-                        .background(adaptiveBackgroundColor)
-                        .cornerRadius(10)
                     }
                 }
-                
-                if shouldShowPaginationProgressSpinner {
-                    paginationProgressView
+                if  shouldShowPaginationProgressSpinner(section: section) {
+                    paginationProgressView(section: section, isOnline: isOnline)
                 }
             }
         }
-        .scrollDismissesKeyboard(.immediately)
-        .background(Color(UIColor.systemGroupedBackground))
+        .frame(maxHeight: maxHeight)
     }
     
-    var listView: some View {
-        ScrollViewReader { scrollProxy in
-            List {
-                if shouldShowSharedWithMe && !isGuest {
-                    Section {
-                        NavigationLink(value: FileChooserRouteData.sharedWithMeRoot) {
-                            sharedWithMeItem
-                        }
-                    }
-                }
-                
-                Section {
-                    ForEach(models) { file in
-                        Button {
-                            onDismiss()
-                            itemPickedCompletion(file)
-                        } label: {
-                            ListItemView(
-                                thumbnailURL: file.thumbnailUrl,
-                                flags: file.flags,
-                                name: file.name,
-                                isFolder: false,
-                                lastDateModified: file.lastDateModified
-                            )
-                        }
-                        .id(file.id)
-                    }
-                }
-                
-                if shouldShowPaginationProgressSpinner {
-                    paginationProgressView
-                }
-            }
-            .scrollDismissesKeyboard(.immediately)
-        }
-    }
-    
-    var sharedWithMeItem: some View {
-        ListItemView(
-            thumbnailURL: nil,
-            flags: nil,
-            name: "Shared with me".vcsLocalized,
-            isFolder: true,
-            isSharedWithMeFolder: true
-        )
-    }
-    
-    var listItemProgressView: some View {
-        HStack {
-            Spacer()
-            ProgressView()
-                .background(Color.clear)
-            Spacer()
-        }
-        .background(Color.clear)
-    }
-    
-    var paginationProgressView: some View {
+    func paginationProgressView(section: RouteSection, isOnline: Bool) -> some View {
         let progressView: AnyView
         
         switch viewsLayoutSetting.layout.asListLayoutCriteria {
         case .list:
-            progressView = AnyView(listItemProgressView)
+            progressView = AnyView(
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .background(Color.clear)
+                    Spacer()
+                }
+                    .background(Color.clear)
+            )
         case .grid:
             progressView = AnyView(ProgressView())
         }
         
         return Group {
-            switch viewModel.paginationState {
+            switch viewModel.getState(for: section) {
             case .hasNextPage:
                 progressView
                     .onAppear {
                         Task {
-                            await onListEndReached()
+                            if isOnline && !viewModel.isGuest {
+                                await viewModel.loadNextPage(section: section)
+                            }
                         }
                     }
-            case .loadingNextPage:
+            case .loading:
                 progressView
             case .noMorePages:
                 EmptyView()

@@ -31,13 +31,13 @@ struct FileChooserModel: Identifiable {
 }
 
 extension Array where Element == FileChooserModel {
-    func matchesFilter(_ fileTypeFilter: FileTypeFilter, isConnected: Bool) -> [FileChooserModel] {
+    func matchesFilter(_ fileTypeFilter: FileTypeFilter, isOnline: Bool) -> [FileChooserModel] {
         return self.filter { fileChooserModel in
             let matchesExtension = fileTypeFilter.extensions.map { filterExtension in
                 fileChooserModel.name.range(of: filterExtension.rawValue, options: .caseInsensitive) != nil
             }.contains(true)
 
-            if isConnected {
+            if isOnline {
                 return matchesExtension
             } else {
                 return matchesExtension && fileChooserModel.isAvailableOnDevice

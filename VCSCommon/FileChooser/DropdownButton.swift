@@ -12,13 +12,12 @@ struct DropdownButton: View {
     @Binding var currentFolderName: String
     @Binding var showDropdown: Bool
     var showDropdownArrow: Bool
-    var isInRoot: Bool
     var viewWidth: CGFloat
     
     var body: some View {
         HStack {
             Text(currentFolderName)
-                .foregroundStyle(isInRoot ? Color.VCSTeal : Color.label)
+                .foregroundStyle(Color.VCSTeal)
                 .font(.headline)
                 .fontWeight(.bold)
                 .lineLimit(1)
@@ -28,7 +27,7 @@ struct DropdownButton: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 10, height: 10)
-                    .foregroundColor(isInRoot ? Color.VCSTeal : Color.label)
+                    .foregroundColor(Color.VCSTeal)
                     .background(
                         Circle()
                             .fill(Color(.systemGray5))

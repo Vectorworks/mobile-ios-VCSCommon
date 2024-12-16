@@ -12,14 +12,17 @@ enum FileChooserRouteData: Hashable, Equatable {
     case dropbox(MyFilesRouteData)
     case oneDrive(MyFilesRouteData)
     case googleDrive(MyFilesRouteData)
-    case sharedWithMeRoot
+    case sharedWithMe
+    case sampleFiles
     
     var displayName: String {
         switch self {
         case .s3(let routeData), .dropbox(let routeData), .oneDrive(let routeData), .googleDrive(let routeData):
             routeData.displayName
-        case .sharedWithMeRoot:
+        case .sharedWithMe:
             "Shared with me".vcsLocalized
+        case .sampleFiles:
+            "Vectorworks Samples".vcsLocalized
         }
     }
 

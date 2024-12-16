@@ -57,11 +57,39 @@ public struct K {
             }
         }
         
-        static public var gridCellImageSize: CGFloat {
+        static public var gridMinCellWidth: CGFloat  {
+            if (UIDevice.current.userInterfaceIdiom == .pad) {
+                170
+            } else {
+                120
+            }
+        }
+        
+        static public var gridMaxCellWidth: CGFloat  {
+            if (UIDevice.current.userInterfaceIdiom == .pad) {
+                220
+            } else {
+                150
+            }
+        }
+        
+        static public var gridCellImagePadding: CGFloat {
+            10
+        }
+        
+        static public var gridCellMaxImageSize: CGFloat {
             if (UIDevice.current.userInterfaceIdiom == .pad) {
                 170
             } else {
                 130
+            }
+        }
+        
+        static public var gridCellMinImageSize: CGFloat {
+            if (UIDevice.current.userInterfaceIdiom == .pad) {
+                150
+            } else {
+                100
             }
         }
         
@@ -70,6 +98,14 @@ public struct K {
                 200
             } else {
                 160
+            }
+        }
+        
+        static public var gridCellImageSize: CGFloat {
+            if (UIDevice.current.userInterfaceIdiom == .pad) {
+                170
+            } else {
+                130
             }
         }
         

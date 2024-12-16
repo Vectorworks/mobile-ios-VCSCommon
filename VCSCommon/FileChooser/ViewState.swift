@@ -9,5 +9,4 @@ enum FileChooserViewState: Equatable {
     case loading
     case error(String)
     case loaded
-    case loadingNextPage
 }

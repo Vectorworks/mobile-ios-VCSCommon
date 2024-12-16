@@ -11,11 +11,11 @@ import SDWebImage
 import SDWebImageSwiftUI
 
 struct GridItemView: View {
+    @Environment(\.colorScheme) var colorScheme
     @State var thumbnailURL: URL?
     @State var flags: VCSFlagsResponse?
     @State var name: String
     @State var isFolder: Bool
-    @State var isSharedWithMeFolder: Bool = false
     @State var lastDateModified: Date?
     
     var placeholderImageIconString: String {
@@ -26,31 +26,28 @@ struct GridItemView: View {
         }
     }
     
+    private var adaptiveBackgroundColor: Color {
+        colorScheme == .dark ? Color(UIColor.secondarySystemBackground) : Color.white
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             WebImage(url: thumbnailURL) { image in
                 image.resizable()
-                    .frame(width: K.Sizes.gridCellImageBackgroundSize, height: K.Sizes.gridCellImageBackgroundSize)
+                    .frame(minWidth: K.Sizes.gridCellMinImageSize, maxWidth: K.Sizes.gridCellMaxImageSize, minHeight: K.Sizes.gridCellMinImageSize, maxHeight: K.Sizes.gridCellMaxImageSize)
             } placeholder: {
                 Group {
-                    if isSharedWithMeFolder {
-                        Image("shared-with-me")
-                            .resizable()
-                            .foregroundStyle(.gray)
-                            .frame(width: 50, height: 50)
-                    } else {
-                        Image(placeholderImageIconString)
-                            .resizable()
-                            .foregroundStyle(.gray)
-                            .frame(width: K.Sizes.gridCellImageSize, height: K.Sizes.gridCellImageSize)
-                            .padding(15)
-                    }
+                    Image(placeholderImageIconString)
+                        .resizable()
+                        .foregroundStyle(.gray)
+                        .frame(minWidth: K.Sizes.gridCellMinImageSize, maxWidth: K.Sizes.gridCellMaxImageSize, minHeight: K.Sizes.gridCellMinImageSize, maxHeight: K.Sizes.gridCellMaxImageSize)
                 }
             }
             .indicator(.activity)
             .transition(.fade(duration: 0.5))
             .scaledToFit()
             .cornerRadius(5)
+            .padding(K.Sizes.gridCellImagePadding)
             
             VStack(alignment: .leading) {
                 HStack {
@@ -72,6 +69,9 @@ struct GridItemView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.bottom, 10)
+        .frame(minWidth: K.Sizes.gridMinCellWidth, maxWidth: K.Sizes.gridMaxCellWidth)
+        .padding(8)
+        .background(adaptiveBackgroundColor)
+        .cornerRadius(10)
     }
 }
