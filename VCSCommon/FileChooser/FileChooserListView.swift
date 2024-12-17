@@ -14,7 +14,9 @@ struct FileChooserListView: View {
     
     @State private var expandedIndex: Int?
     
-    @Binding private var route: FileChooserRouteData
+    @State private var showDropdown = false
+    
+    @State private var route: FileChooserRouteData
     
     @ObservedResults(VCSFileResponse.RealmModel.self, where: { $0.ownerLogin == VCSUser.savedUser?.login ?? "nil" }) var allUserFiles
     
@@ -26,23 +28,48 @@ struct FileChooserListView: View {
     
     private var onDismiss: () -> Void
     
+    private var availableStorages: [VCSStorageResponse] {
+        VCSUser.savedUser?.availableStorages ?? []
+    }
+    
     init(fileTypeFilter: FileTypeFilter,
          itemPickedCompletion: @escaping (FileChooserModel) -> Void,
          onDismiss: @escaping (() -> Void),
-         route: Binding<FileChooserRouteData>,
          isGuest: Bool,
          isOnline: Bool) {
-        self._route = route
+        let s3Storage = VCSUser.savedUser?.availableStorages.first(where: { $0.storageType == .S3 })
+        let route : FileChooserRouteData = isGuest ? .sharedWithMe : .s3(MyFilesRouteData(displayName: s3Storage!.storageType.displayName))
+        self.route = route
         self.isOnline = isOnline
         self.itemPickedCompletion = itemPickedCompletion
         self.onDismiss = onDismiss
         
         let viewModel = FileChooserViewModel(
             fileTypeFilter: fileTypeFilter,
-            mainRoute: route.wrappedValue,
+            mainRoute: route,
             isGuest: isGuest)
         
         _viewModel = StateObject(wrappedValue: viewModel)
+    }
+    
+    private func onStorageChange(selectedStorage: VCSStorageResponse) {
+        switch selectedStorage.storageType {
+            
+        case .S3:
+            self.route = .s3(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
+            
+        case .DROPBOX:
+            self.route = .dropbox(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
+            
+        case .GOOGLE_DRIVE:
+            self.route = .googleDrive(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
+            
+        case .ONE_DRIVE:
+            self.route = .oneDrive(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
+            
+        default:
+            fatalError("Unsupported storage type.")
+        }
     }
     
     private func shouldShowPaginationProgressSpinner(section: RouteSection) -> Bool {
@@ -78,32 +105,53 @@ struct FileChooserListView: View {
         return viewModel.sections[section.index].models
     }
     
-    var body: some View {
-        GeometryReader { geometry in
-            VStack(alignment: .center) {
-                CurrentFilterView(
-                    onDismiss: onDismiss,
-                    fileTypeFilter: viewModel.fileTypeFilter
-                )
+    private var currentStorage: VCSStorageResponse {
+        availableStorages.first(where: { $0.storageType == route.storageType })!
+    }
+    
+    func content(geometry: GeometryProxy) -> some View {
+        VStack(alignment: .center) {
+            DropdownButton(
+                currentStorage: currentStorage,
+                showDropdown: $showDropdown,
+                viewWidth: UIDevice.current.userInterfaceIdiom == .pad ? geometry.size.width * 0.2 : geometry.size.width * 0.5
+            )
+            
+            switch viewModel.viewState {
+            case .error(let error):
+                VCSErrorView(error: error, onDismiss: onDismiss)
                 
-                switch viewModel.viewState {
-                case .error(let error):
-                    VCSErrorView(error: error, onDismiss: onDismiss)
-                    
-                default:
-                    VStack(spacing: 8) {
-                        ForEach(viewModel.sections) { section in
-                            let maxHeight = expandedIndex == section.index ? geometry.size.height * 0.7 : geometry.size.height * 0.1
-                            
-                            collapsibleListView(
-                                section: section,
-                                maxHeight: maxHeight,
-                                isOnline: isOnline
-                            )
-                        }
+            default:
+                VStack(spacing: 8) {
+                    ForEach(viewModel.sections) { section in
+                        let maxHeight = expandedIndex == section.index ? geometry.size.height * 0.7 : geometry.size.height * 0.1
+                        
+                        collapsibleListView(
+                            section: section,
+                            maxHeight: maxHeight,
+                            isOnline: isOnline
+                        )
                     }
                 }
             }
+        }
+    }
+    
+    var body: some View {
+        GeometryReader { geometry in
+            content(geometry: geometry)
+            .overlay(
+                Group {
+                    if showDropdown {
+                        DropdownView(
+                            showDropdown: $showDropdown,
+                            availableStorages: availableStorages,
+                            onStorageChange: self.onStorageChange
+                        )
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    }
+                }
+            )
             .frame(maxWidth: .infinity)
             .onChange(of: route) { _, newRoute in
                 Task {

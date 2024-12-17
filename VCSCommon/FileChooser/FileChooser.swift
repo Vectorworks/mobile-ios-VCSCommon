@@ -11,61 +11,23 @@ public struct FileChooser: View {
     @ObservedObject private var VCSReachabilityMonitor = VCSReachability.default
         
     @State var fileTypeFilter: FileTypeFilter
-    
-    @State var rootRoute: FileChooserRouteData
-        
-    @State private var showDropdown = false
-            
+                        
     private var itemPickedCompletion: (RealmFile) -> Void
     
     @Environment(\.dismiss) private var dismiss
-
-//    private var onDismiss: (() -> Void)
     
     public init(
         fileTypeFilter: FileTypeFilter,
         itemPickedCompletion: @escaping (RealmFile) -> Void
-//        onDismiss: @escaping (() -> Void)
     ) {
-        let s3Storage = VCSUser.savedUser?.availableStorages.first(where: { $0.storageType == .S3 })
-        if s3Storage == nil {
-            self.rootRoute = .sharedWithMe
-        } else {
-            self.rootRoute = .s3(MyFilesRouteData(displayName: s3Storage!.storageType.displayName))
-        }
         self.fileTypeFilter = fileTypeFilter
         self.itemPickedCompletion = itemPickedCompletion
-//        self.onDismiss = onDismiss
     }
     
     private var isGuest: Bool {
         users.first?.entity == nil
     }
-    
-    private var availableStorages: [VCSStorageResponse] {
-        VCSUser.savedUser?.availableStorages ?? []
-    }
-    
-    private func onStorageChange(selectedStorage: VCSStorageResponse) {
-        switch selectedStorage.storageType {
-            
-        case .S3:
-            self.rootRoute = .s3(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
-            
-        case .DROPBOX:
-            self.rootRoute = .dropbox(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
-            
-        case .GOOGLE_DRIVE:
-            self.rootRoute = .googleDrive(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
-            
-        case .ONE_DRIVE:
-            self.rootRoute = .oneDrive(MyFilesRouteData(displayName: selectedStorage.storageType.displayName))
-            
-        default:
-            fatalError("Unsupported storage type.")
-        }
-    }
-    
+        
     private func onItemPicked(pickedModel: FileChooserModel) {
         guard let filePicked = VCSFileResponse.realmStorage.getModelById(id: pickedModel.resourceId) else {
             fatalError("Picked file not found.")
@@ -81,7 +43,6 @@ public struct FileChooser: View {
                     fileTypeFilter: fileTypeFilter,
                     itemPickedCompletion: onItemPicked,
                     onDismiss: { dismiss() },
-                    route: $rootRoute,
                     isGuest: isGuest,
                     isOnline: VCSReachabilityMonitor.isConnected
                 )
@@ -97,15 +58,9 @@ public struct FileChooser: View {
                     }
                     
                     ToolbarItem(placement: .principal) {
-                        DropdownButton(
-                            currentFolderName: Binding(
-                                get: { rootRoute.displayName },
-                                set: { _ in
-                                }
-                            ),
-                            showDropdown: $showDropdown,
-                            showDropdownArrow: !availableStorages.isEmpty,
-                            viewWidth: UIDevice.current.userInterfaceIdiom == .pad ? geometry.size.width * 0.2 : geometry.size.width * 0.5
+                        CurrentFilterView(
+                            onDismiss: { dismiss() },
+                            fileTypeFilter: fileTypeFilter
                         )
                     }
                     
@@ -119,18 +74,6 @@ public struct FileChooser: View {
                         .tint(Color.label)
                     }
                 }
-                .overlay(
-                    Group {
-                        if showDropdown {
-                            DropdownView(
-                                showDropdown: $showDropdown,
-                                availableStorages: availableStorages,
-                                onStorageChange: self.onStorageChange
-                            )
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                        }
-                    }
-                )
                 .frame(maxWidth: .infinity)
                 .tint(.VCSTeal)
             }

@@ -24,16 +24,12 @@ struct CurrentFilterView: View {
                 HStack {
                     Image(fileTypeFilter.iconStr)
                         .foregroundColor(.VCSTeal)
-                        .padding(5)
+                        .padding(EdgeInsets(top: 3, leading: 10, bottom: 3, trailing: 0))
                     Text(fileTypeFilter.titleStr)
                         .foregroundColor(.VCSTeal)
-                        .font(.subheadline)
+                        .font(.caption)
                         .fontWeight(.regular)
-                    Spacer()
-                    
-                    Image(systemName: "xmark")
-                        .foregroundColor(colorScheme == .light ? .gray : .white)
-                        .padding(5)
+                        .padding(EdgeInsets(top: 3, leading: 0, bottom: 3, trailing: 10))
                 }
                 .background(colorScheme == .light ? Color.black.opacity(0.1) : Color.white.opacity(0.1))
                 .cornerRadius(10)

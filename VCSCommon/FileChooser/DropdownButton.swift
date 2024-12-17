@@ -9,33 +9,31 @@ import Foundation
 import SwiftUI
 
 struct DropdownButton: View {
-    @Binding var currentFolderName: String
+    @State var currentStorage: VCSStorageResponse
     @Binding var showDropdown: Bool
-    var showDropdownArrow: Bool
     var viewWidth: CGFloat
     
     var body: some View {
         HStack {
-            Text(currentFolderName)
-                .foregroundStyle(Color.VCSTeal)
-                .font(.headline)
-                .fontWeight(.bold)
-                .lineLimit(1)
-            
-            if showDropdownArrow {
+            HStack {
+                Image(currentStorage.storageType.storageImageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 30, height: 30)
+                Text(currentStorage.storageType.displayName)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                
                 Image(systemName: "chevron.down")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 10, height: 10)
-                    .foregroundColor(Color.VCSTeal)
-                    .background(
-                        Circle()
-                            .fill(Color(.systemGray5))
-                            .frame(width: 16, height: 16)
-                    )
                     .padding(2)
             }
         }
+        .padding()
         .frame(width: viewWidth)
         .onTapGesture {
             showDropdown.toggle()
