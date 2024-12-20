@@ -315,6 +315,10 @@ public class APIClient {
         return performRequest(route: APIRouter.sharedWithMeAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding))
     }
     
+    public static func sharedWithMeAssetAsync(assetURI: String, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileTypes: Bool = VCSFlagStates.fileType, sharingInfo: Bool = VCSFlagStates.sharingInfo, related: Bool = VCSFlagStates.related, branding: Bool = true) async throws -> VCSSharedWithMeAsset  {
+        return try await performAsyncRequest(route: APIRouter.sharedWithMeAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding))
+    }
+    
     public static func sharedWithMeFileInfo(rID: String, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileTypes: Bool = VCSFlagStates.fileType, sharingInfo: Bool = VCSFlagStates.sharingInfo, related: Bool = VCSFlagStates.related, branding: Bool = true) -> Future<VCSSharedWithMeAsset, Error> {
         return performRequest(route: APIRouter.sharedWithMeFileInfo(rID: rID, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo, related: related, branding: branding))
     }
@@ -353,6 +357,10 @@ public class APIClient {
     
     public static func fileAsset(assetURI: String, related: Bool = VCSFlagStates.related, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileType: Bool = VCSFlagStates.thumbnail3D, versioning: Bool = VCSFlagStates.versioning, sharingInfo: Bool = VCSFlagStates.sharingInfo) -> Future<VCSFileResponse, Error> {
         return performRequest(route: APIRouter.fileAsset(assetURI: assetURI, related: related, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileType: fileType, versioning: versioning, sharingInfo: sharingInfo))
+    }
+    
+    public static func fileAssetAsync(assetURI: String, related: Bool = VCSFlagStates.related, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileType: Bool = VCSFlagStates.thumbnail3D, versioning: Bool = VCSFlagStates.versioning, sharingInfo: Bool = VCSFlagStates.sharingInfo) async throws -> VCSFileResponse {
+        return try await performAsyncRequest(route: APIRouter.fileAsset(assetURI: assetURI, related: related, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileType: fileType, versioning: versioning, sharingInfo: sharingInfo))
     }
     
     public static func folderInfo(rID: String, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileTypes: Bool = VCSFlagStates.fileType, sharingInfo: Bool = VCSFlagStates.sharingInfo) -> Future<VCSFolderResponse, Error> {
