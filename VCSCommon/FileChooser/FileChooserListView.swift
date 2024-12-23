@@ -112,8 +112,8 @@ struct FileChooserListView: View {
     func content(geometry: GeometryProxy) -> some View {
         VStack(alignment: .center) {
             DropdownButton(
-                currentStorage: currentStorage,
                 showDropdown: $showDropdown,
+                currentStorage: Binding(get: { self.currentStorage }, set: { _ in }),
                 viewWidth: UIDevice.current.userInterfaceIdiom == .pad ? geometry.size.width * 0.2 : geometry.size.width * 0.5
             )
             

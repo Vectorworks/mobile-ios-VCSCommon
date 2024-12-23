@@ -9,14 +9,20 @@ import Foundation
 import SwiftUI
 import UIKit
 
-struct DropdownView: View {
+public struct DropdownView: View {
     @Binding var showDropdown: Bool
     var availableStorages: [VCSStorageResponse]
     @Environment(\.colorScheme) var colorScheme
     
     var onStorageChange: ((VCSStorageResponse) -> Void)
     
-    var body: some View {
+    public init(showDropdown: Binding<Bool>, availableStorages: [VCSStorageResponse], onStorageChange: @escaping (VCSStorageResponse) -> Void) {
+        self._showDropdown = showDropdown
+        self.availableStorages = availableStorages
+        self.onStorageChange = onStorageChange
+    }
+    
+    public var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             VStack {
                 ForEach(VCSUser.savedUser?.availableStorages ?? [], id: \.storageType) { (currentStorage: VCSStorageResponse) in

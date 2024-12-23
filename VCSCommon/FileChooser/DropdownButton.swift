@@ -8,12 +8,18 @@
 import Foundation
 import SwiftUI
 
-struct DropdownButton: View {
-    @State var currentStorage: VCSStorageResponse
-    @Binding var showDropdown: Bool
-    var viewWidth: CGFloat
+public struct DropdownButton: View {
+    @Binding private var currentStorage: VCSStorageResponse
+    @Binding private var showDropdown: Bool
+    private var viewWidth: CGFloat
     
-    var body: some View {
+    public init(showDropdown: Binding<Bool>, currentStorage: Binding<VCSStorageResponse>, viewWidth: CGFloat) {
+        self.viewWidth = viewWidth
+        self._showDropdown = showDropdown
+        self._currentStorage = currentStorage
+    }
+    
+    public var body: some View {
         HStack {
             HStack {
                 Image(currentStorage.storageType.storageImageName)
