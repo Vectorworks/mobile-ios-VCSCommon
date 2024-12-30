@@ -44,6 +44,16 @@ public struct DropdownButton: View {
         .onTapGesture {
             showDropdown.toggle()
         }
+        //This could be replaced with
+//        Menu {
+//            Button {
+//            } label: {
+//                Label("S3", systemImage: "s3Image")
+//            }
+//            ...
+//        } label: {
+//            Label(currentStorage.storageType.displayName, image: currentStorage.storageType.storageImageName)
+//        }
     }
     
 }
