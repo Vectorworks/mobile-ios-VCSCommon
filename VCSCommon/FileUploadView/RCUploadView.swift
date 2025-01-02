@@ -36,9 +36,6 @@ public struct RCUploadView<Model>: View, KeyboardReadable where Model: RCFileUpl
                         }
                     }
                 }
-                .onTapGesture {
-                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                }
                 .onReceive(keyboardPublisher) { newIsKeyboardVisible in
                     isKeyboardVisible = newIsKeyboardVisible
                 }
@@ -106,6 +103,7 @@ public struct UploadViewFileName<Model>: View where Model: RCFileUploadViewModel
                     TextField("Please enter a filename.".vcsLocalized, text: $model.baseFileName)
                         .onSubmit {
                             guard model.baseFileName.count > 0 else { return }
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                             print(model.baseFileName)
                         }
                         .textInputAutocapitalization(.never)
@@ -267,6 +265,7 @@ public struct UploadViewSimpleLocation<Model>: View where Model: RCFileUploadVie
                         .textFieldStyle(.roundedBorder)
                         .onSubmit {
                             guard model.newLocationName.count > 0 else { return }
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                             print(model.newLocationName)
                         }
                         .textInputAutocapitalization(.never)

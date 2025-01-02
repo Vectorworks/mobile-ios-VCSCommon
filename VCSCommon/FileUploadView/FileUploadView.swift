@@ -57,7 +57,6 @@ public struct FileUploadWarningView<Model>: View where Model: FileUploadViewMode
                     }
                 }
                 .listStyle(.plain)
-//                .padding()
                 
                 Spacer()
                 
@@ -95,7 +94,6 @@ public struct FileUploadWarningView<Model>: View where Model: FileUploadViewMode
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         dismissParent()
                     } label: {
                         Text("Discard".vcsLocalized)
@@ -127,7 +125,6 @@ public struct FileUploadView<Model>: View, KeyboardReadable where Model: FileUpl
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         dismiss()
                     } label: {
                         Text("Discard".vcsLocalized)
@@ -135,9 +132,6 @@ public struct FileUploadView<Model>: View, KeyboardReadable where Model: FileUpl
                     }
                 }
             }
-        }
-        .onTapGesture {
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
         .onReceive(keyboardPublisher) { newIsKeyboardVisible in
             isKeyboardVisible = newIsKeyboardVisible
@@ -167,7 +161,6 @@ public struct FileUploadViewLocationSection<Model>: View where Model: FileUpload
         Spacer()
         
         Button {
-            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             if model.filesHasSameName.isEmpty == false || model.filesHasInvalidName.isEmpty == false || model.filesHasLongName.isEmpty == false {
                 DDLogError("Files has errors.")
                 if model.filesHasSameName.isEmpty == false {

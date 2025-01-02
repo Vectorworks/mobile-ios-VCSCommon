@@ -46,7 +46,7 @@ public class RealityCaptureUploadViewModel: RCFileUploadViewModel {
     public var isSaveButtonDisabled: Bool {
         switch pickerProjectsBrowseOption {
         case .Simple:
-            return nameErrors().isEmpty == false || isUploading == true || isNewLocationNameError() == nil
+            return nameErrors().isEmpty == false || isUploading == true || isNewLocationNameError() != nil
         case .Custom:
             return nameErrors().isEmpty == false || isUploading == true
         }
