@@ -422,6 +422,10 @@ public class APIClient {
         return performRequest(route: APIRouter.sendVCDOCReply(replyData: replyData))
     }
     
+    public static func editVCDOCReply(editReplyData: VCSVWViewerEditReplyRequest) -> Future<VCSVCDOCReplyResult, Error> {
+        return performRequest(route: APIRouter.editVCDOCReply(editReplyData: editReplyData))
+    }
+    
     public static func getTrustedAccounts() -> Future<VCSTrustedAccountsResponse, Error> {
         return performRequest(route: APIRouter.getTrustedAccounts)
     }

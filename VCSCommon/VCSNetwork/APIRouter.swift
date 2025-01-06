@@ -60,6 +60,7 @@ public enum APIRouter: URLRequestConvertible {
     case editVCDOCComment(editCommentData: VCSVWViewerEditCommentRequest)
     case resolveVCDOCComment(resolveCommentData: VCSVWViewerResolveCommentRequest)
     case deleteVCDOCReply(replyID: String)
+    case editVCDOCReply(editReplyData: VCSVWViewerEditReplyRequest)
     case search(query: String, storageType: String?, sharedWithMe: Bool, page: Int)
 
     // MARK: - requestURL
@@ -170,6 +171,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .deleteVCDOCReply:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .editVCDOCReply:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .search:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         }
@@ -226,6 +229,8 @@ public enum APIRouter: URLRequestConvertible {
             return .delete
         case .deleteVCDOCReply:
             return .delete
+        case .editVCDOCReply:
+            return .patch
         default:
             return .get
         }
@@ -375,6 +380,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/comment/\(commentID)/"
         case .deleteVCDOCReply(let replyID):
             return "/reply/\(replyID)/"
+        case .editVCDOCReply(let editReplyData):
+            return "/reply/\(editReplyData.id)/"
         case .search(_, let storageType, let sharedWithMe, _):
             if sharedWithMe {
                 return "__all__/search/"
@@ -422,6 +429,8 @@ public enum APIRouter: URLRequestConvertible {
             return [K.APIParameterKey.mountFolder.action: actionValue]
         case .sendVCDOCReply(let replyData):
             return replyData.asDictionary()
+        case .editVCDOCReply(let editReplyData):
+            return editReplyData.asDictionary()
         case .addVCDOCComment(let commentData):
             return commentData.asDictionary()
         case .editVCDOCComment(let editCommentData):
