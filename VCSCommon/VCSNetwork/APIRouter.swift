@@ -59,6 +59,7 @@ public enum APIRouter: URLRequestConvertible {
     case deleteVCDOCComment(commentID: String)
     case editVCDOCComment(editCommentData: VCSVWViewerEditCommentRequest)
     case resolveVCDOCComment(resolveCommentData: VCSVWViewerResolveCommentRequest)
+    case deleteVCDOCReply(replyID: String)
     case search(query: String, storageType: String?, sharedWithMe: Bool, page: Int)
 
     // MARK: - requestURL
@@ -167,6 +168,8 @@ public enum APIRouter: URLRequestConvertible {
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .deleteVCDOCComment:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
+        case .deleteVCDOCReply:
+            return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v1)
         case .search:
             return VCSRequestURL(vcsServer: VCSServer.default, APIVersion: VCSAPIVersion.v2)
         }
@@ -220,6 +223,8 @@ public enum APIRouter: URLRequestConvertible {
         case .resolveVCDOCComment:
             return .patch
         case .deleteVCDOCComment:
+            return .delete
+        case .deleteVCDOCReply:
             return .delete
         default:
             return .get
@@ -368,6 +373,8 @@ public enum APIRouter: URLRequestConvertible {
             return "/comment/\(resolveCommentdata.id)/"
         case .deleteVCDOCComment(let commentID):
             return "/comment/\(commentID)/"
+        case .deleteVCDOCReply(let replyID):
+            return "/reply/\(replyID)/"
         case .search(_, let storageType, let sharedWithMe, _):
             if sharedWithMe {
                 return "__all__/search/"
