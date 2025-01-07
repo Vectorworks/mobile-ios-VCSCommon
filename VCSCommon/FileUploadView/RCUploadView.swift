@@ -292,7 +292,6 @@ public struct UploadViewSimpleLocation<Model>: View where Model: RCFileUploadVie
                 case nil:
                     EmptyView().frame(width: .zero, height: .zero)
                 }
-                
             }
             
             HStack {
