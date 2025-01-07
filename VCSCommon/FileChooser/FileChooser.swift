@@ -38,7 +38,7 @@ public struct FileChooser: View {
     
     public var body: some View {
         GeometryReader { geometry in
-            NavigationView {
+            NavigationStack {
                 FileChooserListView(
                     fileTypeFilter: fileTypeFilter,
                     itemPickedCompletion: onItemPicked,
@@ -77,7 +77,6 @@ public struct FileChooser: View {
                 .frame(maxWidth: .infinity)
                 .tint(.VCSTeal)
             }
-            .navigationBarHidden(true)
         }
     }
 }
