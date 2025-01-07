@@ -263,7 +263,7 @@ struct FileChooserListView: View {
     
     func lazyVGridView(maxHeight: CGFloat, section: RouteSection, models: [FileChooserModel], isOnline: Bool) -> some View {
         ScrollView {
-            LazyVGrid(columns: [.init(.adaptive(minimum: K.Sizes.gridMinCellWidth, maximum: K.Sizes.gridMaxCellWidth))], spacing: 20) {
+            LazyVGrid(columns: [.init(.adaptive(minimum: ViewConstants.Sizes.gridMinCellWidth, maximum: ViewConstants.Sizes.gridMaxCellWidth))], spacing: 20) {
                 ForEach(models, id: \.resourceUri) { file in
                     Button {
                         onDismiss()

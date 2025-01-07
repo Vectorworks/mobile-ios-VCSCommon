@@ -11,6 +11,8 @@ import SDWebImage
 import SDWebImageSwiftUI
 
 struct GridItemView: View {
+    typealias Sizes = ViewConstants.Sizes
+
     @Environment(\.colorScheme) var colorScheme
     @State var thumbnailURL: URL?
     @State var flags: VCSFlagsResponse?
@@ -34,20 +36,30 @@ struct GridItemView: View {
         VStack(alignment: .leading) {
             WebImage(url: thumbnailURL) { image in
                 image.resizable()
-                    .frame(minWidth: K.Sizes.gridCellMinImageSize, maxWidth: K.Sizes.gridCellMaxImageSize, minHeight: K.Sizes.gridCellMinImageSize, maxHeight: K.Sizes.gridCellMaxImageSize)
+                    .frame(
+                        minWidth: Sizes.gridCellMinImageSize,
+                        maxWidth: Sizes.gridCellMaxImageSize,
+                        minHeight: Sizes.gridCellMinImageSize,
+                        maxHeight: Sizes.gridCellMaxImageSize
+                    )
             } placeholder: {
                 Group {
                     Image(placeholderImageIconString)
                         .resizable()
                         .foregroundStyle(.gray)
-                        .frame(minWidth: K.Sizes.gridCellMinImageSize, maxWidth: K.Sizes.gridCellMaxImageSize, minHeight: K.Sizes.gridCellMinImageSize, maxHeight: K.Sizes.gridCellMaxImageSize)
+                        .frame(
+                            minWidth: Sizes.gridCellMinImageSize,
+                            maxWidth: Sizes.gridCellMaxImageSize,
+                            minHeight: Sizes.gridCellMinImageSize,
+                            maxHeight: Sizes.gridCellMaxImageSize
+                        )
                 }
             }
             .indicator(.activity)
             .transition(.fade(duration: 0.5))
             .scaledToFit()
             .cornerRadius(5)
-            .padding(K.Sizes.gridCellImagePadding)
+            .padding(Sizes.gridCellImagePadding)
             
             VStack(alignment: .leading) {
                 HStack {
@@ -69,7 +81,7 @@ struct GridItemView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(minWidth: K.Sizes.gridMinCellWidth, maxWidth: K.Sizes.gridMaxCellWidth)
+        .frame(minWidth: Sizes.gridMinCellWidth, maxWidth: Sizes.gridMaxCellWidth)
         .padding(8)
         .background(adaptiveBackgroundColor)
         .cornerRadius(10)

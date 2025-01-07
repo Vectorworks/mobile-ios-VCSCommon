@@ -14,7 +14,7 @@ extension Text {
             .font(.headline)
             .fontWeight(.regular)
             .lineLimit(1)
-            .frame(height: K.Sizes.gridTextFrameSize)
+            .frame(height: ViewConstants.Sizes.gridTextFrameSize)
             .truncationMode(.middle)
             .tint(Color.label)
     }

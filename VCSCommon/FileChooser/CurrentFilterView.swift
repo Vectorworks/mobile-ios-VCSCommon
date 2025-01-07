@@ -8,6 +8,7 @@ import Foundation
 import SwiftUI
 
 struct CurrentFilterView: View {
+    typealias Colors = ViewConstants.Colors
     
     var onDismiss: () -> Void
     
@@ -23,17 +24,17 @@ struct CurrentFilterView: View {
             label: {
                 HStack {
                     Image(fileTypeFilter.iconStr)
+                        .resizable()
+                        .frame(width: 20, height: 20)
                         .foregroundColor(.VCSTeal)
-                        .padding(EdgeInsets(top: 3, leading: 10, bottom: 3, trailing: 0))
                     Text(fileTypeFilter.titleStr)
                         .foregroundColor(.VCSTeal)
                         .font(.caption)
-                        .fontWeight(.regular)
-                        .padding(EdgeInsets(top: 3, leading: 0, bottom: 3, trailing: 10))
                 }
-                .background(colorScheme == .light ? Color.black.opacity(0.1) : Color.white.opacity(0.1))
-                .cornerRadius(10)
-                .fixedSize()
+                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .background(Colors.buttonBackground(for: colorScheme))
+                .cornerRadius(5)
             }
         )
     }
