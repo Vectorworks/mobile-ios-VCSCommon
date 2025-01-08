@@ -58,7 +58,7 @@ public class APIClient {
         APIClient.oauth2RetryHandler?.userDidCancelSingIn = false
     }
     
-    internal class func updateOAuthClient(loginSettings: VCSLoginSettingsResponse, redirectURI: String? = nil, sharedGroup: String? = nil) {
+    internal class func updateOAuthClient(loginSettings: VCSLoginSettingsResponse, retryClearDataBlock: @escaping () -> Void, redirectURI: String? = nil, sharedGroup: String? = nil) {
         // Dev option to debug frameworks easier
         var redirectURIs = loginSettings.nomadRedirectURLs
         if let rURI = redirectURI {
@@ -92,7 +92,7 @@ public class APIClient {
         let oauth2Client =  OAuth2CodeGrant(settings: settings)
         oauth2Client.clientConfig.contentType = .json
         APIClient.oauth2Client = oauth2Client
-        APIClient.oauth2RetryHandler = OAuth2RetryHandler(oauth2: APIClient.oauth2Client)
+        APIClient.oauth2RetryHandler = OAuth2RetryHandler(oauth2: APIClient.oauth2Client, retryClearDataBlock: retryClearDataBlock)
     }
     
     public static func clearAllFields() {

@@ -10,11 +10,14 @@ open class OAuth2RetryHandler: RequestInterceptor {
     let loader: OAuth2DataLoader
     fileprivate var requestsToRetry: [(RetryResult) -> Void] = []
     private var retryCounter = 4
+    private var retryClearDataBlock: () -> Void = {}
     
-    init?(oauth2: OAuth2C?) {
+    init?(oauth2: OAuth2C?, retryClearDataBlock: @escaping () -> Void) {
         guard let loader = oauth2 else { return nil }
         self.loader = OAuth2DataLoader(oauth2: loader)
+        self.retryClearDataBlock = retryClearDataBlock
         self.resetRetryCounter()
+        
     }
     
     open func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
@@ -43,7 +46,7 @@ open class OAuth2RetryHandler: RequestInterceptor {
             DDLogError("Retrying 3/3 message - \(error)")
             
             if self.retryCounter == 0 {
-                APIClient.oauth2Client?.forgetTokens()
+                self.retryClearDataBlock()
                 self.resetRetryCounter()
             }
             
