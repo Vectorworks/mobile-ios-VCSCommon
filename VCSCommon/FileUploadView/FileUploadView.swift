@@ -101,6 +101,7 @@ public struct FileUploadWarningView<Model>: View where Model: FileUploadViewMode
                     }
                 }
             }
+            .interactiveDismissDisabled()
         }
     }
 }
@@ -136,6 +137,7 @@ public struct FileUploadView<Model>: View, KeyboardReadable where Model: FileUpl
         .onReceive(keyboardPublisher) { newIsKeyboardVisible in
             isKeyboardVisible = newIsKeyboardVisible
         }
+        .interactiveDismissDisabled()
     }
 }
 
@@ -189,7 +191,6 @@ public struct FileUploadViewLocationSection<Model>: View where Model: FileUpload
         .padding()
         .sheet(isPresented: $warningViewIsPresented) {
             FileUploadWarningView(model: model, dismissParent: dismiss)
-                .interactiveDismissDisabled()
         }
     }
 }
