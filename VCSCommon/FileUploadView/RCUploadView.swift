@@ -39,6 +39,7 @@ public struct RCUploadView<Model>: View, KeyboardReadable where Model: RCFileUpl
                 .onReceive(keyboardPublisher) { newIsKeyboardVisible in
                     isKeyboardVisible = newIsKeyboardVisible
                 }
+                .interactiveDismissDisabled()
             case .failure(let failure):
                 VStack {
                     Label(title: {
@@ -52,6 +53,7 @@ public struct RCUploadView<Model>: View, KeyboardReadable where Model: RCFileUpl
                         Text("Close".vcsLocalized)
                     }
                 }
+                .interactiveDismissDisabled()
             }
         } else {
             ProgressView()
