@@ -112,9 +112,9 @@ struct FileChooserListView: View {
     func content(geometry: GeometryProxy) -> some View {
         VStack(alignment: .center) {
             DropdownButton(
-                showDropdown: $showDropdown,
                 currentStorage: Binding(get: { self.currentStorage }, set: { _ in }),
-                viewWidth: UIDevice.current.userInterfaceIdiom == .pad ? geometry.size.width * 0.2 : geometry.size.width * 0.5
+                availableStorages: availableStorages,
+                onStorageChange: onStorageChange
             )
             
             switch viewModel.viewState {
@@ -140,18 +140,6 @@ struct FileChooserListView: View {
     var body: some View {
         GeometryReader { geometry in
             content(geometry: geometry)
-            .overlay(
-                Group {
-                    if showDropdown {
-                        DropdownView(
-                            showDropdown: $showDropdown,
-                            availableStorages: availableStorages,
-                            onStorageChange: self.onStorageChange
-                        )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    }
-                }
-            )
             .frame(maxWidth: .infinity)
             .onChange(of: route) { _, newRoute in
                 Task {
