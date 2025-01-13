@@ -2,6 +2,7 @@ import SwiftUI
 import SceneKit
 import RealmSwift
 import Realm
+import Combine
 import CocoaLumberjackSwift
 
 public struct FileUploadWarningView<Model>: View where Model: FileUploadViewModel {
@@ -187,6 +188,7 @@ public struct FileUploadViewLocationSection<Model>: View where Model: FileUpload
                 Spacer()
             }
         }
+        .disabled(model.hasNewFolderTextFieldVisible)
         .buttonStyle(.realityCaptureVisualEffectRoundedCornerStyle)
         .padding()
         .sheet(isPresented: $warningViewIsPresented) {
@@ -213,7 +215,9 @@ public struct FileUploadViewCustomLocation<Model>: View where Model: FileUploadV
             case (.success(let storage), .success(let modelParentFolder)):
                 List(selection: Binding($model.lastSelectedFolderID)) {
                     Section {
-                        FileUploadViewCustomLocationSection(model: model, folderData: modelParentFolder)
+                        FileUploadViewCustomLocationSection(model: model, folderData: modelParentFolder) {
+                            model.rootFolderResult = nil
+                        }
                     } header: {
                         let availableStoragesToShow = (VCSUser.savedUser?.availableStorages ?? []).filter({$0.storageType.itemIdentifier != storage.storageType.itemIdentifier})
                         if availableStoragesToShow.count > 0 {
@@ -281,19 +285,230 @@ public struct FileUploadViewCustomLocation<Model>: View where Model: FileUploadV
 public struct FileUploadViewCustomLocationSection<Model>: View where Model: FileUploadViewModel {
     @ObservedObject public var model: Model
     let folderData: VCSFolderResponse
+    @State var showNewFolderTextField: Bool = false {
+        didSet {
+            model.hasNewFolderTextFieldVisible = showNewFolderTextField
+        }
+    }
+    @State var newFolderName: String = ""
+    @State var newLocationValidationError: FilenameValidationError? = nil
+    let reloadParentFolderLogic: () -> Void
     
-    public init(model: Model, folderData: VCSFolderResponse) {
+    public init(model: Model, folderData: VCSFolderResponse, reloadParentFolderLogic: @escaping () -> Void) {
         self.model = model
         self.folderData = folderData
+        self.reloadParentFolderLogic = reloadParentFolderLogic
     }
     
     public var body: some View {
         if folderData.subfolders.count > 0 {
             ForEach(folderData.subfolders, id: \.rID) { subfolder in
-                UploadViewCustomLocationSection(model: model, folderName: subfolder.name, folderRID: subfolder.rID, folderPrefix: subfolder.prefix, folderResourceURI: subfolder.resourceURI)
+                SubFileUploadViewCustomLocationSection(model: model, folderName: subfolder.name, folderRID: subfolder.rID, folderPrefix: subfolder.prefix, folderResourceURI: subfolder.resourceURI)
             }
             .listRowSeparator(.hidden)
             .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 10))
+        }
+        if showNewFolderTextField {
+            VStack {
+                HStack {
+                    TextField("Folder name".vcsLocalized, text: $newFolderName)
+                        .textFieldStyle(.roundedBorder)
+                        .onReceive(Just(newFolderName), perform: { newName in
+                            newLocationValidationError = FolderNameValidator.isNewFolderNameError(folderData: folderData, newFolderName: newName)?.error
+                        })
+                        .onSubmit {
+                            guard newFolderName.count > 0 else { return }
+                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                            guard newLocationValidationError == nil else { return }
+                            showNewFolderTextField = false
+                            APIClient.createFolder(storage: folderData.storageType, name: newFolderName, parentFolderPrefix: folderData.prefix, owner: folderData.ownerLogin).execute { (resultCreation: Result<VCSFolderResponse, Error>) in
+                                switch resultCreation {
+                                case .success(let success):
+                                    VCSCache.addToCache(item: success)
+                                    model.lastSelectedFolderID = success.rID
+                                case .failure(let failure):
+                                    DDLogError("FileUploadViewModel - firstLoadFolder(folderAssetURI:) - createFolder - error: \(failure)")
+                                }
+                                reloadParentFolderLogic()
+                            }
+                        }
+                        .textInputAutocapitalization(.never)
+                        .disableAutocorrection(true)
+                        .submitLabel(.done)
+                        .truncationMode(.middle)
+                    switch newLocationValidationError {
+                    case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                        Image(systemName: "exclamationmark.triangle")
+                    case nil:
+                        EmptyView().frame(width: .zero, height: .zero)
+                    }
+                    Button(action: {
+                        showNewFolderTextField = false
+                        newFolderName = ""
+                    }, label: {
+                        Image(systemName: "xmark.circle")
+                    })
+                }
+                switch newLocationValidationError {
+                case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                    Text(newLocationValidationError?.localizedErrorText ?? "")
+                        .font(.footnote.weight(.bold))
+                        .foregroundStyle(.gray)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                case nil:
+                    EmptyView().frame(width: .zero, height: .zero)
+                }
+            }
+        } else {
+            if true { //ActionValidator.canCreateFolder(cellDataHolder: modelParentFolder) {
+                Button(action: {
+                    showNewFolderTextField = true
+                    newFolderName = ""
+                }, label: {
+                    HStack {
+                        Image(systemName: "folder.badge.plus")
+                        Text("Create new".vcsLocalized)
+                    }
+                })
+            }
+        }
+    }
+}
+
+public struct SubFileUploadViewCustomLocationSection<Model>: View where Model: FileUploadViewModel {
+    @ObservedObject public var model: Model
+    @State var folderResult: Result<VCSFolderResponse, Error>?
+    @State var isSectionExpanded: Bool
+    let folderName: String
+    let folderRID: String
+    let folderResourceURI: String?
+    @State var showNewFolderTextField: Bool = false {
+        didSet {
+            model.hasNewFolderTextFieldVisible = showNewFolderTextField
+        }
+    }
+    @State var newFolderName: String = ""
+    @State var newLocationValidationError: FilenameValidationError? = nil
+    
+    public init(model: Model, folderName: String, folderRID: String, folderPrefix: String, folderResourceURI: String?) {
+        self.model = model
+        self.folderName = folderName
+        self.folderRID = folderRID
+        self.folderResourceURI = folderResourceURI
+        
+        let selectedFolderPrefix = model.selectedFolder?.prefix ?? ""
+        if folderResourceURI == nil {
+            self.isSectionExpanded = true
+        } else if selectedFolderPrefix.contains(folderPrefix) && selectedFolderPrefix != folderPrefix {
+            self.isSectionExpanded = true
+        } else {
+            self.isSectionExpanded = false
+        }
+    }
+    
+    public var body: some View {
+        DisclosureGroup(isExpanded: $isSectionExpanded) {
+            switch folderResult {
+            case .success(let modelParentFolder):
+                if modelParentFolder.subfolders.count > 0 {
+                    ForEach(modelParentFolder.subfolders, id: \.rID) { subfolder in
+                        SubFileUploadViewCustomLocationSection(model: model, folderName: subfolder.name, folderRID: subfolder.rID, folderPrefix: subfolder.prefix, folderResourceURI: subfolder.resourceURI)
+                    }
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 10))
+                }
+                if showNewFolderTextField {
+                    VStack {
+                        HStack {
+                            TextField("Folder name".vcsLocalized, text: $newFolderName)
+                                .textFieldStyle(.roundedBorder)
+                                .onReceive(Just(newFolderName), perform: { newName in
+                                    newLocationValidationError = FolderNameValidator.isNewFolderNameError(folderData: modelParentFolder, newFolderName: newName)?.error
+                                })
+                                .onSubmit {
+                                    guard newFolderName.count > 0 else { return }
+                                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                    guard newLocationValidationError == nil else { return }
+                                    showNewFolderTextField = false
+                                    APIClient.createFolder(storage: modelParentFolder.storageType, name: newFolderName, parentFolderPrefix: modelParentFolder.prefix, owner: modelParentFolder.ownerLogin).execute { (resultCreation: Result<VCSFolderResponse, Error>) in
+                                        switch resultCreation {
+                                        case .success(let success):
+                                            VCSCache.addToCache(item: success)
+                                            model.lastSelectedFolderID = success.rID
+                                        case .failure(let failure):
+                                            DDLogError("FileUploadViewModel - firstLoadFolder(folderAssetURI:) - createFolder - error: \(failure)")
+                                        }
+                                        folderResult = nil
+                                    }
+                                }
+                                .textInputAutocapitalization(.never)
+                                .disableAutocorrection(true)
+                                .submitLabel(.done)
+                                .truncationMode(.middle)
+                            switch newLocationValidationError {
+                            case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                                Image(systemName: "exclamationmark.triangle")
+                            case nil:
+                                EmptyView().frame(width: .zero, height: .zero)
+                            }
+                            Button(action: {
+                                showNewFolderTextField = false
+                                newFolderName = ""
+                            }, label: {
+                                Image(systemName: "xmark.circle")
+                            })
+                        }
+                        switch newLocationValidationError {
+                        case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                            Text(newLocationValidationError?.localizedErrorText ?? "")
+                                .font(.footnote.weight(.bold))
+                                .foregroundStyle(.gray)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        case nil:
+                            EmptyView().frame(width: .zero, height: .zero)
+                        }
+                    }
+                } else {
+                    if true { //ActionValidator.canCreateFolder(cellDataHolder: modelParentFolder) {
+                        Button(action: {
+                            showNewFolderTextField = true
+                            newFolderName = ""
+                        }, label: {
+                            HStack {
+                                Image(systemName: "folder.badge.plus")
+                                Text("Create new".vcsLocalized)
+                            }
+                        })
+                    }
+                }
+            case .failure(let error):
+                HStack {
+                    Text("Error loading folder data".vcsLocalized)
+                    Image(systemName: "exclamationmark.triangle")
+                }
+            case nil:
+                VCSWideProgressView() {
+                        if let folderResourceURI {
+                            model.loadFolder(folderURI: folderResourceURI, folderResult: $folderResult)
+                        } else if let userHomeFolderURI = VCSUser.savedUser?.availableStorages.first?.folderURI {
+                            model.loadFolder(folderURI: userHomeFolderURI, folderResult: $folderResult)
+                        } else {
+                            folderResult = .failure(FilenameValidationError.invalidUser)
+                        }
+                    }
+            }
+        } label: {
+            HStack {
+                Image(systemName: "folder")
+                    .foregroundStyle(.secondary)
+                Text(folderName)
+                Spacer()
+            }
+            .tag(Optional(folderRID))
         }
     }
 }

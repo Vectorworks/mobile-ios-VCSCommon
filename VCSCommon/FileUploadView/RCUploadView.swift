@@ -2,6 +2,8 @@ import SwiftUI
 import SceneKit
 import RealmSwift
 import Realm
+import Combine
+import CocoaLumberjackSwift
 
 public struct RCUploadView<Model>: View, KeyboardReadable where Model: RCFileUploadViewModel {
     @Environment(\.dismiss) var dismiss
@@ -14,8 +16,7 @@ public struct RCUploadView<Model>: View, KeyboardReadable where Model: RCFileUpl
     }
     
     public var body: some View {
-        if let parentFolderResult = model.rootFolderResult {
-            switch parentFolderResult {
+            switch model.rootFolderResult {
             case .success(let modelParentFolder):
                 NavigationStack {
                     VStack {
@@ -54,14 +55,12 @@ public struct RCUploadView<Model>: View, KeyboardReadable where Model: RCFileUpl
                     }
                 }
                 .interactiveDismissDisabled()
+            
+            case nil:
+                VCSWideProgressView() {
+                        model.loadInitialRootFolder()
+                    }
             }
-        } else {
-            ProgressView()
-                .controlSize(.extraLarge)
-                .task {
-                    model.loadInitialRootFolder()
-                }
-        }
     }
 }
 
@@ -112,25 +111,29 @@ public struct UploadViewFileName<Model>: View where Model: RCFileUploadViewModel
                         .disableAutocorrection(true)
                         .submitLabel(.done)
                         .truncationMode(.middle)
-                    switch baseNameValidationError {
-                    case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
-                        Image(systemName: "exclamationmark.triangle")
-                    case nil:
-                        EmptyView().frame(width: .zero, height: .zero)
+                    if model.isUploading == false {
+                        switch baseNameValidationError {
+                        case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                            Image(systemName: "exclamationmark.triangle")
+                        case nil:
+                            EmptyView().frame(width: .zero, height: .zero)
+                        }
                     }
                 }
                 .padding(8)
                 .background(RoundedRectangle(cornerRadius: 10).fill(.background.secondary))
-                switch baseNameValidationError {
-                case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
-                    Text(baseNameValidationError?.localizedErrorText ?? "")
-                        .font(.footnote.weight(.bold))
-                        .foregroundStyle(.gray)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                case nil:
-                    EmptyView().frame(width: .zero, height: .zero)
+                if model.isUploading == false {
+                    switch baseNameValidationError {
+                    case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                        Text(baseNameValidationError?.localizedErrorText ?? "")
+                            .font(.footnote.weight(.bold))
+                            .foregroundStyle(.gray)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    case nil:
+                        EmptyView().frame(width: .zero, height: .zero)
+                    }
                 }
             }
         }
@@ -211,10 +214,21 @@ public struct UploadViewSimpleLocation<Model>: View where Model: RCFileUploadVie
     let modelParentFolder: VCSFolderResponse
     
     @State var showSubfoldersList: Bool = false
+    @State var showNewFolderTextField: Bool = false {
+        didSet {
+            model.hasNewFolderTextFieldVisible = showNewFolderTextField
+        }
+    }
+    @State var newFolderName: String = ""
+    @State var newFolderNameValidationError: FilenameValidationError? = nil
+    @State var folderResult: Result<VCSFolderResponse, Error>?
     
     public init(model: Model, modelParentFolder: VCSFolderResponse) {
         self.model = model
         self.modelParentFolder = modelParentFolder
+        if let lastProjectFolder = model.selectedFolder {
+            folderResult = .success(lastProjectFolder)
+        }
     }
     
     var newLocationValidationError: FilenameValidationError? {
@@ -229,13 +243,35 @@ public struct UploadViewSimpleLocation<Model>: View where Model: RCFileUploadVie
                 Text(modelParentFolder.displayedPrefix)
             }
             if modelParentFolder.subfolders.count > 0 {
-                if let lastProjectFolder = VCSFolderResponse.realmStorage.getById(id: model.lastSelectedFolderID) {
-                    Text(lastProjectFolder.name)
-                } else {
-                    EmptyView().frame(width: 0, height: 0)
+                switch folderResult {
+                case .success(let success):
+                    if success.exists {
+                        Text(success.name)
+                    } else {
+                        Text("").frame(width: 0, height: 0)
+                            .task {
+                                model.lastSelectedFolderID = "nil"
+                                showSubfoldersList = true
+                            }
+                    }
+                case .failure(let failure):
+                    Text("").frame(width: 0, height: 0)
                         .task {
+                            model.lastSelectedFolderID = "nil"
                             showSubfoldersList = true
                         }
+                case nil:
+                    if let lastProjectFolder = VCSFolderResponse.realmStorage.getById(id: model.lastSelectedFolderID) {
+                        VCSWideProgressView() {
+                            model.loadFolder(folderURI: lastProjectFolder.resourceURI, folderResult: $folderResult)
+                        }
+                    } else {
+                        Text("").frame(width: 0, height: 0)
+                            .task {
+                                model.lastSelectedFolderID = "nil"
+                                showSubfoldersList = true
+                            }
+                    }
                 }
                 List(selection: Binding($model.lastSelectedFolderID)) {
                     Section(isExpanded: $showSubfoldersList) {
@@ -250,6 +286,72 @@ public struct UploadViewSimpleLocation<Model>: View where Model: RCFileUploadVie
                         }
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 10))
+                        if showNewFolderTextField {
+                            VStack {
+                                HStack {
+                                    TextField("Folder name".vcsLocalized, text: $newFolderName)
+                                        .textFieldStyle(.roundedBorder)
+                                        .onReceive(Just(newFolderName), perform: { newName in
+                                            newFolderNameValidationError = FolderNameValidator.isNewFolderNameError(folderData: modelParentFolder, newFolderName: newName)?.error
+                                        })
+                                        .onSubmit {
+                                            guard newFolderName.count > 0 else { return }
+                                            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                                            guard newFolderNameValidationError == nil else { return }
+                                            showNewFolderTextField = false
+                                            APIClient.createFolder(storage: modelParentFolder.storageType, name: newFolderName, parentFolderPrefix: modelParentFolder.prefix, owner: modelParentFolder.ownerLogin).execute { (resultCreation: Result<VCSFolderResponse, Error>) in
+                                                switch resultCreation {
+                                                case .success(let success):
+                                                    VCSCache.addToCache(item: success)
+                                                    model.lastSelectedFolderID = success.rID
+                                                case .failure(let failure):
+                                                    DDLogError("FileUploadViewModel - firstLoadFolder(folderAssetURI:) - createFolder - error: \(failure)")
+                                                }
+                                                model.loadInitialRootFolder()
+                                            }
+                                        }
+                                        .textInputAutocapitalization(.never)
+                                        .disableAutocorrection(true)
+                                        .submitLabel(.done)
+                                        .truncationMode(.middle)
+                                    switch newFolderNameValidationError {
+                                    case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                                        Image(systemName: "exclamationmark.triangle")
+                                    case nil:
+                                        EmptyView().frame(width: .zero, height: .zero)
+                                    }
+                                    Button(action: {
+                                        showNewFolderTextField = false
+                                        newFolderName = ""
+                                    }, label: {
+                                        Image(systemName: "xmark.circle")
+                                    })
+                                }
+                                switch newFolderNameValidationError {
+                                case .empty, .containsInvalidCharacters, .exists, .lengthy, .invalidUser:
+                                    Text(newLocationValidationError?.localizedErrorText ?? "")
+                                        .font(.footnote.weight(.bold))
+                                        .foregroundStyle(.gray)
+                                        .lineLimit(1)
+                                        .truncationMode(.tail)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                case nil:
+                                    EmptyView().frame(width: .zero, height: .zero)
+                                }
+                            }
+                        } else {
+                            if true { //ActionValidator.canCreateFolder(cellDataHolder: modelParentFolder) {
+                                Button(action: {
+                                    showNewFolderTextField = true
+                                    newFolderName = ""
+                                }, label: {
+                                    HStack {
+                                        Image(systemName: "folder.badge.plus")
+                                        Text("Create new".vcsLocalized)
+                                    }
+                                })
+                            }
+                        }
                     } header: {
                         HStack {
                             Image(systemName: "folder")
@@ -383,8 +485,7 @@ public struct UploadViewCustomLocationSection<Model>: View where Model: FileUplo
                     Image(systemName: "exclamationmark.triangle")
                 }
             case nil:
-                ProgressView()
-                    .task {
+                VCSWideProgressView() {
                         if let folderResourceURI {
                             model.loadFolder(folderURI: folderResourceURI, folderResult: $folderResult)
                         } else if let userHomeFolderURI = VCSUser.savedUser?.availableStorages.first?.folderURI {

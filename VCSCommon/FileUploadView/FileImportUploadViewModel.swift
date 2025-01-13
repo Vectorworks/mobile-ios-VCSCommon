@@ -22,6 +22,8 @@ public class FileImportUploadViewModel: FileUploadViewModel {
     @Published public var totalProgress: Double = 0.0
     @Published public var totalUploadsCount: Double = 0.0
     
+    @Published public var hasNewFolderTextFieldVisible: Bool = false
+    
     @Published public var itemsLocalNameAndPath: [LocalFileNameAndPath] = []
     
     @Published public var rootFolderResult: Result<VCSFolderResponse, any Error>?

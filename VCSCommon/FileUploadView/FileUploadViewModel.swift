@@ -10,7 +10,7 @@ public protocol FileUploadViewModel: ObservableObject {
     var totalProgress: Double { get set }
     var totalUploadsCount: Double { get set }
     
-    
+    var hasNewFolderTextFieldVisible: Bool { get set }
     var filesHasSameName: [NameAndError] { get }
     var filesHasInvalidName: [NameAndError] { get }
     var filesHasLongName: [NameAndError] { get }

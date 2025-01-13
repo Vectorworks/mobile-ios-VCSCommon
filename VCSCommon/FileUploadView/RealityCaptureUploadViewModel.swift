@@ -46,7 +46,7 @@ public class RealityCaptureUploadViewModel: RCFileUploadViewModel {
     public var isSaveButtonDisabled: Bool {
         switch pickerProjectsBrowseOption {
         case .Simple:
-            return nameErrors().isEmpty == false || isUploading == true || isNewLocationNameError() != nil
+            return nameErrors().isEmpty == false || isUploading == true || isNewLocationNameError() != nil || hasNewFolderTextFieldVisible
         case .Custom:
             return nameErrors().isEmpty == false || isUploading == true
         }
@@ -68,6 +68,7 @@ public class RealityCaptureUploadViewModel: RCFileUploadViewModel {
     @Published public var totalUploadsCount = 0.0
     @Published public var totalProgress: Double = 0.0
     @Published public var baseFileName: String
+    @Published public var hasNewFolderTextFieldVisible: Bool = false
     
     @Published public var pickerProjectsBrowseOption = ProjectsBrowseOptions.Simple
     
@@ -110,7 +111,9 @@ public class RealityCaptureUploadViewModel: RCFileUploadViewModel {
             switch result {
             case .success(let success):
                 VCSCache.addToCache(item: success)
-                self.setSelectedFolderByID(self.lastSelectedFolderID)
+                if success.exists {
+                    self.setSelectedFolderByID(self.lastSelectedFolderID)
+                }
             case .failure(let failure):
                 DDLogError("FileUploadViewModel - loadFolder(folderURI:) - error: \(failure)")
             }
@@ -127,7 +130,9 @@ public class RealityCaptureUploadViewModel: RCFileUploadViewModel {
             case .success(let success):
                 VCSCache.addToCache(item: success)
                 if let lastProjectFolder = VCSFolderResponse.realmStorage.getById(id: self.lastSelectedFolderID), let subfolder = success.subfolders.first(where: { $0.rID == lastProjectFolder.rID }) {
-                    self.setSelectedFolderByID(subfolder.rID)
+                    if subfolder.exists {
+                        self.setSelectedFolderByID(subfolder.rID)
+                    }
                 }
             case .failure(let failure):
                 if failure.responseCode == VCSNetworkErrorCode.notFound.rawValue {
@@ -138,7 +143,9 @@ public class RealityCaptureUploadViewModel: RCFileUploadViewModel {
                         switch resultCreation {
                         case .success(let success):
                             VCSCache.addToCache(item: success)
-                            self.setSelectedFolderByID(success.rID)
+                            if success.exists {
+                                self.setSelectedFolderByID(success.rID)
+                            }
                         case .failure(let failure):
                             DDLogError("FileUploadViewModel - firstLoadFolder(folderAssetURI:) - createFolder - error: \(failure)")
                         }
@@ -178,7 +185,9 @@ public class RealityCaptureUploadViewModel: RCFileUploadViewModel {
             switch result {
             case .success(let success):
                 VCSCache.addToCache(item: success)
-                self.setSelectedFolderByID(success.rID)
+                if success.exists {
+                    self.setSelectedFolderByID(success.rID)
+                }
             case .failure(let failure):
                 DDLogError("FileUploadViewModel - loadProjectFolder - error: \(failure)")
             }

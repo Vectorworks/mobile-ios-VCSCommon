@@ -41,7 +41,11 @@ public class FilenameValidator {
 
     static func doesExist(ownerLogin: String, storage: String, prefix: String) -> Bool {
         let predicate = NSPredicate(format: "ownerLogin == %@ && storageType == %@ && prefix == %@", ownerLogin, storage, prefix)
-        if VCSGenericRealmModelStorage<VCSFileResponse.RealmModel>().getAll(predicate: predicate).first != nil {
+        if VCSFileResponse.realmStorage.getAll(predicate: predicate).first != nil {
+            return true
+        }
+        
+        if VCSFolderResponse.realmStorage.getAll(predicate: predicate).first != nil {
             return true
         }
         
@@ -54,6 +58,15 @@ public class FilenameValidator {
 }
 
 public struct FolderNameValidator {
+    public static func isNewFolderNameError(folderData: VCSFolderResponse, newFolderName: String) -> NameAndError? {
+        guard let ownerLogin = VCSUser.savedUser?.login else { return NameAndError(newFolderName, FilenameValidationError.invalidUser) }
+        guard newFolderName.isEmpty == false else { return NameAndError(newFolderName, FilenameValidationError.empty) }
+        let parentPrefix = folderData.prefix == "/" ? "" : folderData.prefix
+        let fullPrefix = parentPrefix.appendingPathComponent(newFolderName).VCSNormalizedURLString()
+        let result = FilenameValidator.nameError(ownerLogin: ownerLogin, storage: folderData.storageTypeString, prefix: fullPrefix)
+        return result
+    }
+    
     static func doesAssetNameContainsIllegalSymbols(_ name: String) -> Bool {
         return name.rangeOfCharacter(from: VCSCommonConstants.invalidCharacterSet) != nil
     }

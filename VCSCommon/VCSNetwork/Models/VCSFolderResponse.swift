@@ -283,7 +283,7 @@ public extension VCSFolderResponse {
 
 extension VCSFolderResponse: Hashable {
     public static func == (lhs: VCSFolderResponse, rhs: VCSFolderResponse) -> Bool {
-        return lhs.VCSID == rhs.VCSID
+        return lhs.VCSID == rhs.VCSID && lhs.files.count == rhs.files.count && lhs.subfolders.count == rhs.subfolders.count
     }
     
     public func hash(into hasher: inout Hasher) {
