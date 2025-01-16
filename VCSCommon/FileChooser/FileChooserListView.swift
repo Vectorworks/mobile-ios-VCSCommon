@@ -105,17 +105,19 @@ struct FileChooserListView: View {
         return viewModel.sections[section.index].models
     }
     
-    private var currentStorage: VCSStorageResponse {
-        availableStorages.first(where: { $0.storageType == route.storageType })!
+    private var currentStorage: VCSStorageResponse? {
+        availableStorages.first(where: { $0.storageType == route.storageType })
     }
     
     func content(geometry: GeometryProxy) -> some View {
         VStack(alignment: .center) {
-            DropdownButton(
-                currentStorage: Binding(get: { self.currentStorage }, set: { _ in }),
-                availableStorages: availableStorages,
-                onStorageChange: onStorageChange
-            )
+            if let storage = currentStorage {
+                DropdownButton(
+                    currentStorage: Binding(get: { storage }, set: { _ in }),
+                    availableStorages: availableStorages,
+                    onStorageChange: onStorageChange
+                )
+            }
             
             switch viewModel.viewState {
             case .error(let error):

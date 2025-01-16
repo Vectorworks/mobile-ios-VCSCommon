@@ -17,8 +17,9 @@ struct FileChooserModel: Identifiable {
     let thumbnailUrl: URL?
     let lastDateModified: Date?
     let isAvailableOnDevice: Bool
+    let fileType: String?
     
-    init(resourceUri: String, resourceId: String, flags: VCSFlagsResponse?, name: String, thumbnailUrl: URL?, lastDateModified: Date?, isAvailableOnDevice: Bool) {
+    init(resourceUri: String, resourceId: String, flags: VCSFlagsResponse?, name: String, thumbnailUrl: URL?, lastDateModified: Date?, isAvailableOnDevice: Bool, fileType: String?) {
         self.id = resourceId
         self.resourceUri = resourceUri
         self.resourceId = resourceId
@@ -27,6 +28,7 @@ struct FileChooserModel: Identifiable {
         self.thumbnailUrl = thumbnailUrl
         self.lastDateModified = lastDateModified
         self.isAvailableOnDevice = isAvailableOnDevice
+        self.fileType = fileType
     }
 }
 
@@ -34,7 +36,7 @@ extension Array where Element == FileChooserModel {
     func matchesFilter(_ fileTypeFilter: FileTypeFilter, isOnline: Bool) -> [FileChooserModel] {
         return self.filter { fileChooserModel in
             let matchesExtension = fileTypeFilter.extensions.map { filterExtension in
-                fileChooserModel.name.range(of: filterExtension.rawValue, options: .caseInsensitive) != nil
+                filterExtension.isInFile(fileType: fileChooserModel.fileType ?? "", fileName: fileChooserModel.name)
             }.contains(true)
 
             if isOnline {

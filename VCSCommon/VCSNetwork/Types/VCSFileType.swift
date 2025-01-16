@@ -43,6 +43,8 @@ public enum VCSFileType: String
     case VCDOC
     case SAVEDVIEWS
     case REALITY
+    case OBJ
+    case CONNECTCAD
     
     case VWX_EXTENDED
     
@@ -57,6 +59,15 @@ public enum VCSFileType: String
             return file.fileType == self.rawValue
         default:
             return self.isInFileName(name: file.name)
+        }
+    }
+    
+    public func isInFile(fileType: String, fileName: String) -> Bool {
+        switch self {
+        case VCSFileType.IMG, VCSFileType.PANORAMA, VCSFileType.VIDEO, VCSFileType.VIDEO_360:
+            return fileType == self.rawValue
+        default:
+            return self.isInFileName(name: fileName)
         }
     }
     

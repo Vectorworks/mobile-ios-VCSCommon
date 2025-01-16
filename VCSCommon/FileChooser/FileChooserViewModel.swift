@@ -284,9 +284,9 @@ class FileChooserViewModel: ObservableObject {
         let predicate = NSPredicate(format: "RealmID = %@", sampleFilesLink)
         let cachedSampleFilesLink = SharedLink.realmStorage.getAll(predicate: predicate).first
         
-        let shouldLoadSampleFilesSubfolders = (cachedSampleFilesLink?.sharedAsset?.asset as? VCSFolderResponse)?.subfolders.filter { !$0.subfolders.isEmpty }.count == 0
+        let loadedSampleFilesSubfoldersCount = (cachedSampleFilesLink?.sharedAsset?.asset as? VCSFolderResponse)?.subfolders.filter { !$0.subfolders.isEmpty }.count
         
-        if shouldLoadSampleFilesSubfolders {
+        if loadedSampleFilesSubfoldersCount == nil || loadedSampleFilesSubfoldersCount == 0 {
             let sampleFolderResponse = try await APIClient.linkSharedAssetAsync(assetURI: folderURI)
             
             sampleFolderResponse.asset.loadLocalFiles()
@@ -337,7 +337,8 @@ class FileChooserViewModel: ObservableObject {
                     name: $0.name,
                     thumbnailUrl: $0.thumbnailURL,
                     lastDateModified: $0.lastModified.toDate(),
-                    isAvailableOnDevice: $0.isAvailableOnDevice
+                    isAvailableOnDevice: $0.isAvailableOnDevice,
+                    fileType: $0.fileType
                 )
             }
         
@@ -374,7 +375,8 @@ class FileChooserViewModel: ObservableObject {
                     name: $0.entity.name,
                     thumbnailUrl: $0.entity.thumbnailURL,
                     lastDateModified: $0.entity.lastModifiedString.toDate(),
-                    isAvailableOnDevice: $0.entity.isAvailableOnDevice
+                    isAvailableOnDevice: $0.entity.isAvailableOnDevice,
+                    fileType: $0.entity.fileTypeString
                 ))
             }
         }
@@ -420,7 +422,8 @@ class FileChooserViewModel: ObservableObject {
                         name: fileAsset!.name,
                         thumbnailUrl: fileAsset!.thumbnailURL,
                         lastDateModified: fileAsset!.lastModified.toDate(),
-                        isAvailableOnDevice: fileAsset?.isAvailableOnDevice == true
+                        isAvailableOnDevice: fileAsset?.isAvailableOnDevice == true,
+                        fileType: fileAsset?.fileType
                     ))
                 } else {
                     let folderAsset = link.sharedAsset!.asset!.folderAsset!.entity
@@ -440,7 +443,8 @@ class FileChooserViewModel: ObservableObject {
                     name: $0.name,
                     thumbnailUrl: $0.thumbnailURL,
                     lastDateModified: nil,
-                    isAvailableOnDevice: $0.isAvailableOnDevice
+                    isAvailableOnDevice: $0.isAvailableOnDevice,
+                    fileType: $0.fileType
                 )
             }
         
