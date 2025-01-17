@@ -422,8 +422,8 @@ public class APIClient {
         return performRequest(route: APIRouter.editVCDOCReply(editReplyData: editReplyData))
     }
     
-    public static func getTrustedAccounts() -> Future<VCSTrustedAccountsResponse, Error> {
-        return performRequest(route: APIRouter.getTrustedAccounts)
+    public static func getTrustedAccounts() async throws -> VCSTrustedAccountsResponse {
+        return try await performAsyncRequest(route: APIRouter.getTrustedAccounts)
     }
     
     public static func addVCDOCComment(commentData: VCSVWViewerAddCommentRequest) -> Future<VCSVWViewerComment, Error> {

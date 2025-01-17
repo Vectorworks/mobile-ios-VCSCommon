@@ -1,15 +1,15 @@
 import Foundation
 
-public struct VCSTrustedAccount: Codable {
-    let id: Int
-    let login: String
-    let email: String
+public struct VCSTrustedAccount: Codable, Identifiable, Hashable {
+    public let id: Int
+    public let login: String
+    public let email: String
     let firstName: String
     let lastName: String
     let nvwuid: String
-    let fullName: String
+    public let fullName: String
     let organizations: [String]
-
+    
     enum CodingKeys: String, CodingKey {
         case id = "id"
         case login = "login"
