@@ -6,6 +6,10 @@ public class VCSColors {
         return UIColor(red: 0, green: 188, blue: 180)
     }
     
+    public static var blackberry: UIColor {
+        return UIColor(red:107, green: 35, blue: 86)
+    }
+    
     public static func addAlphaToColor(_ color: UIColor, alphaLevel newAlpha: CGFloat = 1) -> UIColor {
         var red: CGFloat = 0
         var green: CGFloat = 0

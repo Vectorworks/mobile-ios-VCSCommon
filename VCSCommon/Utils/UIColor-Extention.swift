@@ -46,4 +46,5 @@ public extension Color {
     static let tertiarySystemFill: Color = { return Color(uiColor: .tertiarySystemFill) }()
     
     static let VCSTeal: Color = { return Color(uiColor: VCSColors.teal) }()
+    static let VCSBlackberry: Color = { return Color(uiColor: VCSColors.blackberry) }()
 }
