@@ -160,7 +160,7 @@ class FileChooserViewModel: ObservableObject {
                 if !isGuest {
                     let sharedWithMeSection = sections.first { $0.route == .sharedWithMe }
                     let sharedWithMeNextPage = sharedWithMeSection?.fileTypeStates[ext]?.currentPage ?? 0
-                    let sharedWithMeResponse = try await APIClient.searchSharedWithMe(query: query, page: sharedWithMeNextPage)
+                    let sharedWithMeResponse = try await APIClient.searchSharedWithMe(query: query, page: sharedWithMeNextPage, related: true)
                     
                     hasMorePages = sharedWithMeResponse.next != nil
                     

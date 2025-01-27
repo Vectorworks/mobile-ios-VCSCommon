@@ -61,7 +61,7 @@ public enum APIRouter: URLRequestConvertible {
     case resolveVCDOCComment(resolveCommentData: VCSVWViewerResolveCommentRequest)
     case deleteVCDOCReply(replyID: String)
     case editVCDOCReply(editReplyData: VCSVWViewerEditReplyRequest)
-    case search(query: String, storageType: String?, sharedWithMe: Bool, page: Int)
+    case search(query: String, storageType: String?, sharedWithMe: Bool, page: Int, related: Bool)
 
     // MARK: - requestURL
     private var requestURL: VCSRequestURL {
@@ -382,7 +382,7 @@ public enum APIRouter: URLRequestConvertible {
             return "/reply/\(replyID)/"
         case .editVCDOCReply(let editReplyData):
             return "/reply/\(editReplyData.id)/"
-        case .search(_, let storageType, let sharedWithMe, _):
+        case .search(_, let storageType, let sharedWithMe, _, _):
             if sharedWithMe {
                 return "__all__/search/"
             } else {
@@ -769,7 +769,7 @@ public enum APIRouter: URLRequestConvertible {
             let queryItemOsMac = URLQueryItem(name: "os", value: "mac")
             result.append(queryItemOsMac)
             return result
-        case .search(let query, _, let sharedWithMe, let page):
+        case .search(let query, _, let sharedWithMe, let page, let related):
             var result: [URLQueryItem] = []
             let queryItemQ = URLQueryItem(name: "q", value: query)
             if sharedWithMe {
@@ -781,6 +781,10 @@ public enum APIRouter: URLRequestConvertible {
             if page > 0 {
                 let queryItemPage = URLQueryItem(name: "page", value: String(page))
                 result.append(queryItemPage)
+            }
+            if related {
+                let queryItemRelated = URLQueryItem(name: "related", value: "on")
+                result.append(queryItemRelated)
             }
             result.append(queryItemQ)
             return result
