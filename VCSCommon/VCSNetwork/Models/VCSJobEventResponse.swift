@@ -173,6 +173,126 @@ public class VCSPresentation : Codable, Hashable {
     }
 }
 
+public struct VCDOCCommentEventNotificationResponse: Decodable {
+    public var packetType: String
+    public var channel: String
+    public var data: VCDOCCommentEventData
+    
+    enum CodingKeys: String, CodingKey {
+        case packetType = "packet_type"
+        case channel = "topic_id"
+        case data = "data"
+    }
+}
+
+public struct VCDOCCommentEventData: Decodable {
+    public var event: String
+    var username: String
+    public var data: VCDOCCommentEventResponseData
+}
+
+public struct VCDOCCommentEventResponseData: Decodable {
+    public var comment: VCDOCCommentEventResponseCommentData
+    public var event: String
+    public var action: String
+    public var toast: Bool
+    public var timestamp: String
+    public var sequenceNumber: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case comment = "comment"
+        case event = "event"
+        case action = "action"
+        case toast = "toast"
+        case timestamp = "timestamp"
+        case sequenceNumber = "sequence_number"
+    }
+}
+
+public class VCDOCCommentEventResponseCommentData: Codable {
+    public let id: Int
+    public let owner: VCDOCCommentEventResponseCommentOwnerData
+    public let content: String
+    public let pubDate: String
+    public let modDate: String
+    public let parentID: Int?
+    public let resolved: Bool?
+    public let replies: [VCSVWViewerCommentReply]?
+    public let metadata: VCSVWViewerCommentMetadata?
+    public let resource: VCDOCCommentEventResourceData
+    public let resourceType: String
+    public let linkUUID: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case owner = "owner"
+        case content = "content"
+        case pubDate = "pub_date"
+        case modDate = "mod_date"
+        case parentID = "parent"
+        case resolved = "resolved"
+        case replies = "replies"
+        case metadata = "metadata"
+        case resource = "resource"
+        case resourceType = "resource_type"
+        case linkUUID = "link_uuid"
+    }
+
+    required public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        id = try values.decode(Int.self, forKey: .id)
+        owner = try values.decode(VCDOCCommentEventResponseCommentOwnerData.self, forKey: .owner)
+        content = try values.decode(String.self, forKey: .content)
+        pubDate = try values.decode(String.self, forKey: .pubDate)
+        modDate = try values.decode(String.self, forKey: .modDate)
+        parentID = try values.decodeIfPresent(Int.self, forKey: .parentID)
+        resolved = try values.decodeIfPresent(Bool.self, forKey: .resolved)
+        replies = try values.decodeIfPresent([VCSVWViewerCommentReply].self, forKey: .replies)
+        metadata = try values.decodeIfPresent(VCSVWViewerCommentMetadata.self, forKey: .metadata)
+        resource = try values.decode(VCDOCCommentEventResourceData.self, forKey: .resource)
+        resourceType = try values.decode(String.self, forKey: .resourceType)
+        linkUUID = try values.decodeIfPresent(String.self, forKey: .linkUUID)
+    }
+}
+
+public struct VCDOCCommentEventResourceData: Codable {
+    public var id: Int
+    public var object: VCSVWViewerCommentResourceObject
+}
+
+
+public class VCDOCCommentEventResponseCommentOwnerData: Codable {
+    public let id: Int
+    public let firstName: String
+    public let lastName: String
+    public let email: String
+    public let login: String
+    public let nvwuid: String
+    public let fullName: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "id"
+        case firstName = "first_name"
+        case lastName = "last_name"
+        case email = "email"
+        case login = "login"
+        case nvwuid = "nvwuid"
+        case fullName = "full_name"
+    }
+    
+    required public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        id = try values.decode(Int.self, forKey: .id)
+        firstName = try values.decode(String.self, forKey: .firstName)
+        lastName = try values.decode(String.self, forKey: .lastName)
+        email = try values.decode(String.self, forKey: .email)
+        login = try values.decode(String.self, forKey: .login)
+        nvwuid = try values.decode(String.self, forKey: .nvwuid)
+        fullName = try values.decode(String.self, forKey: .fullName)
+    }
+}
+
+
 public struct JobPayload: Decodable {
     var event: String
     var username: String
