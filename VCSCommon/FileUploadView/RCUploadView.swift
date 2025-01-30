@@ -11,8 +11,11 @@ public struct RCUploadView<Model>: View, KeyboardReadable where Model: RCFileUpl
     
     @State var isKeyboardVisible = false
     
-    public init(model: Model) {
+    private var dismissAction: (() -> Void)? = nil
+    
+    public init(model: Model, dismissAction: (() -> Void)? = nil) {
         self.model = model
+        self.dismissAction = dismissAction
     }
     
     public var body: some View {
@@ -29,7 +32,11 @@ public struct RCUploadView<Model>: View, KeyboardReadable where Model: RCFileUpl
                         ToolbarItem(placement: .topBarTrailing) {
                             Button {
                                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                                dismiss()
+                                if let dismissAction = dismissAction {
+                                    dismissAction()
+                                } else {
+                                    dismiss()
+                                }
                             } label: {
                                 Text("Discard".vcsLocalized)
                                     .underline()
