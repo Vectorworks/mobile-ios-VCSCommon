@@ -355,6 +355,10 @@ public class APIClient {
         return performRequest(route: APIRouter.folderAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo))
     }
     
+    public static func folderAssetAsync(assetURI: String, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileTypes: Bool = VCSFlagStates.fileType, sharingInfo: Bool = VCSFlagStates.sharingInfo) async throws -> VCSFolderResponse {
+        return try await performAsyncRequest(route:APIRouter.folderAsset(assetURI: assetURI, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileTypes: fileTypes, sharingInfo: sharingInfo))
+    }
+    
     public static func fileAsset(assetURI: String, related: Bool = VCSFlagStates.related, flags: Bool = VCSFlagStates.flags, ownerInfo: Bool = VCSFlagStates.ownerInfo, thumbnail3D: Bool = VCSFlagStates.thumbnail3D, fileType: Bool = VCSFlagStates.thumbnail3D, versioning: Bool = VCSFlagStates.versioning, sharingInfo: Bool = VCSFlagStates.sharingInfo) -> Future<VCSFileResponse, Error> {
         return performRequest(route: APIRouter.fileAsset(assetURI: assetURI, related: related, flags: flags, ownerInfo: ownerInfo, thumbnail3D: thumbnail3D, fileType: fileType, versioning: versioning, sharingInfo: sharingInfo))
     }
