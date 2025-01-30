@@ -321,20 +321,21 @@ public class RealityCaptureUploadViewModel: RCFileUploadViewModel {
         
         
         self.jobFilesCallback?(jobFiles)
+        
         let job = UploadJob(localFiles: jobFiles, owner: ownerLogin, parentFolder: nil)
-        AssetUploader.shared.upload(uploadJob: job, multiFileCompletion: { [unowned self] (result: Result<[VCSFileResponse], Error>) in
-            DispatchQueue.main.async {
+        AssetUploader.shared.upload(uploadJob: job, multiFileCompletion: { [weak self] (result: Result<[VCSFileResponse], Error>) in
+            DispatchQueue.main.async { [weak self] in
                 NotificationCenter.postNotification(name: Notification.Name("VCSUpdateDataSources"), userInfo: nil)
                 switch result {
                 case .success(let successFiles):
                     DDLogInfo("FileUploadViewModel - uploadAction - success upload: \(successFiles)")
                     if let successFile = successFiles.first {
-                        self.selectedFolder?.appendFile(successFile)
+                        self?.selectedFolder?.appendFile(successFile)
                     }
                 case .failure(let failure):
                     DDLogError("FileUploadViewModel - uploadAction - error: \(failure)")
                 }
-                self.uploadCompletion?(result)
+                self?.uploadCompletion?(result)
                 dismiss()
             }
         })
