@@ -200,7 +200,7 @@ class FileChooserViewModel: ObservableObject {
                 case .sharedWithMe:
                     let sharedWithMeSection = sections.first { $0.route == .sharedWithMe }
                     let sharedWithMeNextPage = sharedWithMeSection?.fileTypeStates[ext]?.currentPage ?? 0
-                    let sharedWithMeResponse = try await APIClient.searchSharedWithMe(query: ".\(ext)", page: sharedWithMeNextPage)
+                    let sharedWithMeResponse = try await APIClient.searchSharedWithMe(query: ".\(ext)", page: sharedWithMeNextPage, related: true)
                     
                     updateFileTypeState(for: FileChooserRouteData.sharedWithMe, fileType: ext, hasMorePages: sharedWithMeResponse.next != nil)
                     
@@ -225,7 +225,7 @@ class FileChooserViewModel: ObservableObject {
         let query = ".\(ext)"
         let currentSection = sections.first { $0.route == route }
         let currentStorageNextPage = currentSection?.fileTypeStates[ext]?.currentPage ?? 0
-        let currentStorageResponse = try await APIClient.search(query: query, storageType: route.storageType.rawValue, page: currentStorageNextPage)
+        let currentStorageResponse = try await APIClient.search(query: query, storageType: route.storageType.rawValue, page: currentStorageNextPage, related: true)
         
         updateFileTypeState(for: route, fileType: ext, hasMorePages: currentStorageResponse.next != nil)
         
