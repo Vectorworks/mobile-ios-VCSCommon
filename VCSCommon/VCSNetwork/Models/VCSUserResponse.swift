@@ -162,6 +162,10 @@ extension VCSUser {
         return VCSUser.savedUser != nil
     }
     
+    public static var isGuest: Bool {
+        return VCSUser.savedUser == nil
+    }
+    
     public static var savedUser: VCSUser? {
         return VCSUser.realmStorage.getAll().first { $0.isLoggedIn }
     }
