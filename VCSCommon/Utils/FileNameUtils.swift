@@ -15,4 +15,12 @@ public class FileNameUtils {
         
         return imagePath
     }
+    
+    public static func appendingTimestamp(name: String) -> String {
+        let format: String = "yyyy-MM-dd HH-mm-ss"
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        let timestamp = formatter.string(from: Date())
+        return name.appending(timestamp)
+    }
 }
