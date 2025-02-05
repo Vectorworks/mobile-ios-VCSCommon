@@ -210,7 +210,7 @@ public struct UploadViewLocationSection<Model>: View where Model: RCFileUploadVi
                 Spacer()
             }
         }
-        .buttonStyle(.realityCaptureVisualEffectRoundedCornerStyle)
+        .buttonStyle(.actionButtonRoundedCornerStyle)
         .disabled(model.isSaveButtonDisabled)
         .padding()
     }

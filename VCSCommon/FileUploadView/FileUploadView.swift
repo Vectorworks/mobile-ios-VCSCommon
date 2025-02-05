@@ -87,7 +87,7 @@ public struct FileUploadWarningView<Model>: View where Model: FileUploadViewMode
                             Spacer()
                         }
                     }
-                    .buttonStyle(.realityCaptureVisualEffectRoundedCornerStyle)
+                    .buttonStyle(.actionButtonRoundedCornerStyle)
                     .padding()
                 }
             }
@@ -189,7 +189,7 @@ public struct FileUploadViewLocationSection<Model>: View where Model: FileUpload
             }
         }
         .disabled(model.hasNewFolderTextFieldVisible)
-        .buttonStyle(.realityCaptureVisualEffectRoundedCornerStyle)
+        .buttonStyle(.actionButtonRoundedCornerStyle)
         .padding()
         .sheet(isPresented: $warningViewIsPresented) {
             FileUploadWarningView(model: model, dismissParent: dismiss)

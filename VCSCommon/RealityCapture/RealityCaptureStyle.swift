@@ -81,3 +81,36 @@ public struct RealityCaptureVisualEffectRoundedCornerStyle: ButtonStyle {
 extension ButtonStyle where Self == RealityCaptureVisualEffectRoundedCornerStyle {
     @MainActor public static var realityCaptureVisualEffectRoundedCornerStyle: RealityCaptureVisualEffectRoundedCornerStyle { RealityCaptureVisualEffectRoundedCornerStyle() }
 }
+
+public struct ActionButtonRoundedCornerStyle: ButtonStyle {
+    public func makeBody(configuration: Configuration) -> some View {
+        ButtonWithEnvironmentValues(configuration: configuration)
+        
+    }
+    
+    struct ButtonWithEnvironmentValues: View {
+        let configuration: ButtonStyle.Configuration
+        @Environment(\.isEnabled) private var isEnabled: Bool
+        var body: some View {
+            configuration.label
+                .padding(16)
+                .font(.subheadline)
+                .bold()
+                .foregroundColor(.white)
+                .if(isEnabled == false, transform: {
+                    $0.background(.ultraThinMaterial)
+                    
+                })
+                .if(isEnabled == true, transform: {
+                    $0.background(.blue)
+                })
+                .environment(\.colorScheme, .dark)
+                .cornerRadius(15)
+                .multilineTextAlignment(.center)
+        }
+    }
+}
+
+extension ButtonStyle where Self == ActionButtonRoundedCornerStyle {
+    @MainActor public static var actionButtonRoundedCornerStyle: ActionButtonRoundedCornerStyle { ActionButtonRoundedCornerStyle() }
+}
