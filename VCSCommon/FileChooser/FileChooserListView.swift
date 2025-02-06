@@ -154,7 +154,7 @@ struct FileChooserListView: View {
                     viewModel.setSectionsShouldRefresh()
                 }
             }
-            .onChange(of: viewModel.viewState) { newValue in
+            .onChange(of: viewModel.viewState) { _, newValue in
                 Task {
                     viewModel.setSectionsShouldRefresh()
                 }
