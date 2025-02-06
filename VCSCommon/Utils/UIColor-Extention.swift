@@ -47,5 +47,5 @@ public extension Color {
     
     static let VCSTeal: Color = { return Color(uiColor: VCSColors.teal) }()
     static let VCSBlackberry: Color = { return Color(uiColor: VCSColors.blackberry) }()
-    static let buttonDismissSheetFill: Color = { return Color(uiColor: .systemGray2) }()
+    static let buttonDismissSheetFill: Color = { return Color(uiColor: UIColor(stringHex: "#F0F0F0")) }()
 }

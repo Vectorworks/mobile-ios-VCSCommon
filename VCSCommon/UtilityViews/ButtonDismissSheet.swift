@@ -15,7 +15,7 @@ public struct ButtonDismissSheet: View {
                 .resizable()
                 .frame(width: 24, height: 24)
                 .foregroundStyle(Color.buttonDismissSheetFill)
-                .background(Color.black)
+                .background(Color.black.padding(.all, 4.0))
                 .clipShape(Circle())
         }
     }
