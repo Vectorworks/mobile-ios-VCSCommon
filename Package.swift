@@ -19,13 +19,13 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/robbiehanson/KissXML.git", exact: "5.3.3"),
         .package(url: "https://github.com/CocoaLumberjack/CocoaLumberjack.git", exact: "3.8.5"),
-        .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.10.1"),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.10.2"),
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", exact: "0.9.19"),
-        .package(url: "https://github.com/realm/realm-swift.git", exact: "10.54.1"),
+        .package(url: "https://github.com/realm/realm-swift.git", exact: "20.0.1"),
         .package(url: "https://github.com/scalessec/Toast-Swift.git", exact: "5.1.1"),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "11.4.0"),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk.git", exact: "11.8.1"),
         .package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.20.0"),
-        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI.git", exact: "3.1.2"),
+        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI.git", exact: "3.1.3"),
         
         .package(url: "https://github.com/Vectorworks/OAuth2.git", exact: "5.2.2"),
     ],
