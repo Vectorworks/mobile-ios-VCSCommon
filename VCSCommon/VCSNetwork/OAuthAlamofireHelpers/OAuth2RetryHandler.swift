@@ -22,8 +22,8 @@ open class OAuth2RetryHandler: RequestInterceptor {
         
         do {
             let request = try urlRequest.signed(with: loader.oauth2)
-            DDLogWarn("cURL SIGNED \(Date()):")
-            DDLogWarn("\(request.cURL(pretty: false))")
+            DDLogInfo("cURL SIGNED \(Date()):")
+            DDLogInfo("\(request.cURL(pretty: false))")
             return completion(.success(request))
         } catch {
             DDLogError("Unable to sign request: \(error)")

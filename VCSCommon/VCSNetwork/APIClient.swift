@@ -114,7 +114,7 @@ public class APIClient {
                 switch dataResponse.result {
                 case .success(let value):
                     DDLogDebug("##### VCSNetwork success:\t\(dataResponse)")
-                    DDLogInfo("##### VCSNetwork data:\(value)")
+                    DDLogVerbose("##### VCSNetwork data:\(value)")
                     completion(.success(value))
                 case .failure(let error):
                     // HACK THIS!!!
@@ -153,6 +153,11 @@ public class APIClient {
                 APIClient.lastErrorData = nil
                 switch dataResponse.result {
                 case .success(let value):
+                    DDLogDebug("##### VCSNetwork success:\t\(dataResponse)")
+                    DDLogVerbose("##### VCSNetwork data:\(value)")
+                    if let errorData = dataResponse.data {
+                        DDLogVerbose("##### VCSNetwork response string:\n\(String(data: errorData, encoding: .utf8) ?? "nil")")
+                    }
                     continuation.resume(returning: value)
                 case .failure(let error):
                     // HACK THIS!!!
