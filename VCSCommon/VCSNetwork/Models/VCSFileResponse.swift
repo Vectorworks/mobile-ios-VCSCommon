@@ -300,7 +300,7 @@ extension VCSFileResponse: VCSCellDataHolder {
 
 extension VCSFileResponse: Hashable {
     final public class func ==(lhs: VCSFileResponse, rhs: VCSFileResponse) -> Bool {
-        return lhs.rID == rhs.rID
+        return lhs.VCSID == rhs.VCSID && lhs.localFile == rhs.localFile && lhs.related == rhs.related
     }
     
     public func hash(into hasher: inout Hasher) {

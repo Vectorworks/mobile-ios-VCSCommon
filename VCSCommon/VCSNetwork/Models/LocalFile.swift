@@ -38,6 +38,12 @@ public class LocalFile {
     }
 }
 
+extension LocalFile: Equatable {
+    final public class func ==(lhs: LocalFile, rhs: LocalFile) -> Bool {
+        return lhs.uuid == rhs.uuid
+    }
+}
+
 extension LocalFile: VCSCachable {
     public typealias RealmModel = RealmLocalFile
     private static let realmStorage: VCSGenericRealmModelStorage<RealmModel> = VCSGenericRealmModelStorage<RealmModel>()

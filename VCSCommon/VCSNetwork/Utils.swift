@@ -121,6 +121,8 @@ public extension NotificationCenter {
             NotificationCenter.postSubFileUpdateNotification(model: file)
         } else if let folder = model as? VCSFolderResponse {
             NotificationCenter.postSubFolderUpdateNotification(model: folder)
+        } else {
+            NotificationCenter.postSubItemUpdateNotification(item: model)
         }
     }
     
