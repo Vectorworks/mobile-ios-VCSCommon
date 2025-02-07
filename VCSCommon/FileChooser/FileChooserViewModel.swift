@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import RealmSwift
 import SwiftUI
+import CocoaLumberjackSwift
 
 class FileChooserViewModel: ObservableObject {
     
@@ -228,7 +229,9 @@ class FileChooserViewModel: ObservableObject {
         let currentStorageResponse = try await APIClient.search(query: query, storageType: route.storageType.rawValue, page: currentStorageNextPage, related: true)
         
         updateFileTypeState(for: route, fileType: ext, hasMorePages: currentStorageResponse.next != nil)
-        
+        //TODO: remove debug string
+        let itemsAndRelatedDebugString = currentStorageResponse.results.map({"\($0.asset.name) -rel-> \(($0.asset as? VCSFileResponse)?.related.map({$0.name})))"})
+        DDLogInfo("Items and Related:\n\(itemsAndRelatedDebugString.joined(separator: "\n"))")
         currentStorageResponse.results
             .map { $0.asset }
             .forEach {
