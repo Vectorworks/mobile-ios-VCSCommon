@@ -786,6 +786,9 @@ public enum APIRouter: URLRequestConvertible {
                 let queryItemRelated = URLQueryItem(name: "related", value: "on")
                 result.append(queryItemRelated)
             }
+            let queryItemDateOrder = URLQueryItem(name: "ordering", value: "-date")
+            result.append(queryItemDateOrder)
+            
             result.append(queryItemQ)
             return result
         default:

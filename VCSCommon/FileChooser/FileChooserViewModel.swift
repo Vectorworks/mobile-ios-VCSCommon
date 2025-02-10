@@ -332,6 +332,7 @@ class FileChooserViewModel: ObservableObject {
         
         let currentStorageFiles = allFiles
             .filter { $0.storageType == section.route.storageType.rawValue }
+            .sorted(by: { $0.lastModified > $1.lastModified })
             .map {
                 FileChooserModel(
                     resourceUri: $0.resourceURI,
