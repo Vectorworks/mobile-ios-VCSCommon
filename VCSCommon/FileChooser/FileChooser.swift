@@ -30,7 +30,8 @@ public struct FileChooser: View {
     
     private func onItemPicked(pickedModel: FileChooserModel) {
         guard let filePicked = VCSFileResponse.realmStorage.getModelById(id: pickedModel.resourceId) else {
-            fatalError("Picked file not found.")
+            DDLogError("FileChooser - onItemPicked: Picked file not found: \(pickedModel.resourceId)")
+            return
         }
         
         itemPickedCompletion(filePicked)

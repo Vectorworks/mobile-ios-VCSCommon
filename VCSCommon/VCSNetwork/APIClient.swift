@@ -155,9 +155,6 @@ public class APIClient {
                 case .success(let value):
                     DDLogDebug("##### VCSNetwork success:\t\(dataResponse)")
                     DDLogVerbose("##### VCSNetwork data:\(value)")
-                    if let errorData = dataResponse.data {
-                        DDLogVerbose("##### VCSNetwork response string:\n\(String(data: errorData, encoding: .utf8) ?? "nil")")
-                    }
                     continuation.resume(returning: value)
                 case .failure(let error):
                     // HACK THIS!!!

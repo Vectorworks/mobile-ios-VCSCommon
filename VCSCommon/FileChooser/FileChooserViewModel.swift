@@ -237,9 +237,6 @@ class FileChooserViewModel: ObservableObject {
         let currentStorageResponse = try await APIClient.search(query: query, storageType: route.storageType.rawValue, page: currentStorageNextPage, related: true)
         
         updateFileTypeState(for: route, fileType: ext, hasMorePages: currentStorageResponse.next != nil)
-        //TODO: remove debug string
-        let itemsAndRelatedDebugString = currentStorageResponse.results.map({"\($0.asset.name) -rel-> \(($0.asset as? VCSFileResponse)?.related.map({$0.name})))"})
-        DDLogInfo("Items and Related:\n\(itemsAndRelatedDebugString.joined(separator: "\n"))")
         currentStorageResponse.results
             .map { $0.asset }
             .forEach {
@@ -340,7 +337,7 @@ class FileChooserViewModel: ObservableObject {
         
         let currentStorageFiles = allFiles
             .filter { $0.storageType == section.route.storageType.rawValue }
-            .sorted(by: { $0.lastModified > $1.lastModified })
+//            .sorted(by: { $0.lastModified > $1.lastModified })
             .map {
                 FileChooserModel(
                     resourceUri: $0.resourceURI,
