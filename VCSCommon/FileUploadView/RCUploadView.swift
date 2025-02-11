@@ -28,6 +28,7 @@ public struct RCUploadView<Model>: View, KeyboardReadable where Model: RCFileUpl
                         UploadViewLocationSection(model: model, modelParentFolder: modelParentFolder)
                     }
                     .navigationTitle("Save".vcsLocalized)
+                    .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
                             Button {

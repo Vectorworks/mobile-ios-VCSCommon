@@ -45,17 +45,9 @@ public struct FileChooser: View {
                 isGuest: isGuest,
                 isOnline: VCSReachabilityMonitor.isConnected
             )
+            .navigationTitle(fileTypeFilter.titleStr)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    ToolbarBackButton(
-                        label: "Back".vcsLocalized,
-                        viewWidth: geometry.size.width * 0.3,
-                        onPress: { dismiss() }
-                    )
-                }
-                
                 ToolbarItem(placement: .principal) {
                     CurrentFilterView(
                         onDismiss: { dismiss() },
