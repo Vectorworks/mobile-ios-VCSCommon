@@ -20,6 +20,8 @@ class FileChooserViewModel: ObservableObject {
             
     let mainRoute: FileChooserRouteData
     
+    var isInitialLoad: Bool = true
+    
     var fileTypeFilter: FileTypeFilter
     
     var isGuest: Bool
@@ -135,6 +137,9 @@ class FileChooserViewModel: ObservableObject {
     }
     
     func loadInitialData() async {
+        guard isInitialLoad else { return }
+        isInitialLoad = false
+        
         do {
             updatePaginationWithLoadedFiles()
             
@@ -142,14 +147,8 @@ class FileChooserViewModel: ObservableObject {
                 try await loadInitialDataForSection(section: section)
             }
         } catch {
-            //MOBILE-8964
-            guard error.localizedDescription == "Invalid page." || error.responseCode == 404 else { return }
             handleError(error)
         }
-    }
-    
-    func resetSections() {
-        self.sections = FileChooserViewModel.getSectionsForMainRoute(mainRoute: mainRoute, isGuest: isGuest, fileTypeFilter: fileTypeFilter)
     }
     
     func loadInitialDataForSection(section: RouteSection) async throws {
