@@ -163,6 +163,8 @@ struct FileChooserListView: View {
                 Task {
                     await viewModel.loadInitialData()
                 }
+            }.onDisappear {
+                viewModel.resetSections()
             }
         }
     }
