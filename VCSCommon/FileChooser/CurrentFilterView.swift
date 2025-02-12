@@ -26,9 +26,9 @@ struct CurrentFilterView: View {
                     Image(fileTypeFilter.iconStr)
                         .resizable()
                         .frame(width: 20, height: 20)
-                        .foregroundColor(.VCSTeal)
+                        .foregroundColor(.VCSAccentColor)
                     Text(fileTypeFilter.titleStr)
-                        .foregroundColor(.VCSTeal)
+                        .foregroundColor(.VCSAccentColor)
                         .font(.caption)
                 }
                 .padding(.vertical, 8)

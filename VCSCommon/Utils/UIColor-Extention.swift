@@ -29,6 +29,29 @@ public extension UIColor {
         
         self.init(hex: Int(truncatingIfNeeded: rgbValue))
     }
+    
+    static let VCSAccentColor: UIColor = .blue
+//    static let VCSTeal: UIColor = UIColor(red: 0, green: 188, blue: 180)
+    
+    static let VCSOrange = UIColor(red:1.00, green:0.51, blue:0.00, alpha:1.0)
+    
+    static var VCSBlackberry: UIColor {
+        return UIColor(red:107, green: 35, blue: 86)
+    }
+    
+    func withAlphaModified(_ newAlpha: CGFloat) -> UIColor {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        self.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        
+        return UIColor(red: red, green: green, blue: blue, alpha: newAlpha)
+    }
+    
+    static func addAlphaToColor(_ color: UIColor, alphaLevel newAlpha: CGFloat = 1) -> UIColor {
+        return color.withAlphaModified(newAlpha)
+    }
 }
 
 public extension Color {
@@ -45,8 +68,10 @@ public extension Color {
     static let secondarySystemFill: Color = { return Color(uiColor: .secondarySystemFill) }()
     static let tertiarySystemFill: Color = { return Color(uiColor: .tertiarySystemFill) }()
     
-    static let VCSTeal: Color = { return Color(uiColor: VCSColors.teal) }()
-    static let VCSBlackberry: Color = { return Color(uiColor: VCSColors.blackberry) }()
+//    static let VCSTeal: Color = { return Color(uiColor: UIColor.VCSTeal) }()
+    static let VCSBlackberry: Color = { return Color(uiColor: UIColor.VCSBlackberry) }()
     static let buttonDismissSheetFill: Color = { return Color(uiColor: UIColor(stringHex: "#F0F0F0")) }()
     static let resolvedCommentFill: Color = { return Color(uiColor: UIColor(stringHex: "#F7F7F7")) }()
+    
+    static let VCSAccentColor: Color = { return .blue }()
 }

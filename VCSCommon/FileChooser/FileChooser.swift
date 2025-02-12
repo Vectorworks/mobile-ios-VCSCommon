@@ -67,7 +67,7 @@ public struct FileChooser: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .tint(.VCSTeal)
+            .tint(.VCSAccentColor)
         }
     }
 }
