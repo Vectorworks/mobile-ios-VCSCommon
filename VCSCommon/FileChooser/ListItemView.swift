@@ -60,9 +60,11 @@ struct ListItemView: View {
                         .listCellTextModifier()
                 }
                 HStack {
-                    Text(size ?? "")
-                        .font(.subheadline)
-                        .foregroundColor(Color(.systemGray))
+                    if let sizeString = size {
+                        Text(sizeString)
+                            .font(.subheadline)
+                            .foregroundColor(Color(.systemGray))
+                    }
                     Text(lastDateModified?.formatted() ?? "")
                         .font(.subheadline)
                         .foregroundColor(Color(.systemGray))

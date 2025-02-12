@@ -19,6 +19,7 @@ struct GridItemView: View {
     @State var name: String
     @State var isFolder: Bool
     @State var lastDateModified: Date?
+    @State var size: String?
     
     var placeholderImageIconString: String {
         if isFolder {
@@ -73,10 +74,14 @@ struct GridItemView: View {
                     Spacer()
                 }
                 HStack {
+                    if let sizeString = size {
+                        Text(sizeString)
+                            .font(.subheadline)
+                            .foregroundColor(Color(.systemGray))
+                    }
                     Text(lastDateModified?.formatted() ?? "")
                         .font(.subheadline)
                         .foregroundColor(Color(.systemGray))
-                    Spacer()
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

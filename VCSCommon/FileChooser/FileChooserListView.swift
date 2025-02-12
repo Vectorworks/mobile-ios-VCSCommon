@@ -265,7 +265,8 @@ struct FileChooserListView: View {
                             flags: file.flags,
                             name: file.name,
                             isFolder: false,
-                            lastDateModified: file.lastDateModified
+                            lastDateModified: file.lastDateModified,
+                            size: file.size
                         )
                     }
                 }
