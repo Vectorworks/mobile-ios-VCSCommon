@@ -346,6 +346,7 @@ class FileChooserViewModel: ObservableObject {
                     name: $0.name,
                     thumbnailUrl: $0.thumbnailURL,
                     lastDateModified: $0.lastModified.toDate(),
+                    size: $0.sizeString,
                     isAvailableOnDevice: $0.isAvailableOnDevice,
                     fileType: $0.fileType
                 )
@@ -387,6 +388,7 @@ class FileChooserViewModel: ObservableObject {
                     name: $0.entity.name,
                     thumbnailUrl: $0.entity.thumbnailURL,
                     lastDateModified: $0.entity.lastModifiedString.toDate(),
+                    size: $0.asset?.fileAsset?.sizeString,
                     isAvailableOnDevice: $0.entity.isAvailableOnDevice,
                     fileType: $0.entity.fileTypeString
                 ))
@@ -434,6 +436,7 @@ class FileChooserViewModel: ObservableObject {
                         name: fileAsset!.name,
                         thumbnailUrl: fileAsset!.thumbnailURL,
                         lastDateModified: fileAsset!.lastModified.toDate(),
+                        size: fileAsset?.sizeString,
                         isAvailableOnDevice: fileAsset?.isAvailableOnDevice == true,
                         fileType: fileAsset?.fileType
                     ))
@@ -455,6 +458,7 @@ class FileChooserViewModel: ObservableObject {
                     name: $0.name,
                     thumbnailUrl: $0.thumbnailURL,
                     lastDateModified: nil,
+                    size: nil,
                     isAvailableOnDevice: $0.isAvailableOnDevice,
                     fileType: $0.fileType
                 )

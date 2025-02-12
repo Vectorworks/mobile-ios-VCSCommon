@@ -16,10 +16,11 @@ struct FileChooserModel: Identifiable {
     let name: String
     let thumbnailUrl: URL?
     let lastDateModified: Date?
+    let size: String?
     let isAvailableOnDevice: Bool
     let fileType: String?
     
-    init(resourceUri: String, resourceId: String, flags: VCSFlagsResponse?, name: String, thumbnailUrl: URL?, lastDateModified: Date?, isAvailableOnDevice: Bool, fileType: String?) {
+    init(resourceUri: String, resourceId: String, flags: VCSFlagsResponse?, name: String, thumbnailUrl: URL?, lastDateModified: Date?, size: String?, isAvailableOnDevice: Bool, fileType: String?) {
         self.id = resourceId
         self.resourceUri = resourceUri
         self.resourceId = resourceId
@@ -27,6 +28,7 @@ struct FileChooserModel: Identifiable {
         self.name = name
         self.thumbnailUrl = thumbnailUrl
         self.lastDateModified = lastDateModified
+        self.size = size
         self.isAvailableOnDevice = isAvailableOnDevice
         self.fileType = fileType
     }

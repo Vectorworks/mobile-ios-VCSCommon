@@ -17,6 +17,7 @@ struct ListItemView: View {
     @State var isFolder: Bool
     @State var isSharedWithMeFolder: Bool = false
     @State var lastDateModified: Date?
+    @State var size: String?
     
     var placeholderImageIconString: String {
         if isFolder {
@@ -58,9 +59,14 @@ struct ListItemView: View {
                     Text(name)
                         .listCellTextModifier()
                 }
-                Text(lastDateModified?.formatted() ?? "")
-                    .font(.subheadline)
-                    .foregroundColor(Color(.systemGray))
+                HStack {
+                    Text(size ?? "")
+                        .font(.subheadline)
+                        .foregroundColor(Color(.systemGray))
+                    Text(lastDateModified?.formatted() ?? "")
+                        .font(.subheadline)
+                        .foregroundColor(Color(.systemGray))
+                }
             }
             .padding(.leading)
         }

@@ -334,6 +334,25 @@ public extension Data {
     }
 }
 
+public extension Int {
+    /// count as String.
+    var VCSSizeString: String {
+        // mimic the formatting in portal
+        var bytes: Float = Float(self);
+        var multiplyFactor = 0;
+        var tokens = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+        
+        while bytes > 1000.0 {
+            bytes = bytes/1000.0
+            multiplyFactor = multiplyFactor + 1
+        }
+        
+        return "\(Int( roundf(bytes))) \(tokens[multiplyFactor])"
+    }
+    
+    
+}
+
 public extension Dictionary {
     var jsonData: Data? { return try? JSONSerialization.data(withJSONObject: self, options: [.prettyPrinted]) }
     

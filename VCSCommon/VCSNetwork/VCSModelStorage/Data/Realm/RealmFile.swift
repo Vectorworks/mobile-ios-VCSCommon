@@ -18,6 +18,7 @@ public class RealmFile: Object, VCSRealmObject {
     @Persisted var versionID: String = ""
     @Persisted var thumbnail: String = ""
     @Persisted var size: String = ""
+    public var sizeString: String { (Int(self.size) ?? 0).VCSSizeString }
     @Persisted var downloadURL: String = ""
     @Persisted var lastModified: String = ""
     @Persisted var thumbnail3D: String?

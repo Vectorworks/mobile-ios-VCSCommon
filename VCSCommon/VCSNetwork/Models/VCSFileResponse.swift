@@ -276,7 +276,7 @@ extension VCSFileResponse : FileCellPresentable {
     public var isAvailableOnDevice: Bool { return (self.isOnDisk) }
     public var filterShowingOffline: Bool { return self.isAvailableOnDevice }
     public var lastModifiedString: String { return (self.lastModified) }
-    public var sizeString: String { return (self.size) }
+    public var sizeString: String { (Int(self.size) ?? 0).VCSSizeString }
     public var thumbnailURL: URL? {
         let stringURL = (self.thumbnail3D?.isEmpty ?? true) ? self.thumbnail : self.thumbnail3D!
         return URL(string: stringURL)
