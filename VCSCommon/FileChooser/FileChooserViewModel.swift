@@ -358,6 +358,9 @@ class FileChooserViewModel: ObservableObject {
         DispatchQueue.main.async { [self] in
             sections[section.index].models = resultsFiltered
             sections[section.index].shouldRefresh = false
+            if !isOnline {
+                sections[section.index].isInitialDataLoaded = true
+            }
         }
     }
     
