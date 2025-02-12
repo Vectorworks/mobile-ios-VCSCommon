@@ -73,15 +73,19 @@ struct GridItemView: View {
                         .gridCellTextModifier()
                     Spacer()
                 }
-                HStack {
-                    if let sizeString = size {
+                if let sizeString = size {
+                    HStack {
                         Text(sizeString)
                             .font(.subheadline)
                             .foregroundColor(Color(.systemGray))
+                        Spacer()
                     }
+                }
+                HStack {
                     Text(lastDateModified?.formatted() ?? "")
                         .font(.subheadline)
                         .foregroundColor(Color(.systemGray))
+                    Spacer()
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
