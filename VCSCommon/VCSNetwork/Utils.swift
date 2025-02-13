@@ -45,9 +45,9 @@ public extension Encodable {
     func asJSON() -> String {
         var result: String = "{}"
         let encoder = JSONEncoder()
-        encoder.outputFormatting = .withoutEscapingSlashes
+        encoder.outputFormatting = [.withoutEscapingSlashes]
         do {
-            let jsonData = try JSONEncoder().encode(self)
+            let jsonData = try encoder.encode(self)
             guard let jsonString = String(data: jsonData, encoding: .utf8) else { return result }
             result = jsonString
             DDLogVerbose("Encodable-asJSON data json string: \(result)")
