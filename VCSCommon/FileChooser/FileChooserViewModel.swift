@@ -119,10 +119,12 @@ class FileChooserViewModel: ObservableObject {
     }
     
     func updateSections(newMainRoute: FileChooserRouteData) async {
-        DispatchQueue.main.async { [self] in
-            sections[0] = RouteSection(route: newMainRoute, index: 0, fileTypeStates: FileChooserViewModel.getInitialFileTypeStatesForRoute(route: newMainRoute, fileTypeFilter: fileTypeFilter))
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { [self] in
+                sections[0] = RouteSection(route: newMainRoute, index: 0, fileTypeStates: FileChooserViewModel.getInitialFileTypeStatesForRoute(route: newMainRoute, fileTypeFilter: fileTypeFilter))
+                continuation.resume()
+            }
         }
-        
         do {
             try await loadInitialDataForSection(section: sections[0])
         } catch {
