@@ -356,7 +356,10 @@ public struct UploadViewSimpleLocation<Model>: View where Model: RCFileUploadVie
                                     HStack {
                                         Image(systemName: "folder.badge.plus")
                                         Text("Create new".vcsLocalized)
+                                        Spacer()
                                     }
+                                    .foregroundStyle(Color.VCSAccentColor)
+                                    .padding(.leading, 4)
                                 })
                             }
                         }

@@ -370,7 +370,9 @@ public struct FileUploadViewCustomLocationSection<Model>: View where Model: File
                     HStack {
                         Image(systemName: "folder.badge.plus")
                         Text("Create new".vcsLocalized)
+                        Spacer()
                     }
+                    .padding(.leading, 4)
                 })
             }
         }
@@ -481,6 +483,7 @@ public struct SubFileUploadViewCustomLocationSection<Model>: View where Model: F
                             HStack {
                                 Image(systemName: "folder.badge.plus")
                                 Text("Create new".vcsLocalized)
+                                Spacer()
                             }
                         })
                     }
